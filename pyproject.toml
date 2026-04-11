@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "yada"
+version = "0.1.0"
+description = "A project dir analyzer that tells you few things the project LOC, used languages and etc."
+readme = "README.md"
+requires-python = ">=3.14"
+authors = [{ name = "Saifullah Balghari", email = "sbalghari@tuta.io" }]
+dependencies = []
+
+[project.scripts]
+cli = "yada:cli"
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+src = ["."]
+line-length = 79
+target-version = "py311"
+
+[dependency-groups]
+dev = ["mypy>=1.20.0", "pytest>=9.0.3", "ruff>=0.15.10", "ty>=0.0.29"]
