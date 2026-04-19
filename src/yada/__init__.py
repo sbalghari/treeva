@@ -1,14 +1,16 @@
 from pathlib import Path
+from pprint import pprint
 
+from yada.walker import dir_walker
+from yada.exclusions import GitignoreExclude
 
-PROJ_PATH: Path = Path(r"D:\Projects\sbdots-private")
+PROJ_PATH: Path = Path(r"D:\Projects\yada\walk_test")
 
 LANGUAGE2EXTENSION: dict[str, str] = {
     "Python": ".py",
     "JavaScript": ".js",
     "TypeScript": ".ts",
     "Java": ".java",
-    "Markdown": ".md",
     "C": ".c",
     "C++": ".cpp",
     "C#": ".cs",
@@ -58,68 +60,13 @@ LANGUAGE2EXTENSION: dict[str, str] = {
     "GDScript": ".gd",
 }
 
-excludes = [".git", ".vscde", ".venv"]
-
-
-def _get_language_by_extension(extension: str) -> str | None:
-    """
-    Get the language name by the extension
-    """
-    for lang, ext in LANGUAGE2EXTENSION.items():
-        if ext == extension:
-            return lang
-
-    return None
-
-
-def get_file_extension(filname: str) -> str:
-    ext = filname.split(".")
-    return f".{ext[-1]}"
-
-
-def get_all_files(path: Path, excludes: list[str]) -> list[any]:
-    """
-    Get all the files inside 'path' by walking through every dir
-    while excluding specific files 'excludes'
-    """
-    _files = []
-
-    for root, dirs, files in Path.walk(path, on_error=print):
-        for exclude in excludes:
-            if exclude in dirs:
-                continue
-
-        if isinstance(files, str):
-            _files.append(files)
-        elif isinstance(files, list):
-            for file in files:
-                _files.append(file)
-
-    return _files
-
-
-def get_used_languages(files_list: list[str]) -> dict[str, int]:
-    """
-    Get the used language names and number of files of that language
-    from the list 'files_list'.
-    """
-    _languages: dict[str, int] = {}
-
-    for file in files_list:
-        file_ext = get_file_extension(file)
-        if file_ext in LANGUAGE2EXTENSION.values():
-            _lang = _get_language_by_extension(file_ext)
-            if not _lang:
-                continue
-            if _lang in _languages.keys():
-                _languages[_lang] += 1
-            else:
-                _languages[_lang] = 1
-    return _languages
-
 
 def cli() -> None:
+    files = []
+    for file in dir_walker(PROJ_PATH):
+        if GitignoreExclude(PROJ_PATH).should_exclude(file):
+            continue
 
-    files = get_all_files(path=PROJ_PATH, excludes=excludes)
+        files.append(file)
 
-    print(get_used_languages(files))
+    pprint(files)
