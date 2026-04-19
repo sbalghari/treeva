@@ -123,12 +123,15 @@ class DefaultExclude(ExcludeRule):
         ".history",
     }
 
-    def should_exclude(self, path):
-        spec = PathSpec.from_lines(
-            GitIgnoreSpecPattern, DefaultExclude.DEFAULT_EXCLUDES
+    def __init__(self) -> None:
+        self.spec = PathSpec.from_lines(
+            GitIgnoreSpecPattern,
+            DefaultExclude.DEFAULT_EXCLUDES,
+            backend="best",
         )
 
-        return spec.match_file(path)
+    def should_exclude(self, path) -> bool:
+        return self.spec.match_file(path)
 
 
 class GitignoreExclude(ExcludeRule):
@@ -148,18 +151,32 @@ class GitignoreExclude(ExcludeRule):
         else:
             for i in self.gitignore:
                 _patterns = i.read_text(encoding="utf-8").splitlines()
-
-                gitignore_path = i.relative_to(self.proj_path)
+                gitignore_dir = i.parent
 
                 for pattern in _patterns:
-                    self.exclude_patterns.append(str(gitignore_path) + pattern)
+                    self.exclude_patterns.append(
+                        str(
+                            gitignore_dir.relative_to(
+                                self.proj_path
+                            ).as_posix()
+                        )
+                        + "/"
+                        + pattern
+                    )
 
-    def should_exclude(self, path):
-        spec = PathSpec.from_lines(
+        # Build the pattern specs
+        self.spec = PathSpec.from_lines(
             GitIgnoreSpecPattern, self.exclude_patterns, backend="best"
         )
 
-        return spec.match_file(path)
+    def should_exclude(self, path: Path) -> bool:
+        try:
+            rel_path = path.relative_to(self.proj_path)
+            rel_path_str = rel_path.as_posix()
+            return self.spec.match_file(rel_path_str)
+        except ValueError:
+            # Path is not under proj_path — shouldn't happen, but handle gracefully
+            return False
 
     def _get_gitignore(self) -> Path | list[Path] | None:
         _gitignores = []
