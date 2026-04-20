@@ -3,6 +3,7 @@ from pathlib import Path
 
 from yada.utils.exceptions import DirectoryNotFound
 
+
 def dir_walker(dir_path: Path) -> Iterator[Path]:
     """
     Walk through a directory and yield all file paths recursively.

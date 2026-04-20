@@ -1,0 +1,24 @@
+from enum import Enum
+
+
+class ProgrammingLanguage(str, Enum):
+    PYTHON = "Python"
+    JAVASCRIPT = "JavaScript"
+    TYPESCRIPT = "TypeScript"
+    JAVA = "Java"
+    CPP = "C++"
+    RUST = "Rust"
+    GO = "Go"
+    PHP = "PHP"
+    RUBY = "Ruby"
+    SWIFT = "Swift"
+    KOTLIN = "Kotlin"
+    CSHARP = "C#"
+    C = "C"
+    DART = "Dart"
+    R = "R"
+    LUA = "Lua"
+    SQL = "SQL"
+    HTML = "HTML"
+    CSS = "CSS"
+    SHELL = "Shell"
