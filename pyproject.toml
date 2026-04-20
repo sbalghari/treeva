@@ -9,10 +9,16 @@ description = "yet another dir analyzer, get an overview of your project structu
 readme = "README.md"
 requires-python = ">=3.14"
 authors = [{ name = "Saifullah Balghari", email = "sbalghari@proton.me" }]
-dependencies = ["pathlib>=1.0.1", "pathspec>=1.0.4", "rich>=15.0.0"]
+dependencies = [
+    "pathlib>=1.0.1",
+    "pathspec>=1.0.4",
+    "pyfiglet>=1.0.4",
+    "rich>=15.0.0",
+    "typer>=0.24.1",
+]
 
 [project.scripts]
-cli = "yada:cli"
+yada = "yada:cli"
 
 [tool.uv]
 package = true

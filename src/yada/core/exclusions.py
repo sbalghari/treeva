@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from yada.walker import dir_walker, DirectoryNotFound
+from .walker import dir_walker, DirectoryNotFound
 
 
 class GitignoreNotFound(FileNotFoundError):
