@@ -1,4 +1,4 @@
-from yada.output import cli
+from yada import cli
 
 __all__ = ["cli"]
 

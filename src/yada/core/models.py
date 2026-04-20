@@ -8,15 +8,16 @@ from dataclasses import dataclass
 
 @dataclass
 class FileInfo:
-    name: str
-    path: Path
-    size: bytes
+    filename: str
+    full_path: Path
+    size_in_bytes: bytes
     extension: str
-    hidden: bool
+    is_hidden: bool
 
 
 @dataclass
 class DirInfo:
-    name: str
-    path: Path
-    size: bytes
+    filename: str
+    full_path: Path
+    size_in_bytes: bytes
+    is_hidden: bool

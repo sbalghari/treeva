@@ -1,22 +1,32 @@
-import typer
+from .spinner import SpinnerProgress as Spinner
+from .console import reset_console, clear_console
+from .output import (
+    print_rule,
+    print_newline,
+    print_ascii_art,
+    print_header,
+    print_subheader,
+    print_text,
+    print_subtext,
+    print_info,
+    print_error,
+    print_success,
+    print_warning,
+)
 
-from yada.utils.version import get_version
-
-cli = typer.Typer(name="yada")
-
-# Common options for all commands
-common_options = [
-    typer.Option(False, "--verbose/--no-verbose", help="Verbose output"),
+__all__ = [
+    "Spinner",
+    "reset_console",
+    "clear_console",
+    "print_newline",
+    "print_rule",
+    "print_ascii_art",
+    "print_header",
+    "print_subheader",
+    "print_text",
+    "print_subtext",
+    "print_success",
+    "print_info",
+    "print_error",
+    "print_warning",
 ]
-
-
-@cli.callback(invoke_without_command=True)
-def main(
-    version: bool = typer.Option(
-        False,
-        "--version",
-        help="Show yada version and exit",
-        is_eager=True,
-        callback=lambda v: typer.echo(get_version()) if v else None,
-    ),
-): ...
