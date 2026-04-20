@@ -1,10 +1,7 @@
 from typing import Iterator
 from pathlib import Path
 
-
-class DirectoryNotFound(FileNotFoundError):
-    """Exception raised when a specified directory does not exist."""
-
+from yada.utils.exceptions import DirectoryNotFound
 
 def dir_walker(dir_path: Path) -> Iterator[Path]:
     """

@@ -3,11 +3,8 @@ from abc import ABC, abstractmethod
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from .walker import dir_walker, DirectoryNotFound
-
-
-class GitignoreNotFound(FileNotFoundError):
-    """Raised when no .gitignore file is found inside the given project path."""
+from .dir_walker import dir_walker
+from yada.utils.exceptions import GitignoreNotFound, DirectoryNotFound
 
 
 class ExcludeRule(ABC):
