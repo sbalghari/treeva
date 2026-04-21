@@ -4,7 +4,7 @@ from rich.console import Console
 from ._theme_loader import load_theme
 
 _THEME_PATH = (
-    Path().home() / "Projects" / "hyprforge" / "configs" / "rich_theme.toml"
+    Path(r"D:\Projects\yada\configs\rich_theme.toml")
 )
 
 _THEME, COLORS, ICONS = load_theme(_THEME_PATH)

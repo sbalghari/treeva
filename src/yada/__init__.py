@@ -1,22 +1,30 @@
 import typer
 
 from yada.utils.version import get_version
+from yada.core.analyzer import Analyzer
 
-cli = typer.Typer(name="yada")
-
-# Common options for all commands
-common_options = [
-    typer.Option(False, "--verbose/--no-verbose", help="Verbose output"),
-]
+cli = typer.Typer(name="yada", add_completion=False)
 
 
 @cli.callback(invoke_without_command=True)
-def main(
-    version: bool = typer.Option(
-        False,
-        "--version",
-        help="Show yada version and exit",
-        is_eager=True,
-        callback=lambda v: typer.echo(get_version()) if v else None,
+def _(
+    version: bool = typer.Option(False, "--version", is_eager=True),
+):
+    if version:
+        typer.echo(get_version())
+        raise typer.Exit()
+
+
+@cli.command()
+def analyze(
+    path: str,
+    verbose: bool = typer.Option(
+        False, "--verbose/--no-verbose", help="Verbose output"
     ),
-): ...
+):
+    try:
+        Analyzer(path, verbose=verbose).main()
+
+    except KeyboardInterrupt:
+        typer.echo("Interrupted by user, exiting...")
+        exit(1)

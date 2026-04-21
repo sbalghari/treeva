@@ -11,7 +11,7 @@ from dataclasses import dataclass
 class FileInfo:
     filename: str
     full_path: Path
-    size_in_bytes: bytes
+    size_in_bytes: int
     extension: str
     is_hidden: bool
     language: ProgrammingLanguage
@@ -22,13 +22,7 @@ class DirInfo:
     dirname: str
     full_path: Path
     files_count: int
-    size_in_bytes: bytes
+    size_in_bytes: int
     language_count: dict[ProgrammingLanguage, int]
     is_hidden: bool
 
-
-@dataclass
-class AnalysisInfo:
-    project_name: str
-    project_root: DirInfo
-    languages_used: list[ProgrammingLanguage]

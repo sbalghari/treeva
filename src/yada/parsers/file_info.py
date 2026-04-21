@@ -53,6 +53,6 @@ def parse_file_info(filepath: Path) -> FileInfo:
         full_path=filepath,
         extension=filepath.suffix,
         is_hidden=_is_hidden(filepath),
-        size_in_bytes=bytes(filepath.stat().st_size),
+        size_in_bytes=filepath.stat().st_size,
         language=_detect_language(filepath),
     )

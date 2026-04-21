@@ -16,11 +16,11 @@ def _is_hidden(filepath: Path) -> bool:
     return False
 
 
-def _get_dir_size(dirpath: Path) -> bytes:
-    _size = bytes()
+def _get_dir_size(dirpath: Path) -> int:
+    _size = 0
 
     for file in dir_walker(dirpath):
-        _size += bytes(file.stat().st_size)
+        _size += file.stat().st_size
 
     return _size
 
