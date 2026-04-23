@@ -96,13 +96,12 @@ def print_file_info(file_info: FileInfo) -> None:
     table.add_row("Size", f"{file_info.size_in_bytes:,} bytes")
     table.add_row("Extension", file_info.extension or "-")
     table.add_row("Hidden", "Yes" if file_info.is_hidden else "No")
-    table.add_row("Language", file_info.language.name)
+    table.add_row("Language", file_info.language)
 
     CONSOLE.print(
         Panel(
             table,
             title="File Info",
-            border_style="blue",
         )
     )
 
@@ -120,9 +119,9 @@ def print_dir_info(dir_info: DirInfo) -> None:
     langs.add_column("Count", justify="right", style="green")
 
     for lang, count in dir_info.language_count.items():
-        langs.add_row(lang.name, str(count))
+        langs.add_row(lang, str(count))
 
-    CONSOLE.print(Panel(meta, title="Directory Info", border_style="mauve"))
+    CONSOLE.print(Panel(meta, title="Directory Info"))
     CONSOLE.print(langs)
 
 
