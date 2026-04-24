@@ -22,3 +22,4 @@ class ProgrammingLanguage(str, Enum):
     HTML = "HTML"
     CSS = "CSS"
     SHELL = "Shell"
+    UNKNOWN = "Non-Code-file"

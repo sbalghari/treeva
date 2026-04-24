@@ -1,22 +1,18 @@
 from __future__ import annotations
-from pygments.token import Name
-from mypy.checkstrformat import FormatStringExpr
 
 from pathlib import Path, UnsupportedOperation
 from logging import getLogger
 
 from .models import DirInfo, FileInfo
-from yada.parsers import parse_dir_info, parse_file_info
 from yada.output import (
     Spinner,
     print_header,
     print_info,
     print_warning,
-    print_error, 
+    print_error,
     print_success,
     print_dir_info,
     print_file_info,
-    print_project_tree,
 )
 from yada.scaners import DefaultExclude, GitignoreExclude, dir_walker
 from yada.utils.logger import setup_logging
@@ -40,7 +36,6 @@ class Analyzer:
 
     def _verify_path(self, path: str) -> Path | None:
 
-        # Try to convert to Path object, raise if failed
         try:
             _path = Path(path)
         except UnsupportedOperation as e:
@@ -51,7 +46,7 @@ class Analyzer:
         if not _path.exists():
             print_error("Given dir path doesn't exists!")
             return None
-        
+
         # Check for dir's emptiness
         if _path.is_dir() and not any(_path.iterdir()):
             print_error("Gievn dir is empty!")
@@ -59,11 +54,22 @@ class Analyzer:
 
         return _path
 
-    def main(self) -> None:
+    def _get_all_files(self) -> list[FileInfo]:
         print_header("yada, yet another dir analyzer")
 
-        # with Spinner("Analyzing your project", verbose=self.verbose) as spinner:
-        for i in dir_walker(self.root_path):
-            print_file_info(parse_file_info(i))
-            
+        files = []
 
+        # with Spinner("Analyzing your project", verbose=self.verbose) as spinner:
+        for file in dir_walker(self.root_path):
+            exclude_rule = GitignoreExclude(self.root_path)
+            if exclude_rule.should_exclude(file):
+                continue
+            
+            info = FileInfo.from_path(file)
+            files.append(info)
+
+        return files
+
+    def main(self) -> None:
+        info = DirInfo.from_path(self.root_path)
+        print_dir_info(info)

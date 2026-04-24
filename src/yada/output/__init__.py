@@ -12,7 +12,6 @@ from .output import (
     print_error,
     print_success,
     print_warning,
-    print_project_tree,
     print_dir_info,
     print_file_info,
 )
@@ -32,7 +31,6 @@ __all__ = [
     "print_info",
     "print_error",
     "print_warning",
-    "print_project_tree",
     "print_dir_info",
     "print_file_info",
 ]
