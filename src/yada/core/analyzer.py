@@ -1,4 +1,6 @@
 from __future__ import annotations
+from pygments.formatters import load_formatter_from_file
+from rich.themes import DEFAULT
 
 from pathlib import Path, UnsupportedOperation
 from logging import getLogger
@@ -54,22 +56,6 @@ class Analyzer:
 
         return _path
 
-    def _get_all_files(self) -> list[FileInfo]:
-        print_header("yada, yet another dir analyzer")
-
-        files = []
-
-        # with Spinner("Analyzing your project", verbose=self.verbose) as spinner:
-        for file in dir_walker(self.root_path):
-            exclude_rule = GitignoreExclude(self.root_path)
-            if exclude_rule.should_exclude(file):
-                continue
-            
-            info = FileInfo.from_path(file)
-            files.append(info)
-
-        return files
-
     def main(self) -> None:
-        info = DirInfo.from_path(self.root_path)
-        print_dir_info(info)
+        for fd in dir_walker(self.root_path, logger=self.logger):
+            print(fd)

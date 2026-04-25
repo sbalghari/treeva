@@ -5,7 +5,7 @@ from enum import Enum
 
 from rich.logging import RichHandler
 
-LOG_DIR = Path("/var") / "log" / "hyprforge"
+LOG_DIR = Path(r"D:\Projects\yada\logs")
 
 
 class LogLevel(Enum):

@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from .dir_walker import dir_walker
 from yada.utils.exceptions import GitignoreNotFound, DirectoryNotFound
 
 
@@ -151,31 +150,31 @@ class GitignoreExclude(ExcludeRule):
         if not self.gitignore:
             raise GitignoreNotFound
 
-        # Root .gitignore found
-        if isinstance(self.gitignore, Path):
-            self.exclude_patterns = self.gitignore.read_text(
+        # Root .gitignore
+        if root_gitignore := self.gitignore[0]:
+            self.exclude_patterns = root_gitignore.read_text(
                 encoding="utf-8"
             ).splitlines()
 
-        # Nested .gitignore files found
-        else:
-            for i in self.gitignore:
-                _patterns = i.read_text(encoding="utf-8").splitlines()
+        if subdir_gitignores := self.gitignore[1]:
+            for gi in subdir_gitignores:
+                if gi:
+                    _patterns = gi.read_text(encoding="utf-8").splitlines()
 
-                gitignore_dir = i.parent
+                    gitignore_dir = gi.parent
 
-                for pattern in _patterns:
-                    # Prefix patterns so they stay relative
-                    # to their original folder.
-                    self.exclude_patterns.append(
-                        str(
-                            gitignore_dir.relative_to(
-                                self.proj_path
-                            ).as_posix()
+                    for pattern in _patterns:
+                        # Prefix patterns so they stay relative
+                        # to their original folder.
+                        self.exclude_patterns.append(
+                            str(
+                                gitignore_dir.relative_to(
+                                    self.proj_path
+                                ).as_posix()
+                            )
+                            + "/"
+                            + pattern
                         )
-                        + "/"
-                        + pattern
-                    )
 
         # Build final specs
         self.spec = PathSpec.from_lines(
@@ -200,7 +199,7 @@ class GitignoreExclude(ExcludeRule):
             # Path is outside project root
             return False
 
-    def _get_gitignore(self) -> Path | list[Path] | None:
+    def _get_gitignore(self) -> tuple[Path | None, list[Path | None]]:
         """
         Search project for .gitignore files.
 
@@ -209,19 +208,33 @@ class GitignoreExclude(ExcludeRule):
             - List of nested .gitignore files otherwise
             - None if nothing found
         """
-        _gitignores = []
+        root_gitignore: Path | None = None
+        subdir_gitignores: list[Path | None] = []
 
         try:
-            for file in dir_walker(self.proj_path):
-                if file.match(".gitignore"):
-                    # Prefer root .gitignore immediately
-                    if file.parent == self.proj_path:
-                        return file
+            for root, _, files in self.proj_path.walk(on_error=print):
+                if files:
+                    for f in files:
+                        file = root.joinpath(f)
 
-                    # Otherwise store nested ones
-                    _gitignores.append(file)
+                        if file.match(".gitignore"):
+                            # Prefer root .gitignore immediately
+                            if file.parent == self.proj_path:
+                                root_gitignore = file
 
-            return _gitignores
+                            # Otherwise store nested ones
+                            subdir_gitignores.append(file)
+
+            return root_gitignore, subdir_gitignores
 
         except DirectoryNotFound:
             raise
+
+    @property
+    def gitignore_exists(self) -> bool:
+        gitignore = self._get_gitignore()
+
+        if not gitignore:
+            return False
+
+        return True
