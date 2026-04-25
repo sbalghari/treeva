@@ -238,3 +238,42 @@ class GitignoreExclude(ExcludeRule):
             return False
 
         return True
+
+
+class UnionExclude(ExcludeRule):
+    """
+    Exclusion rule that combines both DefaultExclude and GitignoreExclude.
+    """
+
+    def __init__(
+        self, proj_path: Path, fallback_if_no_gitignore: bool = True
+    ) -> None:
+        self.proj_path = proj_path
+        self.default_exclude = DefaultExclude()
+
+        # Try to initialize gitignore exclude, but handle missing case
+        try:
+            self.gitignore_exclude = GitignoreExclude(proj_path)
+            self.has_gitignore = True
+        except GitignoreNotFound:
+            if fallback_if_no_gitignore:
+                self.gitignore_exclude = None
+                self.has_gitignore = False
+            else:
+                raise
+
+    def should_exclude(self, path: Path) -> bool:
+        """
+        Return True if path matches default OR gitignore patterns.
+
+        Path is excluded if either rule says it should be excluded.
+        """
+        # Check default rules first
+        if self.default_exclude.should_exclude(path):
+            return True
+
+        # Check gitignore rules if available
+        if self.has_gitignore and self.gitignore_exclude:
+            return self.gitignore_exclude.should_exclude(path)
+
+        return False

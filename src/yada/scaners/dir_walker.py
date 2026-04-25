@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 from yada.utils.exceptions import DirectoryNotFound
 from yada.utils.logger import get_caller_logger
-from .exclusions import DefaultExclude, GitignoreExclude
+from .exclusions import UnionExclude
 
 
 def dir_walker(
@@ -18,17 +18,14 @@ def dir_walker(
     if not dir_path.exists():
         raise DirectoryNotFound
 
-    gitignore_rule = GitignoreExclude(dir_path)
-    exclude_rule = (
-        gitignore_rule if gitignore_rule.gitignore_exists else DefaultExclude()
-    )
+    exclude_rule = UnionExclude(dir_path)
 
     for root, dirs, files in dir_path.walk(on_error=logger.error):
         if dirs:
             for dir in dirs:
                 path = root.joinpath(dir)
                 if exclude_rule.should_exclude(path):
-                    dirs.remove(dir)
+                    continue
                 yield path
 
         if files:
