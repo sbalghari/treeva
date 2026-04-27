@@ -24,18 +24,17 @@ def dir_walker(
         raise DirectoryNotFound(f"Path is not a directory: {dir_path}")
 
     # Use provided logger or create a default one
-    if logger is None:
+    if not logger:
         from yada.utils.logger import get_caller_logger
 
         logger = get_caller_logger()
 
     # Creeate exclude_rule
-    exclude_rule = UnionExclude(dir_path, fallback_if_no_gitignore=True)
+    exclude_rule = UnionExclude(dir_path, fallback_if_no_gitignore=True, logger=logger)
 
     try:
         for root, dirs, files in dir_path.walk(on_error=logger.error):
             # Filter directories in-place to avoid traversing excluded dirs
-            # This improves performance by skipping entire excluded subtrees
             dirs[:] = [
                 d for d in dirs if not exclude_rule.should_exclude(root / d)
             ]

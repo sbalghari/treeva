@@ -1,3 +1,4 @@
+from logging import Logger
 from pathlib import Path
 from abc import ABC, abstractmethod
 from pathspec import PathSpec
@@ -202,11 +203,6 @@ class GitignoreExclude(ExcludeRule):
     def _get_gitignore(self) -> tuple[Path | None, list[Path | None]]:
         """
         Search project for .gitignore files.
-
-        Returns:
-            - Root .gitignore if found
-            - List of nested .gitignore files otherwise
-            - None if nothing found
         """
         root_gitignore: Path | None = None
         subdir_gitignores: list[Path | None] = []
@@ -218,11 +214,11 @@ class GitignoreExclude(ExcludeRule):
                         file = root.joinpath(f)
 
                         if file.match(".gitignore"):
-                            # Prefer root .gitignore immediately
+                            # root .gitignore
                             if file.parent == self.proj_path:
                                 root_gitignore = file
 
-                            # Otherwise store nested ones
+                            # nested ones
                             subdir_gitignores.append(file)
 
             return root_gitignore, subdir_gitignores
@@ -246,10 +242,11 @@ class UnionExclude(ExcludeRule):
     """
 
     def __init__(
-        self, proj_path: Path, fallback_if_no_gitignore: bool = True
+        self, proj_path: Path, logger: Logger, fallback_if_no_gitignore: bool = True,
     ) -> None:
         self.proj_path = proj_path
         self.default_exclude = DefaultExclude()
+        self.logger = logger
 
         # Try to initialize gitignore exclude, but handle missing case
         try:
