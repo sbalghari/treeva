@@ -75,21 +75,12 @@ class DirInfo:
     @classmethod
     def from_path(cls, dirpath: Path) -> DirInfo:
         """
-        Create a DirInfo instance from a directory path.
-
-        If files is provided, use it to aggregate data (single pass).
-        Otherwise, walk the directory to collect metrics.
+        Create a DirInfo instance from a directory path by walking that directory and aggregating metrics
         """
-        return cls._walk_directory(dirpath)
-
-    @classmethod
-    def _walk_directory(cls, dirpath: Path) -> DirInfo:
-        """Walk directory and aggregate metrics (legacy approach)."""
         files_count = 0
         size_in_bytes = 0
         language_count = {}
 
-        # Import here to avoid circular import
         from yada.scaners import dir_walker
 
         for file in dir_walker(dirpath):

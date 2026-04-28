@@ -2,6 +2,7 @@ import typer
 
 from yada.utils.version import get_version
 from yada.core.analyzer import Analyzer
+from yada.tui import YadaTUI
 
 cli = typer.Typer(name="yada", add_completion=False)
 
@@ -23,7 +24,8 @@ def analyze(
     ),
 ):
     try:
-        Analyzer(path, verbose=verbose).main()
+        # Analyzer(path, verbose=verbose).main()
+        YadaTUI().run()
 
     except KeyboardInterrupt:
         typer.echo("Interrupted by user, exiting...")

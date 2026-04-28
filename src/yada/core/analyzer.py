@@ -1,12 +1,10 @@
 from __future__ import annotations
-from pygments.formatters import load_formatter_from_file
-from rich.themes import DEFAULT
 
 from pathlib import Path, UnsupportedOperation
 from logging import getLogger
 
 from .models import DirInfo, FileInfo
-from yada.output import (
+from yada.cli import (
     Spinner,
     print_header,
     print_info,
@@ -16,7 +14,7 @@ from yada.output import (
     print_dir_info,
     print_file_info,
 )
-from yada.scaners import DefaultExclude, GitignoreExclude, dir_walker
+from yada.scaners import dir_walker
 from yada.utils.logger import setup_logging
 
 
@@ -34,6 +32,7 @@ class Analyzer:
 
         if not self._verify_path(path):
             return
+            
         self.root_path = Path(path)
 
     def _verify_path(self, path: str) -> Path | None:
