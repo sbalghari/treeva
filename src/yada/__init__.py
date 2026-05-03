@@ -66,5 +66,4 @@ def _verify_path(path: str) -> Path | None:
     return _path
 
 
-DirInfo(
-)
+DirInfo()

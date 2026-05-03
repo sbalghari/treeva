@@ -30,7 +30,9 @@ def dir_walker(
         logger = get_caller_logger()
 
     # Creeate exclude_rule
-    exclude_rule = UnionExclude(dir_path, fallback_if_no_gitignore=True, logger=logger)
+    exclude_rule = UnionExclude(
+        dir_path, fallback_if_no_gitignore=True, logger=logger
+    )
 
     try:
         for root, dirs, files in dir_path.walk(on_error=logger.error):

@@ -70,6 +70,7 @@ class FileInfo:
         """Get owner name from uid, fallback to uid if not found."""
         try:
             import pwd
+
             return pwd.getpwuid(uid).pw_name
         except (KeyError, ImportError):
             return str(uid)
@@ -79,7 +80,7 @@ class FileInfo:
         """Get group name from gid, fallback to gid if not found."""
         try:
             import grp
+
             return grp.getgrgid(gid).gr_name
         except (KeyError, ImportError):
             return str(gid)
-

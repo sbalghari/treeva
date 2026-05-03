@@ -144,7 +144,10 @@ class UnionExclude(ExcludeRule):
     """
 
     def __init__(
-        self, proj_path: Path, logger: Logger, fallback_if_no_gitignore: bool = True,
+        self,
+        proj_path: Path,
+        logger: Logger,
+        fallback_if_no_gitignore: bool = True,
     ) -> None:
         self.proj_path = proj_path
         self.default_exclude = DefaultExclude()

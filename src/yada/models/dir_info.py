@@ -68,4 +68,3 @@ class DirInfo:
             subdirectory_count=subdirectory_count,
             depth=depth,
         )
-

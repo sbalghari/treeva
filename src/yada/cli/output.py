@@ -87,7 +87,7 @@ def print_warning(
 ) -> None:
     CONSOLE.print(warning(t, details=details, use_panel=panel))
 
-    
+
 def format_size(size_in_bytes: int) -> str:  # ty:ignore[invalid-return-type]
     units = ["Bytes", "KB", "MB", "GB", "TB", "PB"]
     size = float(size_in_bytes)
@@ -111,13 +111,7 @@ def print_file_info(file_info: FileInfo) -> None:
     table.add_row("Hidden", "Yes" if file_info.is_hidden else "No")
     table.add_row("Language", file_info.language)
 
-    CONSOLE.print(
-        Panel(
-            table,
-            title="File Info",
-            border_style="border.info"
-        )
-    )
+    CONSOLE.print(Panel(table, title="File Info", border_style="border.info"))
 
 
 def print_dir_info(dir_info: DirInfo) -> None:
