@@ -1,7 +1,7 @@
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from yada.core.models import DirInfo, FileInfo
+    from yada.models import DirInfo, FileInfo
 
 from pyfiglet import figlet_format
 from rich.text import Text

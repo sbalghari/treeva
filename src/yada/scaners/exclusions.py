@@ -5,6 +5,7 @@ from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
 from yada.utils.exceptions import GitignoreNotFound, DirectoryNotFound
+from yada.schemas.constants import DEFAULT_EXCLUDES
 
 
 class ExcludeRule(ABC):
@@ -22,110 +23,11 @@ class DefaultExclude(ExcludeRule):
     Built-in exclude rules for common junk, cache, build, and dependency folders..
     """
 
-    DEFAULT_EXCLUDES: set[str] = {
-        # Version control
-        ".git",
-        ".svn",
-        ".hg",
-        ".bzr",
-        # Python
-        "__pycache__",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".ruff_cache",
-        ".tox",
-        ".nox",
-        ".venv",
-        "venv",
-        "env",
-        ".env",
-        "site-packages",
-        "*.pyc",
-        "*.pyo",
-        "*.pyd",
-        # Node / JavaScript / TypeScript
-        "node_modules",
-        ".npm",
-        ".pnpm-store",
-        ".yarn",
-        ".next",
-        ".nuxt",
-        ".svelte-kit",
-        ".parcel-cache",
-        ".turbo",
-        "coverage",
-        # Java / Kotlin / Gradle
-        ".gradle",
-        "build",
-        "out",
-        "target",
-        # Go / PHP / Ruby
-        "vendor",
-        ".bundle",
-        "vendor/bundle",
-        # C / C++ / CMake
-        "cmake-build-debug",
-        "cmake-build-release",
-        "CMakeFiles",
-        "CMakeCache.txt",
-        "compile_commands.json",
-        "Makefile",
-        "*.o",
-        "*.obj",
-        "*.so",
-        "*.dll",
-        "*.exe",
-        "*.a",
-        "*.lib",
-        # Swift / Xcode
-        ".build",
-        "DerivedData",
-        # Dart / Flutter
-        ".dart_tool",
-        ".flutter-plugins",
-        ".flutter-plugins-dependencies",
-        ".packages",
-        # Android / .NET
-        ".idea",
-        "captures",
-        "bin",
-        "obj",
-        ".vs",
-        # IDEs / Editors
-        ".vscode",
-        "*.iml",
-        "*.suo",
-        "*.user",
-        "*.swp",
-        "*.swo",
-        "*~",
-        # OS junk
-        ".DS_Store",
-        "Thumbs.db",
-        "desktop.ini",
-        # Logs / temp
-        "*.log",
-        "*.tmp",
-        "*.temp",
-        "tmp",
-        "temp",
-        # Caches
-        ".cache",
-        ".sass-cache",
-        ".eslintcache",
-        # Distribution / build output
-        "dist",
-        "release",
-        "debug",
-        # Misc
-        ".history",
-    }
-
     def __init__(self) -> None:
         """Build pathspec specs from default patterns."""
         self.spec = PathSpec.from_lines(
             GitIgnoreSpecPattern,
-            DefaultExclude.DEFAULT_EXCLUDES,
+            DEFAULT_EXCLUDES,
             backend="best",
         )
 
