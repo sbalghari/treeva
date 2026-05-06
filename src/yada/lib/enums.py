@@ -1,0 +1,60 @@
+from enum import Enum
+
+
+class Files(Enum):
+    # Programming languages
+    PYTHON = "Python"
+    JAVASCRIPT = "JavaScript"
+    TYPESCRIPT = "TypeScript"
+    JAVA = "Java"
+    CPP = "C++"
+    C = "C"
+    CSHARP = "C#"
+    GO = "Go"
+    RUST = "Rust"
+    RUBY = "Ruby"
+    PHP = "PHP"
+    SWIFT = "Swift"
+    KOTLIN = "Kotlin"
+    SCALA = "Scala"
+    GROOVY = "Groovy"
+    PERL = "Perl"
+    R = "R"
+    LUA = "Lua"
+    DART = "Dart"
+    ELIXIR = "Elixir"
+    CLOJURE = "Clojure"
+    HASKELL = "Haskell"
+    OCAML = "OCaml"
+    HTML = "HTML"
+    CSS = "CSS"
+    SCSS = "SCSS"
+    SASS = "Sass"
+    LESS = "Less"
+    SQL = "SQL"
+    BASH = "Bash"
+    ZSH = "Zsh"
+    FISH = "Fish"
+    POWERSHELL = "PowerShell"
+    QML = "Qt Modeling Language"
+
+    # Configuration file types
+    JSON = "JSON"
+    YAML = "YAML"
+    TOML = "TOML"
+    XML = "XML"
+    INI = "INI"
+    PROPERTIES = "Properties"
+    ENV = "Environment Variables"
+
+    # Documentation and plain text file types
+    MARKDOWN = "Markdown"
+    RST = "reStructuredText"
+    LATEX = "LaTeX"
+    ASCIIDOC = "AsciiDoc"
+    ORG = "Org Mode"
+    TXT = "Plain Text"
+    LOG = "Log File"
+
+    # For unknown or not mentioned file types
+    UNKNOWN = "Others"

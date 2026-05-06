@@ -1,11 +1,33 @@
 import logging
+import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from enum import Enum
 
 from rich.logging import RichHandler
 
-LOG_DIR = Path(r"D:\Projects\yada\logs")
+
+APP_NAME = "yada"
+
+
+def _default_log_dir() -> Path:
+    """Return a platform-specific default log directory."""
+    home = Path.home()
+
+    if os.name == "nt":
+        base_dir = os.getenv("LOCALAPPDATA") or os.getenv("APPDATA")
+        if not base_dir:
+            base_dir = home / "AppData" / "Local"
+        return Path(base_dir) / APP_NAME / "logs"
+
+    state_home = os.getenv("XDG_STATE_HOME")
+    if state_home:
+        return Path(state_home) / APP_NAME / "logs"
+
+    return home / ".local" / "state" / APP_NAME / "logs"
+
+
+LOG_DIR = Path(os.getenv(f"{APP_NAME.upper()}_LOG_DIR") or _default_log_dir())
 
 
 class LogLevel(Enum):

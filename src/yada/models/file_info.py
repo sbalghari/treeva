@@ -1,13 +1,16 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
 
 from dataclasses import dataclass
-from pathlib import Path
 from datetime import datetime
 import stat
-import os
 
-from yada.schemas.enums import ProgrammingLanguage
-from yada.schemas.constants import LANGUAGE_EXTENSIONS
+from yada.lib.enums import Files
+from yada.lib.constants import FILE_EXTENSIONS
 
 
 @dataclass
@@ -17,7 +20,7 @@ class FileInfo:
     size_in_bytes: int
     extension: str
     is_hidden: bool
-    language: ProgrammingLanguage
+    file_type: Files.value
     created_at: datetime
     modified_at: datetime
     accessed_at: datetime
@@ -30,10 +33,10 @@ class FileInfo:
     @classmethod
     def from_path(cls, filepath: Path) -> FileInfo:
         """Create a FileInfo instance from a file path."""
-        stat_info = filepath.stat()
+        file_stats = filepath.stat()
 
-        owner = cls._get_owner(stat_info.st_uid)
-        group = cls._get_group(stat_info.st_gid)
+        owner = cls._get_owner(file_stats.st_uid)
+        group = cls._get_group(file_stats.st_gid)
         is_symlink = filepath.is_symlink()
         symlink_target = str(filepath.resolve()) if is_symlink else None
 
@@ -41,13 +44,13 @@ class FileInfo:
             filename=filepath.name,
             full_path=filepath,
             extension=filepath.suffix,
-            is_hidden=filepath.name.startswith("."),
-            size_in_bytes=stat_info.st_size,
-            language=cls._detect_language(filepath),
-            created_at=datetime.fromtimestamp(stat_info.st_ctime),
-            modified_at=datetime.fromtimestamp(stat_info.st_mtime),
-            accessed_at=datetime.fromtimestamp(stat_info.st_atime),
-            permissions=stat.filemode(stat_info.st_mode),
+            is_hidden=cls._is_hidden(filepath),
+            size_in_bytes=file_stats.st_size,
+            file_type=cls._detect_file_type(filepath),
+            created_at=datetime.fromtimestamp(file_stats.st_ctime),
+            modified_at=datetime.fromtimestamp(file_stats.st_mtime),
+            accessed_at=datetime.fromtimestamp(file_stats.st_atime),
+            permissions=stat.filemode(file_stats.st_mode),
             owner=owner,
             group=group,
             is_symlink=is_symlink,
@@ -55,15 +58,20 @@ class FileInfo:
         )
 
     @staticmethod
-    def _detect_language(filepath: Path) -> ProgrammingLanguage.value:
-        """Detect programming language based on file extension."""
+    def _is_hidden(filepath: Path) -> bool:
+        # TODO: implement it for windows also
+        return filepath.name.startswith(".")
+
+    @staticmethod
+    def _detect_file_type(filepath: Path) -> str:
+        """Determine file type from its file extension."""
         extension = filepath.suffix.lower()
 
-        for language, extensions in LANGUAGE_EXTENSIONS.items():
+        for file_type, extensions in FILE_EXTENSIONS.items():
             if extension in extensions:
-                return language.value
+                return file_type.value
 
-        return "UNKNOWN"
+        return Files.UNKNOWN.value
 
     @staticmethod
     def _get_owner(uid: int) -> str:

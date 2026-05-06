@@ -4,7 +4,7 @@ from pathlib import Path
 if TYPE_CHECKING:
     from logging import Logger
 
-from yada.utils.exceptions import DirectoryNotFound
+from yada.lib.exceptions import DirectoryNotFound
 from .exclusions import UnionExclude
 
 

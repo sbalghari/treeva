@@ -109,7 +109,7 @@ def print_file_info(file_info: FileInfo) -> None:
     table.add_row("Size", format_size(file_info.size_in_bytes))
     table.add_row("Extension", file_info.extension or "-")
     table.add_row("Hidden", "Yes" if file_info.is_hidden else "No")
-    table.add_row("Language", file_info.language)
+    table.add_row("Language", file_info.file_type)
 
     CONSOLE.print(Panel(table, title="File Info", border_style="border.info"))
 

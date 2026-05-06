@@ -3,10 +3,10 @@ from logging import getLogger
 
 import typer
 
-from yada.utils.version import get_version
-from yada.utils.logger import setup_logging
+from yada.lib.version import get_version
+from yada.lib.logger import setup_logging
 from yada.cli import print_error
-from yada.tui import YadaTUI
+# from yada.tui import YadaTUI
 from yada.models import DirInfo
 
 
@@ -64,6 +64,3 @@ def _verify_path(path: str) -> Path | None:
         return None
 
     return _path
-
-
-DirInfo()

@@ -1,11 +1,13 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from dataclasses import dataclass, field
-from pathlib import Path
+if TYPE_CHECKING:
+    from pathlib import Path
+
+from dataclasses import dataclass
 from datetime import datetime
 import stat
 
-from yada.schemas.enums import ProgrammingLanguage
 from .file_info import FileInfo
 
 
@@ -15,7 +17,7 @@ class DirInfo:
     full_path: Path
     files_count: int
     size_in_bytes: int
-    language_count: dict[ProgrammingLanguage, int]
+    language_count: dict[str, int]
     is_hidden: bool
     created_at: datetime
     modified_at: datetime
@@ -24,10 +26,9 @@ class DirInfo:
     owner: str
     group: str
     subdirectory_count: int
-    depth: int
 
     @classmethod
-    def from_path(cls, dirpath: Path, *, depth: int = 0) -> DirInfo:
+    def from_path(cls, dirpath: Path) -> DirInfo:
         """
         Create a DirInfo instance from a directory path by walking that directory and aggregating metrics
         """
@@ -45,7 +46,7 @@ class DirInfo:
                 files_count += 1
                 size_in_bytes += file.stat().st_size
 
-                lang = FileInfo._detect_language(file)
+                lang = FileInfo._detect_file_type(file)
                 language_count[lang] = language_count.get(lang, 0) + 1
 
         stat_info = dirpath.stat()
@@ -66,5 +67,4 @@ class DirInfo:
             owner=owner,
             group=group,
             subdirectory_count=subdirectory_count,
-            depth=depth,
         )
