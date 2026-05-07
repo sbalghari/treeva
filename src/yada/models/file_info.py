@@ -11,6 +11,7 @@ import stat
 
 from yada.lib.enums import Files
 from yada.lib.constants import FILE_EXTENSIONS
+from yada.scaners import CalcLOC
 
 
 @dataclass
@@ -21,6 +22,8 @@ class FileInfo:
     extension: str
     is_hidden: bool
     file_type: Files.value
+    loc: int
+    comments_line: int
     created_at: datetime
     modified_at: datetime
     accessed_at: datetime
@@ -40,13 +43,22 @@ class FileInfo:
         is_symlink = filepath.is_symlink()
         symlink_target = str(filepath.resolve()) if is_symlink else None
 
+        file_type = cls._detect_file_type(filepath)
+
+        loc, comments_line = CalcLOC(
+            file_path=filepath,
+            file_type=file_type,
+        ).calculate()
+
         return cls(
             filename=filepath.name,
-            full_path=filepath,
+            full_path=filepath.resolve(),
             extension=filepath.suffix,
             is_hidden=cls._is_hidden(filepath),
             size_in_bytes=file_stats.st_size,
-            file_type=cls._detect_file_type(filepath),
+            file_type=file_type,
+            loc=loc,
+            comments_line=comments_line,
             created_at=datetime.fromtimestamp(file_stats.st_ctime),
             modified_at=datetime.fromtimestamp(file_stats.st_mtime),
             accessed_at=datetime.fromtimestamp(file_stats.st_atime),
@@ -63,15 +75,15 @@ class FileInfo:
         return filepath.name.startswith(".")
 
     @staticmethod
-    def _detect_file_type(filepath: Path) -> str:
+    def _detect_file_type(filepath: Path) -> Files:
         """Determine file type from its file extension."""
         extension = filepath.suffix.lower()
 
         for file_type, extensions in FILE_EXTENSIONS.items():
             if extension in extensions:
-                return file_type.value
+                return file_type
 
-        return Files.UNKNOWN.value
+        return Files.UNKNOWN
 
     @staticmethod
     def _get_owner(uid: int) -> str:

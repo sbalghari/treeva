@@ -6,7 +6,7 @@ import typer
 from yada.lib.version import get_version
 from yada.lib.logger import setup_logging
 from yada.cli import print_error
-# from yada.tui import YadaTUI
+from yada.tui import YadaTUI
 from yada.models import DirInfo
 
 

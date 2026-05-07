@@ -17,7 +17,9 @@ class DirInfo:
     full_path: Path
     files_count: int
     size_in_bytes: int
-    language_count: dict[str, int]
+    language_count: dict[
+        str, list[int]
+    ]  # i.e: {Language name: [files count, LOC, comment lines]}
     is_hidden: bool
     created_at: datetime
     modified_at: datetime
@@ -44,10 +46,16 @@ class DirInfo:
                 subdirectory_count += 1
             else:
                 files_count += 1
-                size_in_bytes += file.stat().st_size
 
-                lang = FileInfo._detect_file_type(file)
-                language_count[lang] = language_count.get(lang, 0) + 1
+                fileinfo = FileInfo.from_path(file)
+
+                size_in_bytes += fileinfo.size_in_bytes
+
+                lang = fileinfo.file_type.value
+                language_count[lang] = language_count.get(lang, [0, 0, 0])
+                language_count[lang][0] += 1
+                language_count[lang][1] += fileinfo.loc
+                language_count[lang][2] += fileinfo.comments_line
 
         stat_info = dirpath.stat()
         owner = FileInfo._get_owner(stat_info.st_uid)
@@ -55,7 +63,7 @@ class DirInfo:
 
         return cls(
             dirname=dirpath.name,
-            full_path=dirpath,
+            full_path=dirpath.resolve(),
             is_hidden=dirpath.name.startswith("."),
             files_count=files_count,
             size_in_bytes=size_in_bytes,

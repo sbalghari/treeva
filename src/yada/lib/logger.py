@@ -134,7 +134,7 @@ def setup_logging(
     }
 
 
-def get_caller_logger(default: str = "hyprforge") -> logging.Logger:
+def get_caller_logger(default: str = "yada") -> logging.Logger:
     """
     Fallback for helper functions when caller didn't pass a logger.
     """

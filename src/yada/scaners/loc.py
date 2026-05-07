@@ -297,8 +297,6 @@ class CalcLOC:
         self.encoding = encoding
         self.file_path = file_path
 
-        self._calculate()
-
     def _get_language_config(self) -> Optional[Dict]:
         """Get the language configuration for the given file."""
 
@@ -319,7 +317,7 @@ class CalcLOC:
         """Strip line but preserve indentation for comment detection."""
         return line.strip()
 
-    def _calculate(self) -> Tuple[int, int]:
+    def calculate(self) -> Tuple[int, int]:
         """
         Returns:
             Tuple of (lines_of_code, comment_lines)

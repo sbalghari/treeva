@@ -25,7 +25,7 @@ def dir_walker(
 
     # Use provided logger or create a default one
     if not logger:
-        from yada.utils.logger import get_caller_logger
+        from yada.lib.logger import get_caller_logger
 
         logger = get_caller_logger()
 
