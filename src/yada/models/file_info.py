@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from logging import Logger
     from pathlib import Path
 
 
@@ -11,6 +12,7 @@ import stat
 
 from yada.lib.enums import Files
 from yada.lib.constants import FILE_EXTENSIONS
+from yada.lib.types import OutputFormat
 from yada.scaners import CalcLOC
 
 
@@ -24,6 +26,7 @@ class FileInfo:
     file_type: Files.value
     loc: int
     comments_line: int
+    comment_density: float
     created_at: datetime
     modified_at: datetime
     accessed_at: datetime
@@ -34,7 +37,9 @@ class FileInfo:
     symlink_target: str | None
 
     @classmethod
-    def from_path(cls, filepath: Path) -> FileInfo:
+    def from_path(
+        cls, filepath: Path, *, logger: Logger, format: OutputFormat = "python-object"
+    ) -> FileInfo:
         """Create a FileInfo instance from a file path."""
         file_stats = filepath.stat()
 
@@ -48,17 +53,21 @@ class FileInfo:
         loc, comments_line = CalcLOC(
             file_path=filepath,
             file_type=file_type,
+            logger=logger
         ).calculate()
 
-        return cls(
+        comment_density = ((comments_line / loc) * 100) if loc > 0 else 0
+
+        data = cls(
             filename=filepath.name,
-            full_path=filepath.resolve(),
+            full_path=filepath,
             extension=filepath.suffix,
             is_hidden=cls._is_hidden(filepath),
             size_in_bytes=file_stats.st_size,
             file_type=file_type,
             loc=loc,
             comments_line=comments_line,
+            comment_density=comment_density,
             created_at=datetime.fromtimestamp(file_stats.st_ctime),
             modified_at=datetime.fromtimestamp(file_stats.st_mtime),
             accessed_at=datetime.fromtimestamp(file_stats.st_atime),
@@ -68,6 +77,8 @@ class FileInfo:
             is_symlink=is_symlink,
             symlink_target=symlink_target,
         )
+
+        return cls._format(data, format)
 
     @staticmethod
     def _is_hidden(filepath: Path) -> bool:
@@ -104,3 +115,50 @@ class FileInfo:
             return grp.getgrgid(gid).gr_name
         except (KeyError, ImportError):
             return str(gid)
+
+    @staticmethod
+    def _format_size(size_in_bytes: int) -> str:
+        """Convert bytes to human-readable format with 2 decimal places (e.g., 1.24MB)"""
+        units = ["B", "KB", "MB", "GB", "TB"]
+        size = float(size_in_bytes)
+
+        for unit in units:
+            if size < 1024:
+                return f"{size:.2f}{unit}"
+            size /= 1024
+
+        return f"{size:.2f}PB"
+
+    @classmethod
+    def _format(cls, data, format: OutputFormat):
+        if format == "python-object":
+            return data
+
+        if format == "json":
+            _dict: dict[str, Any] = {
+                "Filename": data.filename,
+                "Full path": str(data.full_path),
+                "Extension": data.extension,
+                "File type": data.file_type.value,
+                "Size": cls._format_size(data.size_in_bytes),
+                "Size in bytes": data.size_in_bytes,
+                "Is hidden": data.is_hidden,
+                "Is symlink": data.is_symlink,
+                "Symlink target": data.symlink_target,
+                "LOC": data.loc,
+                "Comments line": data.comments_line,
+                "Comment density %": f"{data.comment_density:.2f}",
+                "Created at": data.created_at.isoformat(),
+                "Modified at": data.modified_at.isoformat(),
+                "Accessed at": data.accessed_at.isoformat(),
+                "Permissions": data.permissions,
+                "Owner": data.owner,
+                "Group": data.group,
+            }
+            return _dict
+
+        if format == "plain-text":
+            return str(data)
+
+        if format == "rich-table":
+            return "..."

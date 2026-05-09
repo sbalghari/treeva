@@ -1,9 +1,8 @@
-from typing import Tuple, Optional, Dict, TYPE_CHECKING
+from typing import Optional, Dict, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-from logging import Logger
+    from logging import Logger
 
 from yada.lib.enums import Files
 from yada.lib.logger import get_caller_logger
@@ -289,10 +288,10 @@ class CalcLOC:
         self,
         file_path: Path,
         file_type: Files,
-        logger: Logger = get_caller_logger(__name__),
+        logger: Optional["Logger"] = None,
         encoding: str = "utf-8",
     ):
-        self.logger = logger
+        self.logger = logger or get_caller_logger(__name__)
         self.file_type = file_type
         self.encoding = encoding
         self.file_path = file_path
@@ -317,7 +316,7 @@ class CalcLOC:
         """Strip line but preserve indentation for comment detection."""
         return line.strip()
 
-    def calculate(self) -> Tuple[int, int]:
+    def calculate(self) -> tuple[int, int]:
         """
         Returns:
             Tuple of (lines_of_code, comment_lines)
@@ -409,7 +408,7 @@ class CalcLOC:
                                 continue
 
                         # Handle single-line comments
-                        if config["single_comment"] in stripped_line:
+                        if config["single_comment"] and config["single_comment"] in stripped_line:
                             # Check if the comment is at the beginning or after code
                             comment_pos = stripped_line.find(
                                 config["single_comment"]
