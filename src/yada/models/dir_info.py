@@ -11,6 +11,7 @@ import stat
 
 from .file_info import FileInfo
 from yada.lib.types import OutputFormat
+from yada.lib.utils import format_size, is_hidden
 
 
 @dataclass
@@ -134,7 +135,7 @@ class DirInfo:
         data = cls(
             dirname=dirpath.name,
             full_path=dirpath,
-            is_hidden=dirpath.name.startswith("."),
+            is_hidden=is_hidden(dirpath),
             files_count=files_count,
             size_in_bytes=size_in_bytes,
             language_count=language_count,
@@ -161,19 +162,6 @@ class DirInfo:
 
         return cls._format(data, format)
 
-    @staticmethod
-    def _format_size(size_in_bytes: int) -> str:
-        """Convert bytes to human-readable format with 2 decimal places (e.g., 1.24MB)"""
-        units = ["B", "KB", "MB", "GB", "TB"]
-        size = float(size_in_bytes)
-
-        for unit in units:
-            if size < 1024:
-                return f"{size:.2f}{unit}"
-            size /= 1024
-
-        return f"{size:.2f}PB"
-
     @classmethod
     def _format(cls, data, format: OutputFormat):
         if format == "python-object":
@@ -184,7 +172,7 @@ class DirInfo:
                 "Directory name": data.dirname,
                 "Full path": str(data.full_path),
                 "Files count": data.files_count,
-                "Size": cls._format_size(data.size_in_bytes),
+                "Size": format_size(data.size_in_bytes),
                 "Size in bytes": data.size_in_bytes,
                 "Language count": {
                     lang: {
@@ -210,10 +198,10 @@ class DirInfo:
                 "Code Comment density %": f"{data.comment_density:.2f}",
                 "Largest file": {
                     "name": data.largest_file["name"],
-                    "size": cls._format_size(data.largest_file["size"]),
+                    "size": format_size(data.largest_file["size"]),
                     "size in bytes": data.largest_file["size"],
                 },
-                "Average file size": cls._format_size(
+                "Average file size": format_size(
                     int(data.average_file_size)
                 ),
                 "Average file size in bytes": f"{data.average_file_size:.2f}",
@@ -258,7 +246,7 @@ Directory:          {data.dirname}
 Full path:          {data.full_path}
 Files:              {data.files_count:,}
 Subdirectories:     {data.subdirectory_count:,}
-Total size:         {cls._format_size(data.size_in_bytes)}
+Total size:         {format_size(data.size_in_bytes)}
 Size (bytes):       {data.size_in_bytes:,}
 Symlinks:           {data.symlinks_count}
 Empty files:        {data.empty_files_count}
@@ -271,8 +259,8 @@ Code Statistics:
    ├─ Total LOC:       {data.total_loc:,}
    ├─ Total comments:  {data.total_comments:,}
    ├─ Comment ratio:   {data.comment_density:.2f}%
-   ├─ Avg file size:   {cls._format_size(int(data.average_file_size))}
-   └─ Largest file:    {data.largest_file.get("name", "N/A")} ({cls._format_size(data.largest_file.get("size", 0))})
+   ├─ Avg file size:   {format_size(int(data.average_file_size))}
+   └─ Largest file:    {data.largest_file.get("name", "N/A")} ({format_size(data.largest_file.get("size", 0))})
 
 Permissions:
    ├─ Executable:      {data.executable_files_count}

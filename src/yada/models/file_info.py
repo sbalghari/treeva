@@ -13,6 +13,7 @@ import stat
 from yada.lib.enums import Files
 from yada.lib.constants import FILE_EXTENSIONS
 from yada.lib.types import OutputFormat
+from yada.lib.utils import format_size, is_hidden
 from yada.scaners import CalcLOC
 
 
@@ -64,7 +65,7 @@ class FileInfo:
             filename=filepath.name,
             full_path=filepath,
             extension=filepath.suffix,
-            is_hidden=cls._is_hidden(filepath),
+            is_hidden=is_hidden(filepath),
             size_in_bytes=file_stats.st_size,
             file_type=file_type,
             loc=loc,
@@ -81,11 +82,6 @@ class FileInfo:
         )
 
         return cls._format(data, format)
-
-    @staticmethod
-    def _is_hidden(filepath: Path) -> bool:
-        # TODO: implement it for windows also
-        return filepath.name.startswith(".")
 
     @staticmethod
     def _detect_file_type(filepath: Path) -> Files:
@@ -118,19 +114,6 @@ class FileInfo:
         except (KeyError, ImportError):
             return str(gid)
 
-    @staticmethod
-    def _format_size(size_in_bytes: int) -> str:
-        """Convert bytes to human-readable format with 2 decimal places (e.g., 1.24MB)"""
-        units = ["B", "KB", "MB", "GB", "TB"]
-        size = float(size_in_bytes)
-
-        for unit in units:
-            if size < 1024:
-                return f"{size:.2f}{unit}"
-            size /= 1024
-
-        return f"{size:.2f}PB"
-
     @classmethod
     def _format(cls, data, format: OutputFormat):
         if format == "python-object":
@@ -142,7 +125,7 @@ class FileInfo:
                 "Full path": str(data.full_path),
                 "Extension": data.extension,
                 "File type": data.file_type.value,
-                "Size": cls._format_size(data.size_in_bytes),
+                "Size": format_size(data.size_in_bytes),
                 "Size in bytes": data.size_in_bytes,
                 "Is hidden": data.is_hidden,
                 "Is symlink": data.is_symlink,
@@ -169,7 +152,7 @@ Filename:           {data.filename}
 Full path:          {data.full_path}
 Extension:          {data.extension if data.extension else "None"}
 File type:          {data.file_type.value}
-Size:               {cls._format_size(data.size_in_bytes)}
+Size:               {format_size(data.size_in_bytes)}
 Size (bytes):       {data.size_in_bytes:,}
 
 Code Statistics:
