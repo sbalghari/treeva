@@ -201,9 +201,7 @@ class DirInfo:
                     "size": format_size(data.largest_file["size"]),
                     "size in bytes": data.largest_file["size"],
                 },
-                "Average file size": format_size(
-                    int(data.average_file_size)
-                ),
+                "Average file size": format_size(int(data.average_file_size)),
                 "Average file size in bytes": f"{data.average_file_size:.2f}",
                 "Oldest file date": data.oldest_file_date.strftime(
                     "%Y-%m-%d %H:%M:%S"

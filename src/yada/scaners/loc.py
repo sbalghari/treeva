@@ -408,7 +408,10 @@ class CalcLOC:
                                 continue
 
                         # Handle single-line comments
-                        if config["single_comment"] and config["single_comment"] in stripped_line:
+                        if (
+                            config["single_comment"]
+                            and config["single_comment"] in stripped_line
+                        ):
                             # Check if the comment is at the beginning or after code
                             comment_pos = stripped_line.find(
                                 config["single_comment"]
