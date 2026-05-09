@@ -142,6 +142,7 @@ def file(
                 CONSOLE.print(json.dumps(file_info, indent=2))
             else:
                 CONSOLE.print(file_info)
+            return
 
         if format == "json":
             output_path = Path.home() / "yada" / f"FileInfo_{path.name}.json"

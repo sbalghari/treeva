@@ -195,9 +195,9 @@ class DirInfo:
                     for lang, counts in data.language_count.items()
                 },
                 "Is hidden": data.is_hidden,
-                "Created at": data.created_at.isoformat(),
-                "Modified at": data.modified_at.isoformat(),
-                "Accessed at": data.accessed_at.isoformat(),
+                "Created at": data.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "Modified at": data.modified_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "Accessed at": data.accessed_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "Permissions": data.permissions,
                 "Owner": data.owner,
                 "Group": data.group,
@@ -217,10 +217,14 @@ class DirInfo:
                     int(data.average_file_size)
                 ),
                 "Average file size in bytes": f"{data.average_file_size:.2f}",
-                "Oldest file date": data.oldest_file_date.isoformat()
+                "Oldest file date": data.oldest_file_date.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 if data.oldest_file_date
                 else None,
-                "Newest file date": data.newest_file_date.isoformat()
+                "Newest file date": data.newest_file_date.strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
                 if data.newest_file_date
                 else None,
                 "Executable files count": data.executable_files_count,
@@ -229,7 +233,64 @@ class DirInfo:
             return _dict
 
         if format == "plain-text":
-            return str(data)
+            # Build language stats section
+            lang_lines = []
+            for lang, counts in sorted(
+                data.language_count.items(),
+                key=lambda x: x[1][0],
+                reverse=True,
+            ):
+                files_count, loc, comments = counts
+                lang_lines.append(
+                    f"   ├─ {lang:<20} {files_count:>5} files, {loc:>7} LOC, {comments:>5} comments"
+                )
+
+            lang_section = (
+                "\n".join(lang_lines) if lang_lines else "   └─ No files"
+            )
+
+            text_output = f"""
+╔══════════════════════════════════════════════════════════════╗
+║               DIRECTORY INFORMATION                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+Directory:          {data.dirname}
+Full path:          {data.full_path}
+Files:              {data.files_count:,}
+Subdirectories:     {data.subdirectory_count:,}
+Total size:         {cls._format_size(data.size_in_bytes)}
+Size (bytes):       {data.size_in_bytes:,}
+Symlinks:           {data.symlinks_count}
+Empty files:        {data.empty_files_count}
+Hidden files:       {data.hidden_files_count}
+
+Programming Languages:
+{lang_section}
+
+Code Statistics:
+   ├─ Total LOC:       {data.total_loc:,}
+   ├─ Total comments:  {data.total_comments:,}
+   ├─ Comment ratio:   {data.comment_density:.2f}%
+   ├─ Avg file size:   {cls._format_size(int(data.average_file_size))}
+   └─ Largest file:    {data.largest_file.get("name", "N/A")} ({cls._format_size(data.largest_file.get("size", 0))})
+
+Permissions:
+   ├─ Executable:      {data.executable_files_count}
+   └─ Read-only:       {data.readonly_files_count}
+
+Owner/Group:        {data.owner} / {data.group}
+Permissions:        {data.permissions}
+
+Timestamps:
+   ├─ Created:         {data.created_at.strftime("%Y-%m-%d %H:%M:%S")}
+   ├─ Modified:        {data.modified_at.strftime("%Y-%m-%d %H:%M:%S")}
+   ├─ Accessed:        {data.accessed_at.strftime("%Y-%m-%d %H:%M:%S")}
+   ├─ Oldest file:     {data.oldest_file_date.strftime("%Y-%m-%d %H:%M:%S") if data.oldest_file_date else "N/A"}
+   └─ Newest file:     {data.newest_file_date.strftime("%Y-%m-%d %H:%M:%S") if data.newest_file_date else "N/A"}
+
+Hidden:             {"Yes" if data.is_hidden else "No"}
+"""
+            return text_output.strip()
 
         if format == "rich-table":
             return "..."

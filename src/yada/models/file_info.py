@@ -38,7 +38,11 @@ class FileInfo:
 
     @classmethod
     def from_path(
-        cls, filepath: Path, *, logger: Logger, format: OutputFormat = "python-object"
+        cls,
+        filepath: Path,
+        *,
+        logger: Logger,
+        format: OutputFormat = "python-object",
     ) -> FileInfo:
         """Create a FileInfo instance from a file path."""
         file_stats = filepath.stat()
@@ -51,9 +55,7 @@ class FileInfo:
         file_type = cls._detect_file_type(filepath)
 
         loc, comments_line = CalcLOC(
-            file_path=filepath,
-            file_type=file_type,
-            logger=logger
+            file_path=filepath, file_type=file_type, logger=logger
         ).calculate()
 
         comment_density = ((comments_line / loc) * 100) if loc > 0 else 0
@@ -148,9 +150,9 @@ class FileInfo:
                 "LOC": data.loc,
                 "Comments line": data.comments_line,
                 "Comment density %": f"{data.comment_density:.2f}",
-                "Created at": data.created_at.isoformat(),
-                "Modified at": data.modified_at.isoformat(),
-                "Accessed at": data.accessed_at.isoformat(),
+                "Created at": data.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "Modified at": data.modified_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "Accessed at": data.accessed_at.strftime("%Y-%m-%d %H:%M:%S"),
                 "Permissions": data.permissions,
                 "Owner": data.owner,
                 "Group": data.group,
@@ -158,7 +160,36 @@ class FileInfo:
             return _dict
 
         if format == "plain-text":
-            return str(data)
+            text_output = f"""
+╔══════════════════════════════════════════════════════════════╗
+║                    FILE INFORMATION                          ║
+╚══════════════════════════════════════════════════════════════╝
+
+Filename:           {data.filename}
+Full path:          {data.full_path}
+Extension:          {data.extension if data.extension else "None"}
+File type:          {data.file_type.value}
+Size:               {cls._format_size(data.size_in_bytes)}
+Size (bytes):       {data.size_in_bytes:,}
+
+Code Statistics:
+   ├─ Lines of Code:   {data.loc:,}
+   ├─ Comments:        {data.comments_line:,}
+   └─ Comment ratio:   {data.comment_density:.2f}%
+
+Permissions:        {data.permissions}
+Owner:              {data.owner}
+Group:              {data.group}
+
+Timestamps:
+   ├─ Created:        {data.created_at.strftime("%Y-%m-%d %H:%M:%S")}
+   ├─ Modified:       {data.modified_at.strftime("%Y-%m-%d %H:%M:%S")}
+   └─ Accessed:       {data.accessed_at.strftime("%Y-%m-%d %H:%M:%S")}
+
+Symbolic link:      {"Yes → " + data.symlink_target if data.is_symlink else "No"}
+Hidden:             {"Yes" if data.is_hidden else "No"}
+"""
+            return text_output.strip()
 
         if format == "rich-table":
             return "..."
