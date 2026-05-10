@@ -9,7 +9,13 @@ from yada.cli.console import CONSOLE
 from yada.lib.version import get_version
 from yada.lib.logger import setup_logging, LOG_DIR
 from yada.lib.types import OutputFormat
-from yada.cli import print_error, print_success
+from yada.cli import (
+    print_error,
+    print_success,
+    print_analysis_info,
+    print_dir_info,
+    print_file_info,
+)
 from yada.models import DirInfo, FileInfo, AnalysisInfo
 
 
@@ -117,8 +123,14 @@ def analyze(
         if not file:
             if format == "json":
                 CONSOLE.print(json.dumps(analysis_info, indent=2))
+            elif format == "rich-table":
+                print_analysis_info(analysis_info)  # ty:ignore[invalid-argument-type]
             else:
                 CONSOLE.print(analysis_info)
+            return
+
+        if file and format == "rich-table":
+            print_error("--file isn't supported with --format 'rich-table'")
             return
 
         if format == "json":
@@ -142,6 +154,7 @@ def analyze(
         print_error(
             f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.analyze.log"
         )
+        logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)
 
 
@@ -164,8 +177,14 @@ def dir(
         if not file:
             if format == "json":
                 CONSOLE.print(json.dumps(dir_info, indent=2))
+            elif format == "rich-table":
+                print_dir_info(dir_info)
             else:
                 CONSOLE.print(dir_info)
+            return
+
+        if file and format == "rich-table":
+            print_error("--file isn't supported with --format 'rich-table'")
             return
 
         if format == "json":
@@ -185,6 +204,7 @@ def dir(
         print_error(
             f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.dir.log"
         )
+        logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)
 
 
@@ -207,8 +227,14 @@ def file(
         if not file:
             if format == "json":
                 CONSOLE.print(json.dumps(file_info, indent=2))
+            elif format == "rich-table":
+                print_file_info(file_info)
             else:
                 CONSOLE.print(file_info)
+            return
+
+        if file and format == "rich-table":
+            print_error("--file isn't supported with --format 'rich-table'")
             return
 
         if format == "json":
@@ -228,4 +254,5 @@ def file(
         print_error(
             f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.file.log"
         )
+        logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)

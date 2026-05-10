@@ -175,4 +175,4 @@ Hidden:             {"Yes" if data.is_hidden else "No"}
             return text_output.strip()
 
         if format == "rich-table":
-            return "..."
+            return data

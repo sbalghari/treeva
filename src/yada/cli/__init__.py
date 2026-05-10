@@ -14,6 +14,7 @@ from .output import (
     print_warning,
     print_dir_info,
     print_file_info,
+    print_analysis_info,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "print_warning",
     "print_dir_info",
     "print_file_info",
+    "print_analysis_info"
 ]

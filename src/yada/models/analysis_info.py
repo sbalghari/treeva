@@ -125,7 +125,7 @@ class AnalysisInfo:
             return cls._format_plain_text(data)
 
         if format == "rich-table":
-            return "..."  # TODO: Implement rich table format
+            return data
 
         return data
 
