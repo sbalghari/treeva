@@ -1,5 +1,5 @@
 from pathlib import Path
-from logging import getLogger
+from logging import getLogger, Logger
 from typing import Annotated, Optional
 import json
 
@@ -7,19 +7,79 @@ import typer
 from yada.cli.console import CONSOLE
 
 from yada.lib.version import get_version
-from yada.lib.logger import setup_logging
+from yada.lib.logger import setup_logging, LOG_DIR
 from yada.lib.types import OutputFormat
 from yada.cli import print_error, print_success
-from yada.models import DirInfo, FileInfo
+from yada.models import DirInfo, FileInfo, AnalysisInfo
 
 
 cli = typer.Typer(name="yada", add_completion=False)
+
+common_options = {
+    "format": typer.Option("json", "--format", "-f", help="output format"),
+    "file": typer.Option(
+        False, "--file/--no-file", help="redirect output to a file"
+    ),
+    "verbose": typer.Option(
+        False, "--verbose/--no-verbose", help="verbose output"
+    ),
+}
 
 
 def version_callback(version: bool):
     if version:
         typer.echo(get_version())
         raise typer.Exit(0)
+
+
+def write_output_to_file(
+    filepath: Path,
+    data: str,
+    logger: Logger,
+    encoding: str = "utf-8",
+) -> bool:
+    """Write data to a file"""
+
+    # Validate inputs
+    if not isinstance(data, str):
+        logger.error(f"Data must be string, got {type(data)}")
+        return False
+
+    try:
+        # Check if file exists
+        if filepath.exists():
+            overwrite = typer.confirm(
+                f"'{filepath.name}' already exists. Overwrite?",
+                default=True,
+            )
+            if not overwrite:
+                logger.warning(f"File {filepath} exists, skipping silently")
+                return True
+
+        # Ensure directory exists
+        filepath.parent.mkdir(exist_ok=True, parents=True)
+
+        # Write the file
+        filepath.write_text(data, encoding=encoding)
+
+        # Verify
+        if filepath.exists() and filepath.stat().st_size > 0:
+            logger.info(f"Successfully wrote {len(data)} bytes to {filepath}")
+            return True
+        else:
+            raise OSError("File write verification failed")
+
+    except PermissionError as e:
+        logger.error(f"Permission denied writing to {filepath}: {e}")
+        return False
+
+    except OSError as e:
+        logger.error(f"Failed to write to {filepath}: {e}")
+        return False
+
+    except Exception as e:
+        logger.exception(f"Unexpected error writing to {filepath}: {e}")
+        return False
 
 
 @cli.callback(invoke_without_command=False)
@@ -39,37 +99,58 @@ def _(
 @cli.command(help="Analyze a project and get a detailed analysis")
 def analyze(
     path: Annotated[Path, typer.Argument(help="project path")],
-    format: Annotated[
-        OutputFormat, typer.Option("--format", "-f", help="output format")
-    ] = "json",
-    verbose: bool = typer.Option(
-        False, "--verbose/--no-verbose", help="verbose output"
-    ),
+    format: OutputFormat = common_options["format"],
+    file: bool = common_options["file"],
+    verbose: bool = common_options["verbose"],
 ):
 
     setup_logging("yada.cmd.analyze", verbose=verbose)
     logger = getLogger("yada.cmd.analyze")
 
+    path = path.resolve()
+
     try:
-        logger.warning("Not implemented yet...")
+        analysis_info = AnalysisInfo.from_path(
+            path, logger=logger, format=format
+        )
+
+        if not file:
+            if format == "json":
+                CONSOLE.print(json.dumps(analysis_info, indent=2))
+            else:
+                CONSOLE.print(analysis_info)
+            return
+
+        if format == "json":
+            output_path = (
+                Path.home() / "yada" / f"ProjectAnalysis_{path.name}.json"
+            )
+            output_content = json.dumps(analysis_info, indent=2)
+        else:
+            output_path = (
+                Path.home() / "yada" / f"ProjectAnalysis_{path.name}.txt"
+            )
+            output_content = str(analysis_info)
+
+        if write_output_to_file(output_path, output_content, logger):
+            print_success(f"Analysis ready at {output_path}")
 
     except KeyboardInterrupt:
         typer.echo("Interrupted by user, exiting...")
+        raise typer.Exit(1)
+    except Exception as e:
+        print_error(
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.analyze.log"
+        )
         raise typer.Exit(1)
 
 
 @cli.command(help="Get metadata of a directory")
 def dir(
-    path: Annotated[Path, typer.Argument(help="dir path")],
-    format: Annotated[
-        OutputFormat, typer.Option("--format", "-f", help="output format")
-    ] = "json",
-    file: bool = typer.Option(
-        False, "--file/--no-file", help="redirect output to a file"
-    ),
-    verbose: bool = typer.Option(
-        False, "--verbose/--no-verbose", help="verbose output"
-    ),
+    path: Annotated[Path, typer.Argument(help="directory path")],
+    format: OutputFormat = common_options["format"],
+    file: bool = common_options["file"],
+    verbose: bool = common_options["verbose"],
 ):
 
     setup_logging("yada.cmd.dir", verbose=verbose)
@@ -94,39 +175,25 @@ def dir(
             output_path = Path.home() / "yada" / f"DirInfo_{path.name}.txt"
             output_content = str(dir_info)
 
-        if output_path.exists():
-            overwrite = typer.prompt(
-                f"{output_path.name} already exists, overwrite?",
-                default=True,
-            )
-            if not overwrite:
-                return
-
-        output_path.parent.mkdir(exist_ok=True, parents=True)
-        output_path.write_text(output_content)
-
-        print_success(f"Metadata ready at {output_path}")
+        if write_output_to_file(output_path, output_content, logger):
+            print_success(f"Metadata ready at {output_path}")
 
     except KeyboardInterrupt:
         typer.echo("Interrupted by user, exiting...")
         raise typer.Exit(1)
     except Exception as e:
-        print_error(f"Unexpected Error: {str(e)}")
+        print_error(
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.dir.log"
+        )
         raise typer.Exit(1)
 
 
 @cli.command(help="Get metadata of a file")
 def file(
     path: Annotated[Path, typer.Argument(help="file path")],
-    format: Annotated[
-        OutputFormat, typer.Option("--format", "-f", help="output format")
-    ] = "json",
-    file: bool = typer.Option(
-        False, "--file/--no-file", help="redirect output to a file"
-    ),
-    verbose: bool = typer.Option(
-        False, "--verbose/--no-verbose", help="verbose output"
-    ),
+    format: OutputFormat = common_options["format"],
+    file: bool = common_options["file"],
+    verbose: bool = common_options["verbose"],
 ):
 
     setup_logging("yada.cmd.file", verbose=verbose)
@@ -151,22 +218,14 @@ def file(
             output_path = Path.home() / "yada" / f"DirInfo_{path.name}.txt"
             output_content = str(file_info)
 
-        if output_path.exists():
-            overwrite = typer.prompt(
-                f"{output_path.name} already exists, overwrite?",
-                default=True,
-            )
-            if not overwrite:
-                return
-
-        output_path.parent.mkdir(exist_ok=True, parents=True)
-        output_path.write_text(output_content)
-
-        print_success(f"Metadata ready at {output_path}")
+        if write_output_to_file(output_path, output_content, logger):
+            print_success(f"Metadata ready at {output_path}")
 
     except KeyboardInterrupt:
         typer.echo("Interrupted by user, exiting...")
         raise typer.Exit(1)
     except Exception as e:
-        print_error(f"Error getting file info: {str(e)}")
+        print_error(
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.file.log"
+        )
         raise typer.Exit(1)

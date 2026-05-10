@@ -38,7 +38,6 @@ class DirInfo:
     total_comments: int
     comment_density: float
     largest_file: dict[str, Any]
-    average_file_size: float
     oldest_file_date: datetime | None
     newest_file_date: datetime | None
     executable_files_count: int
@@ -123,11 +122,6 @@ class DirInfo:
         stat_info = dirpath.stat()
         owner = FileInfo._get_owner(stat_info.st_uid)
         group = FileInfo._get_group(stat_info.st_gid)
-
-        # Calculate derived metrics
-        average_file_size = (
-            size_in_bytes / files_count if files_count > 0 else 0
-        )
         comment_density = (
             ((total_comments / total_loc) * 100) if total_comments > 0 else 0
         )
@@ -153,7 +147,6 @@ class DirInfo:
             total_comments=total_comments,
             comment_density=comment_density,
             largest_file=largest_file,
-            average_file_size=average_file_size,
             oldest_file_date=oldest_file_date,
             newest_file_date=newest_file_date,
             executable_files_count=executable_files_count,
@@ -201,8 +194,6 @@ class DirInfo:
                     "size": format_size(data.largest_file["size"]),
                     "size in bytes": data.largest_file["size"],
                 },
-                "Average file size": format_size(int(data.average_file_size)),
-                "Average file size in bytes": f"{data.average_file_size:.2f}",
                 "Oldest file date": data.oldest_file_date.strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
@@ -257,7 +248,6 @@ Code Statistics:
    ├─ Total LOC:       {data.total_loc:,}
    ├─ Total comments:  {data.total_comments:,}
    ├─ Comment ratio:   {data.comment_density:.2f}%
-   ├─ Avg file size:   {format_size(int(data.average_file_size))}
    └─ Largest file:    {data.largest_file.get("name", "N/A")} ({format_size(data.largest_file.get("size", 0))})
 
 Permissions:
