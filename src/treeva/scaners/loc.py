@@ -4,8 +4,8 @@ if TYPE_CHECKING:
     from pathlib import Path
     from logging import Logger
 
-from yada.lib.enums import Files
-from yada.lib.logger import get_caller_logger
+from treeva.lib.enums import Files
+from treeva.lib.logger import get_caller_logger
 
 
 class _LanguageConfig:

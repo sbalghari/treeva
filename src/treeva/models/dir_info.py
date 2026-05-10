@@ -10,8 +10,8 @@ from datetime import datetime
 import stat
 
 from .file_info import FileInfo
-from yada.lib.types import OutputFormat
-from yada.lib.utils import format_size, is_hidden
+from treeva.lib.types import OutputFormat
+from treeva.lib.utils import format_size, is_hidden
 
 
 @dataclass
@@ -65,7 +65,7 @@ class DirInfo:
         executable_files_count = 0
         readonly_files_count = 0
 
-        from yada.scaners import dir_walker
+        from treeva.scaners import dir_walker
 
         for file in dir_walker(dirpath):
             if file.is_dir():

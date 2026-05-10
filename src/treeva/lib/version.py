@@ -4,13 +4,13 @@ from typer import echo
 
 def get_version() -> str:
     """
-    Return the installed version of yada.
+    Return the installed version of treeva.
 
     Returns:
         str: version string, or "unknown" if metadata is unavailable.
     """
     try:
-        return version("yada")
+        return version("treeva")
     except PackageNotFoundError:
-        echo("Warning: yada package metadata not found.")
+        echo("Warning: treeva package metadata not found.")
         return "unknown"

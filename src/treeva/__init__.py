@@ -4,22 +4,22 @@ from typing import Annotated, Optional
 import json
 
 import typer
-from yada.cli.console import CONSOLE
 
-from yada.lib.version import get_version
-from yada.lib.logger import setup_logging, LOG_DIR
-from yada.lib.types import OutputFormat
-from yada.cli import (
+from treeva.cli.console import CONSOLE
+from treeva.lib.version import get_version
+from treeva.lib.logger import setup_logging, LOG_DIR
+from treeva.lib.types import OutputFormat
+from treeva.cli import (
     print_error,
     print_success,
     print_analysis_info,
     print_dir_info,
     print_file_info,
 )
-from yada.models import DirInfo, FileInfo, AnalysisInfo
+from treeva.models import DirInfo, FileInfo, AnalysisInfo
 
 
-cli = typer.Typer(name="yada", add_completion=False)
+cli = typer.Typer(name="treeva", add_completion=False)
 
 common_options = {
     "format": typer.Option("json", "--format", "-f", help="output format"),
@@ -110,8 +110,8 @@ def analyze(
     verbose: bool = common_options["verbose"],
 ):
 
-    setup_logging("yada.cmd.analyze", verbose=verbose)
-    logger = getLogger("yada.cmd.analyze")
+    setup_logging("treeva.cmd.analyze", verbose=verbose)
+    logger = getLogger("treeva.cmd.analyze")
 
     path = path.resolve()
 
@@ -135,12 +135,12 @@ def analyze(
 
         if format == "json":
             output_path = (
-                Path.home() / "yada" / f"ProjectAnalysis_{path.name}.json"
+                Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.json"
             )
             output_content = json.dumps(analysis_info, indent=2)
         else:
             output_path = (
-                Path.home() / "yada" / f"ProjectAnalysis_{path.name}.txt"
+                Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.txt"
             )
             output_content = str(analysis_info)
 
@@ -152,7 +152,7 @@ def analyze(
         raise typer.Exit(1)
     except Exception as e:
         print_error(
-            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.analyze.log"
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/treeva.cmd.analyze.log"
         )
         logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)
@@ -166,8 +166,8 @@ def dir(
     verbose: bool = common_options["verbose"],
 ):
 
-    setup_logging("yada.cmd.dir", verbose=verbose)
-    logger = getLogger("yada.cmd.dir")
+    setup_logging("treeva.cmd.dir", verbose=verbose)
+    logger = getLogger("treeva.cmd.dir")
 
     path = path.resolve()
 
@@ -188,10 +188,10 @@ def dir(
             return
 
         if format == "json":
-            output_path = Path.home() / "yada" / f"DirInfo_{path.name}.json"
+            output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.json"
             output_content = json.dumps(dir_info, indent=2)
         else:
-            output_path = Path.home() / "yada" / f"DirInfo_{path.name}.txt"
+            output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
             output_content = str(dir_info)
 
         if write_output_to_file(output_path, output_content, logger):
@@ -202,7 +202,7 @@ def dir(
         raise typer.Exit(1)
     except Exception as e:
         print_error(
-            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.dir.log"
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/treeva.cmd.dir.log"
         )
         logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)
@@ -216,8 +216,8 @@ def file(
     verbose: bool = common_options["verbose"],
 ):
 
-    setup_logging("yada.cmd.file", verbose=verbose)
-    logger = getLogger("yada.cmd.file")
+    setup_logging("treeva.cmd.file", verbose=verbose)
+    logger = getLogger("treeva.cmd.file")
 
     path = path.resolve()
 
@@ -238,10 +238,10 @@ def file(
             return
 
         if format == "json":
-            output_path = Path.home() / "yada" / f"FileInfo_{path.name}.json"
+            output_path = Path.home() / "treeva" / f"FileInfo_{path.name}.json"
             output_content = json.dumps(file_info, indent=2)
         else:
-            output_path = Path.home() / "yada" / f"DirInfo_{path.name}.txt"
+            output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
             output_content = str(file_info)
 
         if write_output_to_file(output_path, output_content, logger):
@@ -252,7 +252,7 @@ def file(
         raise typer.Exit(1)
     except Exception as e:
         print_error(
-            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/yada.cmd.file.log"
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/treeva.cmd.file.log"
         )
         logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)

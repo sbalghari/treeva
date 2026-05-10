@@ -10,11 +10,11 @@ from dataclasses import dataclass
 from datetime import datetime
 import stat
 
-from yada.lib.enums import Files
-from yada.lib.constants import FILE_EXTENSIONS
-from yada.lib.types import OutputFormat
-from yada.lib.utils import format_size, is_hidden
-from yada.scaners import CalcLOC
+from treeva.lib.enums import Files
+from treeva.lib.constants import FILE_EXTENSIONS
+from treeva.lib.types import OutputFormat
+from treeva.lib.utils import format_size, is_hidden
+from treeva.scaners import CalcLOC
 
 
 @dataclass

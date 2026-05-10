@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from yada.lib.exceptions import GitignoreNotFound, DirectoryNotFound
-from yada.lib.constants import DEFAULT_EXCLUDES
+from treeva.lib.exceptions import GitignoreNotFound, DirectoryNotFound
+from treeva.lib.constants import DEFAULT_EXCLUDES
 
 
 class ExcludeRule(ABC):

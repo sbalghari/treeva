@@ -1,4 +1,4 @@
-from yada import cli
+from treeva import cli
 
 __all__ = ["cli"]
 

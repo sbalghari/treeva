@@ -7,7 +7,7 @@ from enum import Enum
 from rich.logging import RichHandler
 
 
-APP_NAME = "yada"
+APP_NAME = "treeva"
 
 
 def _default_log_dir() -> Path:

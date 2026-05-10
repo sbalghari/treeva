@@ -1,4 +1,4 @@
-"""Utility functions for YADA."""
+"""Utility functions for TREEVA."""
 
 from pathlib import Path
 import platform

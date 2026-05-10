@@ -2,7 +2,7 @@ from rich.columns import Columns
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from yada.models import DirInfo, FileInfo, AnalysisInfo
+    from treeva.models import DirInfo, FileInfo, AnalysisInfo
 
 from pyfiglet import figlet_format
 from rich.text import Text
@@ -14,7 +14,7 @@ from rich.panel import Panel
 
 from .console import CONSOLE, COLORS
 from ._base import info, success, error, warning
-from yada.lib.utils import format_size
+from treeva.lib.utils import format_size
 
 
 HEADING_GRADIENT = [

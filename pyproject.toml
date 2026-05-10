@@ -3,12 +3,34 @@ requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "yada"
-version = "0.1.0"
-description = "yet another dir analyzer, get an overview of your project structure, files, and codebase contents."
+name = "treeva"
+version = "0.1.0a1"
+description = "Treeva - Fast project structure analysis and code metrics from the command line"
 readme = "README.md"
+license = { text = "MIT" }
 requires-python = ">=3.12"
 authors = [{ name = "Saifullah Balghari", email = "sbalghari@proton.me" }]
+keywords = [
+    "cli",
+    "analyzer",
+    "directory",
+    "project",
+    "code-metrics",
+    "language-detection",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Shells",
+]
 dependencies = [
     "pathlib>=1.0.1",
     "pathspec>=1.0.4",
@@ -18,8 +40,15 @@ dependencies = [
     "typer>=0.24.1",
 ]
 
+[project.urls]
+Homepage = "https://github.com/sbalghari/treeva"
+Documentation = "https://github.com/sbalghari/treeva#readme"
+Repository = "https://github.com/sbalghari/treeva.git"
+Issues = "https://github.com/sbalghari/treeva/issues"
+Changelog = "https://github.com/sbalghari/treeva/blob/main/CHANGELOG.md"
+
 [project.scripts]
-yada = "yada:cli"
+treeva = "treeva:cli"
 
 [tool.uv]
 package = true
@@ -30,9 +59,4 @@ line-length = 79
 target-version = "py311"
 
 [dependency-groups]
-dev = [
-    "mypy>=1.20.0",
-    "pytest>=9.0.3",
-    "ruff>=0.15.10",
-    "ty>=0.0.29",
-]
+dev = ["mypy>=1.20.0", "pytest>=9.0.3", "ruff>=0.15.10", "ty>=0.0.29"]
