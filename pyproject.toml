@@ -7,7 +7,7 @@ name = "yada"
 version = "0.1.0"
 description = "yet another dir analyzer, get an overview of your project structure, files, and codebase contents."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 authors = [{ name = "Saifullah Balghari", email = "sbalghari@proton.me" }]
 dependencies = [
     "pathlib>=1.0.1",
