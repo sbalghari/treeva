@@ -26,11 +26,11 @@
 - [x] File and dir metadata extraction
 - [x] Language detection (40+ languages)
 - [x] Multiple output formats
-- [ ] AST-based analysis for deeper code insights
+- [ ] AST/Tree-sitter-based analysis for deeper code insights
 - [ ] Custom exclusions support
 - [ ] Terminal user interface
 - [ ] AI-powered analysis and recommendations
-- [ ] CI/CD integeration support
+- [ ] CI/CD integration support
 
 ## Installation
 
@@ -45,7 +45,7 @@
 git clone https://github.com/sbalghari/treeva.git
 cd treeva
 uv sync
-uv run treeva --version
+uv run treeva --help
 ```
 
 ### Using pip
@@ -54,60 +54,8 @@ uv run treeva --version
 git clone https://github.com/sbalghari/treeva.git
 cd treeva
 pip install -e .
-treeva --version
+treeva --help
 ```
-
-## Quick Start
-
-### Analyze a Project
-
-Get a comprehensive analysis of your project with code quality scores and language breakdown:
-
-```bash
-uv run treeva analyze /path/to/project --format rich-table
-```
-
-### Inspect a Directory
-
-Get directory-level metadata and file statistics:
-
-```bash
-uv run treeva dir /path/to/directory --format rich-table
-```
-
-### Examine a Single File
-
-Get detailed metadata for a specific file:
-
-```bash
-uv run treeva file /path/to/file.py --format rich-table
-```
-
-### Output Options
-
-**JSON Format** - Structured data for integration with other tools:
-
-```bash
-uv run treeva analyze . --format json
-```
-
-**Plain Text** - Human-readable ASCII output:
-
-```bash
-uv run treeva analyze . --format plain-text
-```
-
-**Rich Table** - Colored terminal tables (default, console only):
-
-```bash
-uv run treeva analyze . --format rich-table
-```
-
-### Additional Options
-
-- `--file` - Save output to a file (not supported with rich-table format)
-- `--verbose` - Enable debug-level logging
-- `--version` - Show version information
 
 ## Contributing
 
