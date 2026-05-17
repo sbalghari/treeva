@@ -14,7 +14,7 @@ from rich.panel import Panel
 
 from .console import CONSOLE, COLORS
 from ._base import info, success, error, warning
-from treeva.lib.utils import format_size
+from treeva.library.utils import format_size
 
 
 HEADING_GRADIENT = [

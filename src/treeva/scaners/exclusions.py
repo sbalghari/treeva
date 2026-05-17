@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from treeva.lib.exceptions import GitignoreNotFound, DirectoryNotFound
-from treeva.lib.constants import DEFAULT_EXCLUDES
+from treeva.library.exceptions import GitignoreNotFound, DirectoryNotFound
+from treeva.constants import DEFAULT_EXCLUDES
 
 
 class ExcludeRule(ABC):

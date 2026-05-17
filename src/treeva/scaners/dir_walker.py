@@ -4,7 +4,7 @@ from pathlib import Path
 if TYPE_CHECKING:
     from logging import Logger
 
-from treeva.lib.exceptions import DirectoryNotFound
+from treeva.library.exceptions import DirectoryNotFound
 from .exclusions import UnionExclude
 
 
@@ -25,7 +25,7 @@ def dir_walker(
 
     # Use provided logger or create a default one
     if not logger:
-        from treeva.lib.logger import get_caller_logger
+        from treeva.library.logger import get_caller_logger
 
         logger = get_caller_logger()
 

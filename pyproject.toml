@@ -36,7 +36,9 @@ dependencies = [
     "pathspec>=1.0.4",
     "pyfiglet>=1.0.4",
     "rich>=15.0.0",
+    "ruff>=0.15.10",
     "textual>=8.2.4",
+    "ty>=0.0.29",
     "typer>=0.24.1",
 ]
 

@@ -355,7 +355,9 @@ dependencies = [
     { name = "pathspec" },
     { name = "pyfiglet" },
     { name = "rich" },
+    { name = "ruff" },
     { name = "textual" },
+    { name = "ty" },
     { name = "typer" },
 ]
 
@@ -373,7 +375,9 @@ requires-dist = [
     { name = "pathspec", specifier = ">=1.0.4" },
     { name = "pyfiglet", specifier = ">=1.0.4" },
     { name = "rich", specifier = ">=15.0.0" },
+    { name = "ruff", specifier = ">=0.15.10" },
     { name = "textual", specifier = ">=8.2.4" },
+    { name = "ty", specifier = ">=0.0.29" },
     { name = "typer", specifier = ">=0.24.1" },
 ]
 

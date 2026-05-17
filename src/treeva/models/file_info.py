@@ -10,10 +10,8 @@ from dataclasses import dataclass
 from datetime import datetime
 import stat
 
-from treeva.lib.enums import Files
-from treeva.lib.constants import FILE_EXTENSIONS
-from treeva.lib.types import OutputFormat
-from treeva.lib.utils import format_size, is_hidden
+from treeva.constants import FILE_EXTENSIONS, OutputFormat, Files
+from treeva.library.utils import format_size, is_hidden
 from treeva.scaners import CalcLOC
 
 

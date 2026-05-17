@@ -6,9 +6,9 @@ import json
 import typer
 
 from treeva.cli.console import CONSOLE
-from treeva.lib.version import get_version
-from treeva.lib.logger import setup_logging, LOG_DIR
-from treeva.lib.types import OutputFormat
+from treeva.library.version import get_version
+from treeva.library.logger import setup_logging, LOG_DIR
+from treeva.constants import OutputFormat
 from treeva.cli import (
     print_error,
     print_success,

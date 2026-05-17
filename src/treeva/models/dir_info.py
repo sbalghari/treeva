@@ -10,8 +10,8 @@ from datetime import datetime
 import stat
 
 from .file_info import FileInfo
-from treeva.lib.types import OutputFormat
-from treeva.lib.utils import format_size, is_hidden
+from treeva.constants import OutputFormat
+from treeva.library.utils import format_size, is_hidden
 
 
 @dataclass

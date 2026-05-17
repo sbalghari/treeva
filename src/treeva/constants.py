@@ -1,4 +1,67 @@
-from .enums import Files
+from enum import Enum
+from typing import TypeAlias, Literal
+
+
+########################################################
+# Files
+########################################################
+class Files(Enum):
+    # Programming languages
+    PYTHON = "Python"
+    JAVASCRIPT = "JavaScript"
+    TYPESCRIPT = "TypeScript"
+    JAVA = "Java"
+    CPP = "C++"
+    C = "C"
+    CSHARP = "C#"
+    GO = "Go"
+    RUST = "Rust"
+    RUBY = "Ruby"
+    PHP = "PHP"
+    SWIFT = "Swift"
+    KOTLIN = "Kotlin"
+    SCALA = "Scala"
+    GROOVY = "Groovy"
+    PERL = "Perl"
+    R = "R"
+    LUA = "Lua"
+    DART = "Dart"
+    ELIXIR = "Elixir"
+    CLOJURE = "Clojure"
+    HASKELL = "Haskell"
+    OCAML = "OCaml"
+    HTML = "HTML"
+    CSS = "CSS"
+    SCSS = "SCSS"
+    SASS = "Sass"
+    LESS = "Less"
+    SQL = "SQL"
+    BASH = "Bash"
+    ZSH = "Zsh"
+    FISH = "Fish"
+    POWERSHELL = "PowerShell"
+    QML = "Qt Modeling Language"
+
+    # Configuration file types
+    JSON = "JSON"
+    YAML = "YAML"
+    TOML = "TOML"
+    XML = "XML"
+    INI = "INI"
+    PROPERTIES = "Properties"
+    ENV = "Environment Variables"
+
+    # Documentation and plain text file types
+    MARKDOWN = "Markdown"
+    RST = "reStructuredText"
+    LATEX = "LaTeX"
+    ASCIIDOC = "AsciiDoc"
+    ORG = "Org Mode"
+    TXT = "Plain Text"
+    LOG = "Log File"
+
+    # For unknown or not mentioned file types
+    UNKNOWN = "Others"
 
 
 FILE_EXTENSIONS: dict[Files, list[str]] = {
@@ -53,6 +116,9 @@ FILE_EXTENSIONS: dict[Files, list[str]] = {
 }
 
 
+########################################################
+# Excludes
+########################################################
 DEFAULT_EXCLUDES: set[str] = {
     # Version control
     ".git",
@@ -151,3 +217,53 @@ DEFAULT_EXCLUDES: set[str] = {
     # Misc
     ".history",
 }
+
+
+########################################################
+# RICH
+########################################################
+COLORS = {
+    "rosewater": "#f5e0dc",
+    "flamingo": "#f2cdcd",
+    "pink": "#f5c2e7",
+    "mauve": "#cba6f7",
+    "red": "#f38ba8",
+    "maroon": "#eba0ac",
+    "peach": "#fab387",
+    "yellow": "#f9e2af",
+    "green": "#a6e3a1",
+    "teal": "#94e2d5",
+    "sky": "#89dceb",
+    "sapphire": "#74c7ec",
+    "blue": "#89b4fa",
+    "lavender": "#b4befe",
+    "text": "#cdd6f4",
+    "subtext1": "#bac2de",
+    "subtext0": "#a6adc8",
+    "overlay2": "#9399b2",
+    "overlay1": "#7f849c",
+    "overlay0": "#6c7086",
+    "surface2": "#585b70",
+    "surface1": "#45475a",
+    "surface0": "#313244",
+    "base": "#1e1e2e",
+    "mantle": "#181825",
+    "crust": "#11111b",
+}
+
+ICONS = {
+    "done": "󰄴",
+    "error": "",
+    "warning": "",
+    "info": "",
+    "question": "",
+    "pointer": "",
+}
+
+
+########################################################
+# TYPE ALIASES
+########################################################
+OutputFormat: TypeAlias = Literal[
+    "json", "rich-table", "plain-text", "python-object"
+]

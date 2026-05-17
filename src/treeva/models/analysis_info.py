@@ -8,8 +8,8 @@ if TYPE_CHECKING:
 from dataclasses import dataclass
 
 from .dir_info import DirInfo
-from treeva.lib.types import OutputFormat
-from treeva.lib.utils import format_size
+from treeva.constants import OutputFormat
+from treeva.library.utils import format_size
 
 
 @dataclass
