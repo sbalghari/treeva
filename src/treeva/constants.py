@@ -185,7 +185,6 @@ DEFAULT_EXCLUDES: set[str] = {
     # Android / .NET
     ".idea",
     "captures",
-    "bin",
     "obj",
     ".vs",
     # IDEs / Editors
