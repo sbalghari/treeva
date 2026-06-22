@@ -12,11 +12,11 @@ from treeva.constants import OutputFormat
 from treeva.cli import (
     print_error,
     print_success,
-    print_analysis_info,
-    print_dir_info,
-    print_file_info,
+    print_analysis_result,
+    print_dir_node,
+    print_src_file,
 )
-from treeva.models import DirInfo, FileInfo, AnalysisInfo
+from treeva.models import DirNode, SourceFile, AnalysisResult
 
 
 cli = typer.Typer(name="treeva", add_completion=False)
@@ -116,17 +116,21 @@ def analyze(
     path = path.resolve()
 
     try:
-        analysis_info = AnalysisInfo.from_path(
-            path, logger=logger, format=format
-        )
-
         if not file:
             if format == "json":
-                CONSOLE.print(json.dumps(analysis_info, indent=2))
+                CONSOLE.print(
+                    json.dumps(
+                        AnalysisResult.get_json(path, logger=logger), indent=2
+                    )
+                )
             elif format == "rich-table":
-                print_analysis_info(analysis_info)  # ty:ignore[invalid-argument-type]
+                print_analysis_result(
+                    AnalysisResult.get_object(path, logger=logger)
+                )
             else:
-                CONSOLE.print(analysis_info)
+                CONSOLE.print(
+                    AnalysisResult.get_plain_text(path, logger=logger)
+                )
             return
 
         if file and format == "rich-table":
@@ -137,12 +141,16 @@ def analyze(
             output_path = (
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.json"
             )
-            output_content = json.dumps(analysis_info, indent=2)
+            output_content = json.dumps(
+                AnalysisResult.get_json(path, logger=logger), indent=2
+            )
         else:
             output_path = (
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.txt"
             )
-            output_content = str(analysis_info)
+            output_content = str(
+                AnalysisResult.get_plain_text(path, logger=logger)
+            )
 
         if write_output_to_file(output_path, output_content, logger):
             print_success(f"Analysis ready at {output_path}")
@@ -172,15 +180,15 @@ def dir(
     path = path.resolve()
 
     try:
-        dir_info = DirInfo.from_path(path, logger=logger, format=format)
-
         if not file:
             if format == "json":
-                CONSOLE.print(json.dumps(dir_info, indent=2))
+                CONSOLE.print(
+                    json.dumps(DirNode.get_json(path, logger=logger), indent=2)
+                )
             elif format == "rich-table":
-                print_dir_info(dir_info)
+                print_dir_node(DirNode.get_object(path, logger=logger))
             else:
-                CONSOLE.print(dir_info)
+                CONSOLE.print(DirNode.get_plain_text(path, logger=logger))
             return
 
         if file and format == "rich-table":
@@ -189,10 +197,12 @@ def dir(
 
         if format == "json":
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.json"
-            output_content = json.dumps(dir_info, indent=2)
+            output_content = json.dumps(
+                DirNode.get_json(path, logger=logger), indent=2
+            )
         else:
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
-            output_content = str(dir_info)
+            output_content = str(DirNode.get_plain_text(path, logger=logger))
 
         if write_output_to_file(output_path, output_content, logger):
             print_success(f"Metadata ready at {output_path}")
@@ -222,15 +232,17 @@ def file(
     path = path.resolve()
 
     try:
-        file_info = FileInfo.from_path(path, format=format, logger=logger)
-
         if not file:
             if format == "json":
-                CONSOLE.print(json.dumps(file_info, indent=2))
+                CONSOLE.print(
+                    json.dumps(
+                        SourceFile.get_json(path, logger=logger), indent=2
+                    )
+                )
             elif format == "rich-table":
-                print_file_info(file_info)
+                print_src_file(SourceFile.get_object(path, logger=logger))
             else:
-                CONSOLE.print(file_info)
+                CONSOLE.print(SourceFile.get_plain_text(path, logger=logger))
             return
 
         if file and format == "rich-table":
@@ -239,10 +251,14 @@ def file(
 
         if format == "json":
             output_path = Path.home() / "treeva" / f"FileInfo_{path.name}.json"
-            output_content = json.dumps(file_info, indent=2)
+            output_content = json.dumps(
+                SourceFile.get_json(path, logger=logger), indent=2
+            )
         else:
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
-            output_content = str(file_info)
+            output_content = str(
+                SourceFile.get_plain_text(path, logger=logger)
+            )
 
         if write_output_to_file(output_path, output_content, logger):
             print_success(f"Metadata ready at {output_path}")

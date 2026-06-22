@@ -12,9 +12,9 @@ from .output import (
     print_error,
     print_success,
     print_warning,
-    print_dir_info,
-    print_file_info,
-    print_analysis_info,
+    print_analysis_result,
+    print_dir_node,
+    print_src_file,
 )
 
 __all__ = [
@@ -32,7 +32,7 @@ __all__ = [
     "print_info",
     "print_error",
     "print_warning",
-    "print_dir_info",
-    "print_file_info",
-    "print_analysis_info",
+    "print_dir_node",
+    "print_src_file",
+    "print_analysis_result",
 ]

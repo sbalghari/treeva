@@ -5,7 +5,7 @@ from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
 from treeva.library.exceptions import GitignoreNotFound, DirectoryNotFound
-from treeva.constants import DEFAULT_EXCLUDES
+from treeva.constants.excludes import DEFAULT_EXCLUDES
 
 
 class ExcludeRule(ABC):

@@ -4,246 +4,246 @@ if TYPE_CHECKING:
     from pathlib import Path
     from logging import Logger
 
-from treeva.constants import Files
+from treeva.constants.enums import FileType
 from treeva.library.logger import get_caller_logger
 
 
 class _LanguageConfig:
     """Configuration for different programming languages."""
 
-    _configs: Dict[Files, Dict] = {
-        Files.PYTHON: {
+    _configs: Dict[FileType, Dict] = {
+        FileType.PYTHON: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": ['"""', "'''"],
             "line_comment_only": False,
         },
-        Files.JAVASCRIPT: {
+        FileType.JAVASCRIPT: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.TYPESCRIPT: {
+        FileType.TYPESCRIPT: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.JAVA: {
+        FileType.JAVA: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["/**"],
             "line_comment_only": False,
         },
-        Files.C: {
+        FileType.C: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.CPP: {
+        FileType.CPP: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.CSHARP: {
+        FileType.CSHARP: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["///"],
             "line_comment_only": False,
         },
-        Files.GO: {
+        FileType.GO: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.RUST: {
+        FileType.RUST: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["///", "//!"],
             "line_comment_only": False,
         },
-        Files.RUBY: {
+        FileType.RUBY: {
             "single_comment": "#",
             "multi_comment_start": "=begin",
             "multi_comment_end": "=end",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.PHP: {
+        FileType.PHP: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["/**"],
             "line_comment_only": False,
         },
-        Files.SWIFT: {
+        FileType.SWIFT: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["///"],
             "line_comment_only": False,
         },
-        Files.KOTLIN: {
+        FileType.KOTLIN: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["/**"],
             "line_comment_only": False,
         },
-        Files.SCALA: {
+        FileType.SCALA: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["/**"],
             "line_comment_only": False,
         },
-        Files.GROOVY: {
+        FileType.GROOVY: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["/**"],
             "line_comment_only": False,
         },
-        Files.PERL: {
+        FileType.PERL: {
             "single_comment": "#",
             "multi_comment_start": "=pod",
             "multi_comment_end": "=cut",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.R: {
+        FileType.R: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.LUA: {
+        FileType.LUA: {
             "single_comment": "--",
             "multi_comment_start": "--[[",
             "multi_comment_end": "]]",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.DART: {
+        FileType.DART: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": ["///"],
             "line_comment_only": False,
         },
-        Files.ELIXIR: {
+        FileType.ELIXIR: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": ['"""', "'''"],
             "line_comment_only": False,
         },
-        Files.CLOJURE: {
+        FileType.CLOJURE: {
             "single_comment": ";",
             "multi_comment_start": "(comment",
             "multi_comment_end": ")",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.HASKELL: {
+        FileType.HASKELL: {
             "single_comment": "--",
             "multi_comment_start": "{-",
             "multi_comment_end": "-}",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.OCAML: {
+        FileType.OCAML: {
             "single_comment": None,
             "multi_comment_start": "(*",
             "multi_comment_end": "*)",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.HTML: {
+        FileType.HTML: {
             "single_comment": None,
             "multi_comment_start": "<!--",
             "multi_comment_end": "-->",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.CSS: {
+        FileType.CSS: {
             "single_comment": None,
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.SCSS: {
+        FileType.SCSS: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.SASS: {
+        FileType.SASS: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.LESS: {
+        FileType.LESS: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.SQL: {
+        FileType.SQL: {
             "single_comment": "--",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.BASH: {
+        FileType.BASH: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.ZSH: {
+        FileType.ZSH: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.FISH: {
+        FileType.FISH: {
             "single_comment": "#",
             "multi_comment_start": None,
             "multi_comment_end": None,
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.POWERSHELL: {
+        FileType.POWERSHELL: {
             "single_comment": "#",
             "multi_comment_start": "<#",
             "multi_comment_end": "#>",
             "docstring_delims": [],
             "line_comment_only": False,
         },
-        Files.QML: {
+        FileType.QML: {
             "single_comment": "//",
             "multi_comment_start": "/*",
             "multi_comment_end": "*/",
@@ -254,25 +254,25 @@ class _LanguageConfig:
 
     # Non-code files that should be skipped
     NON_CODE_FILES = {
-        Files.JSON,
-        Files.YAML,
-        Files.TOML,
-        Files.XML,
-        Files.INI,
-        Files.PROPERTIES,
-        Files.ENV,
-        Files.MARKDOWN,
-        Files.RST,
-        Files.LATEX,
-        Files.ASCIIDOC,
-        Files.ORG,
-        Files.TXT,
-        Files.LOG,
-        Files.UNKNOWN,
+        FileType.JSON,
+        FileType.YAML,
+        FileType.TOML,
+        FileType.XML,
+        FileType.INI,
+        FileType.PROPERTIES,
+        FileType.ENV,
+        FileType.MARKDOWN,
+        FileType.RST,
+        FileType.LATEX,
+        FileType.ASCIIDOC,
+        FileType.ORG,
+        FileType.TXT,
+        FileType.LOG,
+        FileType.UNKNOWN,
     }
 
     @classmethod
-    def get_config(cls, file_type: Files) -> Optional[Dict]:
+    def get_config(cls, file_type: FileType) -> Optional[Dict]:
         """Get configuration for a file type."""
         if file_type in cls.NON_CODE_FILES:
             return None
@@ -287,7 +287,7 @@ class CalcLOC:
     def __init__(
         self,
         file_path: Path,
-        file_type: Files,
+        file_type: FileType,
         logger: Optional["Logger"] = None,
         encoding: str = "utf-8",
     ):
