@@ -6,7 +6,7 @@ DEFAULT_EXCLUDES: set[str] = {
     ".hg",
     ".bzr",
     # Python
-    "__pycache__",
+    "tests/*__pycache__",
     ".pytest_cache",
     ".mypy_cache",
     ".ruff_cache",
