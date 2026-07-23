@@ -1,6 +1,7 @@
 DEFAULT_EXCLUDES: set[str] = {
     # Version control
     ".git",
+    ".githooks",
     ".svn",
     ".hg",
     ".bzr",
