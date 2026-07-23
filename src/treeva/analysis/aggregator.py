@@ -54,7 +54,7 @@ class MetricsAggregator:
 
     def build_result(self) -> ProjectMetrics:
         comment_density = (
-            self._total_comment_lines / self._total_loc
+            self._total_comment_lines / self._total_loc * 100
             if self._total_loc > 0
             else 0.0
         )
