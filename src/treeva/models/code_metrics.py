@@ -22,6 +22,8 @@ class CodeMetrics:
     variable_count: int
     constant_count: int
 
+    import_count: int  # import/use/include directives
+
     # Complexity-related
     branch_count: int  # if, else, switch, match, etc.
     loop_count: int  # for, while, do-while

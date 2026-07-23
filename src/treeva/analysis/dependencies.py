@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 from tree_sitter import Query, QueryCursor
 
-from treeva.scaners import dir_walker
+from treeva.scanners import dir_walker
 from treeva.analysis.treesitter.grammars import get_language, get_parser
 from treeva.analysis.treesitter.analyzer import TREE_SITTER_GRAMMAR_MAP
 from treeva.analysis.factories import source_file_from_path
@@ -52,7 +52,7 @@ IMPORT_QUERIES: dict[str, str] = {
 }
 
 
-def _normalise_import_text(text: str, lang: str) -> str:
+def _normalize_import_text(text: str, lang: str) -> str:
     if lang in ("go", "javascript", "typescript", "cpp", "c", "lua"):
         return text.strip("\"'")
     return text.strip()
@@ -85,10 +85,10 @@ def extract_imports(filepath: Path, lang: str) -> list[str]:
             for cap_name, nodes in captures.items():
                 for node in nodes:
                     text = node.text.decode("utf-8")
-                    normalised = _normalise_import_text(text, lang)
-                    if normalised and normalised not in seen:
-                        seen.add(normalised)
-                        imports.append(normalised)
+                    normalized = _normalize_import_text(text, lang)
+                    if normalized and normalized not in seen:
+                        seen.add(normalized)
+                        imports.append(normalized)
     except Exception:
         pass
 

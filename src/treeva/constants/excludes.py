@@ -81,6 +81,7 @@ DEFAULT_EXCLUDES: set[str] = {
     "desktop.ini",
     # Generated artifacts
     "AGENTS.md",
+    "AGENTS.md.bak",
     # Logs / temp
     "*.log",
     "*.tmp",

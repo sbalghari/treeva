@@ -108,6 +108,7 @@ class TreeSitterAnalyzer:
             method_count=_count("method"),
             variable_count=_count("variable"),
             constant_count=_count("constant"),
+            import_count=_count("import"),
             branch_count=_count("branch"),
             loop_count=_count("loop"),
             return_count=_count("return"),

@@ -7,6 +7,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset(),
         "variable": frozenset({"assignment"}),
         "constant": frozenset(),
+        "import": frozenset({"import_statement", "import_from_statement"}),
         "branch": frozenset(
             {
                 "if_statement",
@@ -30,6 +31,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset({"impl_item"}),
         "variable": frozenset({"let_declaration"}),
         "constant": frozenset({"const_item", "static_item"}),
+        "import": frozenset({"use_declaration"}),
         "branch": frozenset(
             {
                 "if_expression",
@@ -56,6 +58,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset({"method_declaration"}),
         "variable": frozenset({"short_var_declaration", "var_declaration"}),
         "constant": frozenset({"const_declaration"}),
+        "import": frozenset({"import_declaration"}),
         "branch": frozenset(
             {
                 "if_statement",
@@ -80,6 +83,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset({"method_definition"}),
         "variable": frozenset({"variable_declaration"}),
         "constant": frozenset({"lexical_declaration"}),
+        "import": frozenset({"import_declaration", "import_expression"}),
         "branch": frozenset(
             {"if_statement", "else_clause", "switch_case", "switch_default"}
         ),
@@ -103,6 +107,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset({"method_definition"}),
         "variable": frozenset({"variable_declaration"}),
         "constant": frozenset({"lexical_declaration"}),
+        "import": frozenset({"import_declaration", "import_expression"}),
         "branch": frozenset(
             {"if_statement", "else_clause", "switch_case", "switch_default"}
         ),
@@ -120,6 +125,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset(),
         "variable": frozenset({"variable_assignment"}),
         "constant": frozenset(),
+        "import": frozenset(),
         "branch": frozenset(
             {"if_statement", "elif_clause", "else_clause", "case_statement"}
         ),
@@ -137,6 +143,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
             {"assignment_statement", "local_variable_declaration"}
         ),
         "constant": frozenset(),
+        "import": frozenset(),
         "branch": frozenset({"if_statement", "else_clause", "elseif_clause"}),
         "loop": frozenset(
             {"for_statement", "while_statement", "repeat_statement"}
@@ -154,6 +161,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
             {"variable_declaration", "local_variable_declaration"}
         ),
         "constant": frozenset({"constant_declaration"}),
+        "import": frozenset({"import_declaration"}),
         "branch": frozenset({"if_statement", "else_clause", "switch_block"}),
         "loop": frozenset(
             {"for_statement", "while_statement", "do_statement"}
@@ -169,6 +177,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset(),
         "variable": frozenset({"declaration"}),
         "constant": frozenset({"const_declaration"}),
+        "import": frozenset({"preproc_include"}),
         "branch": frozenset(
             {"if_statement", "else_clause", "switch_statement"}
         ),
@@ -186,6 +195,7 @@ NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {
         "method": frozenset(),
         "variable": frozenset({"declaration"}),
         "constant": frozenset({"const_declaration"}),
+        "import": frozenset({"preproc_include"}),
         "branch": frozenset(
             {"if_statement", "else_clause", "switch_statement"}
         ),

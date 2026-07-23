@@ -1,6 +1,7 @@
-from .spinner import SpinnerProgress as Spinner
-from .console import reset_console, clear_console
-from .output import (
+from treeva.cli.app import cli
+from treeva.cli.utils.spinner import SpinnerProgress as Spinner
+from treeva.cli.utils.console import reset_console, clear_console
+from treeva.cli.utils.output import (
     print_rule,
     print_newline,
     print_ascii_art,
@@ -18,6 +19,7 @@ from .output import (
 )
 
 __all__ = [
+    "cli",
     "Spinner",
     "reset_console",
     "clear_console",
