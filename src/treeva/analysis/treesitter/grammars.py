@@ -26,7 +26,12 @@ _LANGUAGES: dict[str, Language] = {
 
 _PARSER_CACHE: dict[str, Parser] = {}
 
+
 def get_parser(language_name: str) -> Parser:
     if language_name not in _PARSER_CACHE:
         _PARSER_CACHE[language_name] = Parser(_LANGUAGES[language_name])
     return _PARSER_CACHE[language_name]
+
+
+def get_language(language_name: str) -> Language:
+    return _LANGUAGES[language_name]

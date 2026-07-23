@@ -51,6 +51,7 @@ dependencies = [
     "tree-sitter-bash",
     "ty>=0.0.29",
     "typer>=0.24.1",
+    "requests>=2.34.2",
 ]
 
 [project.urls]

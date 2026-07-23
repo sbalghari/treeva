@@ -50,17 +50,3 @@ FILE_EXTENSIONS: dict[FileType, list[str]] = {
     FileType.TXT: [".txt"],
     FileType.LOG: [".log"],
 }
-
-TREE_SITTER_LANGUAGE_MAP: dict[str, str] = {
-    ".py": "python",
-    ".rs": "rust",
-    ".c": "c", ".h": "c",
-    ".cpp": "cpp", ".cc": "cpp", ".hpp": "cpp",
-    ".go": "go",
-    ".java": "java",
-    ".js": "javascript", ".jsx": "javascript",
-    ".ts": "typescript",
-    ".tsx": "tsx",
-    ".lua": "lua",
-    ".sh": "bash", ".bash": "bash",
-}

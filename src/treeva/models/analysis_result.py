@@ -1,143 +1,151 @@
 from __future__ import annotations
+
+from dataclasses import dataclass
+from pathlib import Path
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from logging import Logger
-
-
-from dataclasses import dataclass
-from treeva.models import CodeMetrics
-from datetime import datetime
-
-from .dir_node import DirNode
-from treeva.library.utils import format_size
 
 
 @dataclass
 class AnalysisResult:
     project_name: str
     project_path: Path
+
+    # File statistics
     files_count: int
+    code_files_count: dict[str, int]
     subdirectory_count: int
     size_in_bytes: int
+
+    # Code Metrics
     total_loc: int
     total_comment_lines: int
+    total_blank_lines: int
     comment_density: float
+    total_functions: int
+    total_classes: int
+    total_methods: int
+    total_variables: int
+    total_imports: int
+
+    # Complexity
+    total_branches: int
+    total_loops: int
+    max_nesting_depth: int
+    average_nesting_depth: float
+
+    # Language statistics
+    top_languages: list[tuple[str, int]]
+    language_distribution: dict[str, float]
+    language_loc: dict[str, int]
+
+    # Quality
+    docstring_count: int
+    documented_functions: int
+    undocumented_functions: int
+    documentation_coverage: float
+
+    # Largest entities
     largest_file: dict[str, Any]
+    largest_function: dict[str, Any] | None
+    largest_class: dict[str, Any] | None
+
+    # Project structure
+    deepest_directory_depth: int
+    average_files_per_directory: float
+    empty_directory_count: int
+
+    # Dates
     created_at: datetime
     modified_at: datetime
     oldest_file_date: datetime | None
     newest_file_date: datetime | None
-    source_files_count: dict[str, int]
-    top_languages: list[tuple[str, int]]
+
+    # Analysis metadata
+    scanned_files: int
+    ignored_files: int
+    failed_files: int
+    scan_duration_seconds: float
 
     @classmethod
-    def _from_path(
-        cls, dirpath: Path, *, logger: Logger
+    def get_object(
+        cls,
+        path: Path,
+        *,
+        logger: Logger,
+        extra_exclude_patterns: list[str] | None = None,
     ) -> AnalysisResult:
-        """
-        Create an AnalysisResult instance
-        """
+        from treeva.analysis.manager import AnalysisManager
+        from treeva.analysis.factories import dir_node_from_path
 
-        dir_node = DirNode.get_object(dirpath, logger=logger)
-        total_loc, total_comment_lines, top_languages = (
-            cls._calculate_top_languages(dir_node, logger)
+        dir_node = dir_node_from_path(
+            path, logger=logger, extra_exclude_patterns=extra_exclude_patterns
         )
-        comment_density = (
-            ((total_comment_lines / total_loc) * 100) if total_loc > 0 else 0
-        )
-
-        return cls(
-            project_name=dir_node.full_path.name,
-            project_path=dir_node.full_path,
-            files_count=dir_node.files_count,
-            subdirectory_count=dir_node.subdirectory_count,
-            size_in_bytes=dir_node.size_in_bytes,
-            largest_file=dir_node.largest_file,
-            created_at=dir_node.created_at,
-            total_loc=total_loc,
-            total_comment_lines=total_comment_lines,
-            comment_density=comment_density,
-            modified_at=dir_node.modified_at,
-            oldest_file_date=dir_node.oldest_file_date,
-            newest_file_date=dir_node.newest_file_date,
-            source_files_count=dir_node.source_files_count,
-            top_languages=top_languages,
-        )
-
-    @staticmethod
-    def _calculate_top_languages(
-        dir_node: DirNode, logger: Logger
-    ) -> tuple[int, int, list[tuple[str, int]]]:
-        total_loc = 0
-        total_comment_lines = 0
-        language_locs = []
-        for file in dir_node.source_files:
-            code_metrics = CodeMetrics.get_object(file, logger=logger)
-
-            # Agregate metrics
-            total_loc += code_metrics.lines_of_code
-            total_comment_lines += code_metrics.lines_of_comment
-
-            loc = code_metrics.lines_of_code
-            lang = code_metrics.language.label
-            if loc > 0:  # Only include languages with code
-                language_locs.append((lang, loc))
-
-        # Sort by LOC descending and return top 10
-        return (
-            total_loc,
-            total_comment_lines,
-            (sorted(language_locs, key=lambda x: x[1], reverse=True)[:10]),
-        )
+        manager = AnalysisManager()
+        return manager.analyze(dir_node, logger=logger)
 
     @classmethod
-    def get_object(cls, dirpath: Path, logger: Logger) -> AnalysisResult:
-        return cls._from_path(dirpath, logger=logger)
-
-    @classmethod
-    def get_json(cls, dirpath: Path, logger: Logger) -> dict[str, Any]:
-        data = cls._from_path(dirpath, logger=logger)
-
+    def get_json(
+        cls,
+        path: Path,
+        *,
+        logger: Logger,
+        extra_exclude_patterns: list[str] | None = None,
+    ) -> dict[str, Any]:
+        result = cls.get_object(
+            path,
+            logger=logger,
+            extra_exclude_patterns=extra_exclude_patterns,
+        )
         return {
-            "Project name": data.project_name,
-            "Project path": str(data.project_path),
-            "Summary": {
-                "Total files": data.files_count,
-                "Total subdirectories": data.subdirectory_count,
-                "Total size": format_size(data.size_in_bytes),
-                "Total size in bytes": data.size_in_bytes,
-                "Total LOC": data.total_loc,
-                "Total comment lines": data.total_comment_lines,
-                "Comment density (%)": round(data.comment_density, 2),
-            },
-            "Top languages": [
-                {"language": lang, "LOC": loc}
-                for lang, loc in data.top_languages
+            "Project Name": result.project_name,
+            "Project Path": str(result.project_path),
+            "Files": result.files_count,
+            "Subdirectories": result.subdirectory_count,
+            "Size (bytes)": result.size_in_bytes,
+            "Total LOC": result.total_loc,
+            "Total Comment Lines": result.total_comment_lines,
+            "Total Blank Lines": result.total_blank_lines,
+            "Comment Density": result.comment_density,
+            "Top Languages": [
+                {"language": lang, "loc": loc}
+                for lang, loc in result.top_languages
             ],
-            "File distribution": {
-                lang: {
-                    "Files count": counts,
-                }
-                for lang, counts in sorted(
-                    data.source_files_count.items(),
-                    key=lambda x: x[1],
-                    reverse=True,
-                )
-            },
-            "Timestamps": {
-                "Created": data.created_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "Modified": data.modified_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "Oldest file": (
-                    data.oldest_file_date.strftime("%Y-%m-%d %H:%M:%S")
-                    if data.oldest_file_date
-                    else None
-                ),
-                "Newest file": (
-                    data.newest_file_date.strftime("%Y-%m-%d %H:%M:%S")
-                    if data.newest_file_date
-                    else None
-                ),
-            },
+            "Scanned Files": result.scanned_files,
+            "Failed Files": result.failed_files,
+            "Created At": result.created_at.isoformat(),
+            "Modified At": result.modified_at.isoformat(),
         }
+
+    @classmethod
+    def get_plain_text(
+        cls,
+        path: Path,
+        *,
+        logger: Logger,
+        extra_exclude_patterns: list[str] | None = None,
+    ) -> str:
+        result = cls.get_object(
+            path,
+            logger=logger,
+            extra_exclude_patterns=extra_exclude_patterns,
+        )
+        lines = [
+            f"Project: {result.project_name}",
+            f"Path: {result.project_path}",
+            f"Files: {result.files_count}",
+            f"Subdirectories: {result.subdirectory_count}",
+            f"Total LOC: {result.total_loc}",
+            f"Total Comments: {result.total_comment_lines}",
+            f"Comment Density: {result.comment_density:.1f}%",
+            "Top Languages:",
+        ]
+        for lang, loc in result.top_languages[:5]:
+            lines.append(f"  {lang}: {loc} LOC")
+        lines.append(
+            f"Scanned: {result.scanned_files}, Failed: {result.failed_files}"
+        )
+        return "\n".join(lines)

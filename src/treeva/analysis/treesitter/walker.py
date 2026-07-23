@@ -15,7 +15,9 @@ def walk_tree(tree: Tree) -> TreeStats:
             break
 
         stats.total_nodes += 1
-        stats.node_type_counts[node.type] = stats.node_type_counts.get(node.type, 0) + 1
+        stats.node_type_counts[node.type] = (
+            stats.node_type_counts.get(node.type, 0) + 1
+        )
 
         if node.is_named:
             stats.named_node_type_counts[node.type] = (

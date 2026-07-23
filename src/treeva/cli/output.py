@@ -324,7 +324,7 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
     )
 
     for lang, count in sorted(
-        analysis_result.source_files_count.items(),
+        analysis_result.code_files_count.items(),
         key=lambda item: item[1],
         reverse=True,
     ):

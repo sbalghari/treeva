@@ -1,6 +1,13 @@
-from typing import Protocol
+from typing import Protocol, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from logging import Logger
+
 from treeva.models.source_file import SourceFile
-from treeva.models.analysis_result import AnalysisResult
+from treeva.models.code_metrics import CodeMetrics
+
 
 class BaseAnalyzer(Protocol):
-    def analyze(self, source_file: SourceFile) -> AnalysisResult: ...
+    def analyze(
+        self, source_file: SourceFile, *, logger: Logger
+    ) -> CodeMetrics: ...

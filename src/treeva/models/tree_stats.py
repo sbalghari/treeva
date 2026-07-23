@@ -1,10 +1,12 @@
 from dataclasses import dataclass, field
 
+
 @dataclass(slots=True)
 class ErrorSpan:
     start_line: int
     end_line: int
     node_type: str  # "ERROR" or "MISSING"
+
 
 @dataclass(slots=True)
 class TreeStats:

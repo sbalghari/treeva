@@ -16,7 +16,16 @@ from treeva.cli import (
     print_dir_node,
     print_src_file,
 )
-from treeva.models import DirNode, SourceFile, AnalysisResult
+from treeva.models import AnalysisResult
+from treeva.export.agents import generate_agents_md
+from treeva.analysis.factories import (
+    source_file_from_path,
+    source_file_format_plain_text,
+    source_file_format_json,
+    dir_node_from_path,
+    dir_node_format_plain_text,
+    dir_node_format_json,
+)
 
 
 cli = typer.Typer(name="treeva", add_completion=False)
@@ -108,6 +117,12 @@ def analyze(
     format: OutputFormat = common_options["format"],
     file: bool = common_options["file"],
     verbose: bool = common_options["verbose"],
+    exclude: Annotated[
+        Optional[list[str]],
+        typer.Option(
+            "--exclude", "-e", help="extra gitignore-style exclude patterns"
+        ),
+    ] = None,  # type: ignore[assignment]
 ):
 
     setup_logging("treeva.cmd.analyze", verbose=verbose)
@@ -120,16 +135,23 @@ def analyze(
             if format == "json":
                 CONSOLE.print(
                     json.dumps(
-                        AnalysisResult.get_json(path, logger=logger), indent=2
+                        AnalysisResult.get_json(
+                            path, logger=logger, extra_exclude_patterns=exclude
+                        ),
+                        indent=2,
                     )
                 )
             elif format == "rich-table":
                 print_analysis_result(
-                    AnalysisResult.get_object(path, logger=logger)
+                    AnalysisResult.get_object(
+                        path, logger=logger, extra_exclude_patterns=exclude
+                    )
                 )
             else:
                 CONSOLE.print(
-                    AnalysisResult.get_plain_text(path, logger=logger)
+                    AnalysisResult.get_plain_text(
+                        path, logger=logger, extra_exclude_patterns=exclude
+                    )
                 )
             return
 
@@ -142,14 +164,19 @@ def analyze(
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.json"
             )
             output_content = json.dumps(
-                AnalysisResult.get_json(path, logger=logger), indent=2
+                AnalysisResult.get_json(
+                    path, logger=logger, extra_exclude_patterns=exclude
+                ),
+                indent=2,
             )
         else:
             output_path = (
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.txt"
             )
             output_content = str(
-                AnalysisResult.get_plain_text(path, logger=logger)
+                AnalysisResult.get_plain_text(
+                    path, logger=logger, extra_exclude_patterns=exclude
+                )
             )
 
         if write_output_to_file(output_path, output_content, logger):
@@ -172,6 +199,12 @@ def dir(
     format: OutputFormat = common_options["format"],
     file: bool = common_options["file"],
     verbose: bool = common_options["verbose"],
+    exclude: Annotated[
+        Optional[list[str]],
+        typer.Option(
+            "--exclude", "-e", help="extra gitignore-style exclude patterns"
+        ),
+    ] = None,  # type: ignore[assignment]
 ):
 
     setup_logging("treeva.cmd.dir", verbose=verbose)
@@ -183,12 +216,25 @@ def dir(
         if not file:
             if format == "json":
                 CONSOLE.print(
-                    json.dumps(DirNode.get_json(path, logger=logger), indent=2)
+                    json.dumps(
+                        dir_node_format_json(
+                            path, logger=logger, extra_exclude_patterns=exclude
+                        ),
+                        indent=2,
+                    )
                 )
             elif format == "rich-table":
-                print_dir_node(DirNode.get_object(path, logger=logger))
+                print_dir_node(
+                    dir_node_from_path(
+                        path, logger=logger, extra_exclude_patterns=exclude
+                    )
+                )
             else:
-                CONSOLE.print(DirNode.get_plain_text(path, logger=logger))
+                CONSOLE.print(
+                    dir_node_format_plain_text(
+                        path, logger=logger, extra_exclude_patterns=exclude
+                    )
+                )
             return
 
         if file and format == "rich-table":
@@ -198,11 +244,18 @@ def dir(
         if format == "json":
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.json"
             output_content = json.dumps(
-                DirNode.get_json(path, logger=logger), indent=2
+                dir_node_format_json(
+                    path, logger=logger, extra_exclude_patterns=exclude
+                ),
+                indent=2,
             )
         else:
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
-            output_content = str(DirNode.get_plain_text(path, logger=logger))
+            output_content = str(
+                dir_node_format_plain_text(
+                    path, logger=logger, extra_exclude_patterns=exclude
+                )
+            )
 
         if write_output_to_file(output_path, output_content, logger):
             print_success(f"Metadata ready at {output_path}")
@@ -236,13 +289,16 @@ def file(
             if format == "json":
                 CONSOLE.print(
                     json.dumps(
-                        SourceFile.get_json(path, logger=logger), indent=2
+                        source_file_format_json(path, logger=logger),
+                        indent=2,
                     )
                 )
             elif format == "rich-table":
-                print_src_file(SourceFile.get_object(path, logger=logger))
+                print_src_file(source_file_from_path(path, logger=logger))
             else:
-                CONSOLE.print(SourceFile.get_plain_text(path, logger=logger))
+                CONSOLE.print(
+                    source_file_format_plain_text(path, logger=logger)
+                )
             return
 
         if file and format == "rich-table":
@@ -252,12 +308,12 @@ def file(
         if format == "json":
             output_path = Path.home() / "treeva" / f"FileInfo_{path.name}.json"
             output_content = json.dumps(
-                SourceFile.get_json(path, logger=logger), indent=2
+                source_file_format_json(path, logger=logger), indent=2
             )
         else:
             output_path = Path.home() / "treeva" / f"DirInfo_{path.name}.txt"
             output_content = str(
-                SourceFile.get_plain_text(path, logger=logger)
+                source_file_format_plain_text(path, logger=logger)
             )
 
         if write_output_to_file(output_path, output_content, logger):
@@ -269,6 +325,55 @@ def file(
     except Exception as e:
         print_error(
             f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/treeva.cmd.file.log"
+        )
+        logger.exception("Unexpected Error: ", exc_info=e)
+        raise typer.Exit(1)
+
+
+@cli.command(help="Generate AGENTS.md reference for a project")
+def agents(
+    path: Annotated[Path, typer.Argument(help="project path")],
+    verbose: bool = common_options["verbose"],
+    exclude: Annotated[
+        Optional[list[str]],
+        typer.Option(
+            "--exclude", "-e", help="extra gitignore-style exclude patterns"
+        ),
+    ] = None,  # type: ignore[assignment]
+):
+    setup_logging("treeva.cmd.agents", verbose=verbose)
+    logger = getLogger("treeva.cmd.agents")
+
+    path = path.resolve()
+
+    try:
+        content = generate_agents_md(
+            path, logger=logger, extra_exclude_patterns=exclude
+        )
+        output_path = path / "AGENTS.md"
+
+        if output_path.exists():
+            try:
+                overwrite = typer.confirm(
+                    "AGENTS.md already exists. Overwrite?",
+                    default=True,
+                )
+                if not overwrite:
+                    print_error("Aborted")
+                    raise typer.Exit(1)
+            except typer.Abort:
+                print_error("Aborted")
+                raise typer.Exit(1)
+
+        output_path.write_text(content, encoding="utf-8")
+        print_success(f"AGENTS.md written to {output_path}")
+
+    except KeyboardInterrupt:
+        typer.echo("Interrupted by user, exiting...")
+        raise typer.Exit(1)
+    except Exception as e:
+        print_error(
+            f"Unexpected Error: {str(e)}, check logs for details: {LOG_DIR}/treeva.cmd.agents.log"
         )
         logger.exception("Unexpected Error: ", exc_info=e)
         raise typer.Exit(1)
