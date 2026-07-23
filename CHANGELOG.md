@@ -2,8 +2,9 @@
 
 All notable changes to Treeva will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on
+[Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project
+adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0-alpha] - 2026-05-11
 
@@ -11,10 +12,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Added
 
-- **Core Scanning**: Recursive directory traversal with filesystem error handling
-- **File Metadata**: Comprehensive file information extraction (size, permissions, timestamps, ownership)
-- **Language Detection**: Support for 40+ programming languages with extension-based detection
-- **Lines of Code (LOC) Calculation**: Language-specific comment detection for code metrics
+- **Core Scanning**: Recursive directory traversal with filesystem error
+  handling
+- **File Metadata**: Comprehensive file information extraction (size,
+  permissions, timestamps, ownership)
+- **Language Detection**: Support for 40+ programming languages with
+  extension-based detection
+- **Lines of Code (LOC) Calculation**: Language-specific comment detection for
+  code metrics
   - Single-line comment recognition
   - Multi-line comment block detection
   - Language-specific docstring handling

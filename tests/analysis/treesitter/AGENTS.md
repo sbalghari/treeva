@@ -1,0 +1,56 @@
+# tests/analysis/treesitter/ — Agent Reference
+
+| File                   | Language | LOC | Comment | Blank | Functions | Classes | Branches | Loops |
+| ---------------------- | -------- | --- | ------- | ----- | --------- | ------- | -------- | ----- |
+| `test_analyzer.py`     | Python   | 18  | 6       | 11    | 3         | 0       | 0        | 0     |
+| `test_dependencies.py` | Python   | 24  | 0       | 8     | 4         | 0       | 0        | 0     |
+| `test_grammars.py`     | Python   | 14  | 0       | 6     | 3         | 0       | 0        | 0     |
+| `test_mapping.py`      | Python   | 63  | 0       | 17    | 6         | 0       | 0        | 3     |
+| `test_symbols.py`      | Python   | 33  | 0       | 11    | 4         | 0       | 0        | 0     |
+| `test_walker.py`       | Python   | 52  | 2       | 13    | 5         | 0       | 0        | 0     |
+
+### Symbols
+
+#### `test_analyzer.py`
+
+- `function` `test_valid_file_has_no_error` (13-17)
+- `function` `test_broken_file_flags_error` (20-23)
+- `function` `test_empty_file_does_not_crash` (26-35)
+
+#### `test_dependencies.py`
+
+- `function` `test_python_import_extraction` (4-10)
+- `function` `test_empty_file_returns_empty_imports` (13-17)
+- `function` `test_no_imports_returns_empty` (20-24)
+- `function` `test_go_import_extraction` (27-32)
+
+#### `test_grammars.py`
+
+- `function` `test_get_parser_returns_parser_for_every_registered_language`
+  (6-8)
+- `function` `test_get_parser_is_cached` (12-15)
+- `function` `test_get_parser_rejects_unknown_language` (18-20)
+
+#### `test_mapping.py`
+
+- `function` `test_all_supported_languages_have_maps` (9-23)
+- `function` `test_each_kind_is_a_frozenset` (26-31)
+- `function` `test_each_lang_has_all_kinds` (34-48)
+- `function` `test_python_structural_metrics` (51-63)
+- `function` `test_python_line_metrics` (66-72)
+- `function` `test_go_structural_metrics` (75-80)
+
+#### `test_symbols.py`
+
+- `function` `test_extract_python_symbols` (5-16)
+- `function` `test_extract_go_symbols` (19-26)
+- `function` `test_symbol_lines_are_correct` (29-37)
+- `function` `test_empty_source_returns_no_symbols` (40-44)
+
+#### `test_walker.py`
+
+- `function` `test_walk_tree_reaches_root_and_terminates` (5-15)
+- `function` `test_walk_tree_excludes_punctuation_from_named_counts` (18-25)
+- `function` `test_walk_tree_flags_no_errors_on_valid_source` (28-32)
+- `function` `test_walk_tree_flags_errors_on_broken_source` (35-39)
+- `function` `test_walk_tree_node_counts_match_baseline` (42-67)

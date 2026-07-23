@@ -1,11 +1,12 @@
 # Contributing to Treeva
 
-Thank you for your interest in contributing to Treeva! This document provides guidelines and instructions for contributing to the project.
-
+Thank you for your interest in contributing to Treeva! This document provides
+guidelines and instructions for contributing to the project.
 
 ## Getting Started
 
 ### Fork and Clone
+
 1. Fork the repository on GitHub
 2. Clone your fork locally:
    ```bash
@@ -14,6 +15,7 @@ Thank you for your interest in contributing to Treeva! This document provides gu
    ```
 
 ### Set Up Development Environment
+
 ```bash
 # Install dependencies with uv
 uv sync
@@ -25,6 +27,7 @@ uv run treeva --version
 ## Making Changes
 
 ### Create a Feature Branch
+
 ```bash
 git checkout -b feature/your-feature-name
 ```
@@ -58,6 +61,7 @@ Write clear, concise commit messages.
 ### Push and Create a Pull Request
 
 1. Push your branch:
+
    ```bash
    git push origin feature/your-feature-name
    ```

@@ -231,6 +231,9 @@ def _format_root_agents(
     lines.append(
         "5. Respect the project's directory structure — each directory has a focused responsibility."
     )
+    lines.append(
+        "6. After every change, format Python with `ruff format` and Markdown with `prettier --write`."
+    )
     lines.append("")
 
     return lines

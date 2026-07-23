@@ -1,6 +1,8 @@
 # Treeva Roadmap
 
-Treeva is evolving from a filesystem-based code scanner into a full syntax-aware code intelligence engine using AST (Python) and Tree-sitter (multi-language).
+Treeva is evolving from a filesystem-based code scanner into a full
+syntax-aware code intelligence engine using AST (Python) and Tree-sitter
+(multi-language).
 
 The guiding principle:
 
@@ -78,6 +80,7 @@ Language Router
 # Phase 0 — Foundation Refactor
 
 ### Goal
+
 Prepare architecture without changing current behavior.
 
 ### Tasks
@@ -100,6 +103,7 @@ Prepare architecture without changing current behavior.
 # Phase 1 — Python AST Migration
 
 ### Goal
+
 Replace regex-based Python analysis with real AST + tokenizer.
 
 ### Tasks
@@ -128,6 +132,7 @@ Replace regex-based Python analysis with real AST + tokenizer.
 # Phase 2 — Analysis Manager Introduction
 
 ### Goal
+
 Centralize analysis routing.
 
 ### Tasks
@@ -148,6 +153,7 @@ Centralize analysis routing.
 # Phase 3 — Tree-sitter Integration
 
 ### Goal
+
 Introduce multi-language parsing foundation.
 
 ### Tasks
@@ -173,6 +179,7 @@ Introduce multi-language parsing foundation.
 # Phase 4 — Node Mapping System
 
 ### Goal
+
 Normalize syntax across languages.
 
 ### Tasks
@@ -193,6 +200,7 @@ Normalize syntax across languages.
 # Phase 5 — Remove Regex LOC System
 
 ### Goal
+
 Fully eliminate legacy implementation.
 
 ### Tasks
@@ -212,6 +220,7 @@ Fully eliminate legacy implementation.
 # Phase 6 — Tree-sitter Query System
 
 ### Goal
+
 Enable advanced symbol extraction.
 
 ### Tasks
@@ -232,6 +241,7 @@ Enable advanced symbol extraction.
 # Phase 7 — Symbol System
 
 ### Goal
+
 Introduce first real code intelligence feature.
 
 ### Tasks
@@ -250,6 +260,7 @@ Introduce first real code intelligence feature.
 # Phase 8 — Dependency Graphs
 
 ### Goal
+
 Understand relationships between files.
 
 ### Tasks
@@ -267,6 +278,7 @@ Understand relationships between files.
 # Phase 9 — Advanced Metrics
 
 ### Goal
+
 Improve code quality analysis.
 
 ### Metrics
@@ -286,6 +298,7 @@ Improve code quality analysis.
 # Phase 10 — AI Context Layer
 
 ### Goal
+
 Prepare Treeva for LLM integration.
 
 ### Tasks
@@ -313,4 +326,3 @@ Treeva evolves into:
 - Stage 2: Syntax-aware analyzer
 - Stage 3: Code intelligence engine
 - Stage 4: AI-assisted architecture tool
-

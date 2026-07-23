@@ -1,0 +1,49 @@
+# tests/fixtures/treesitter/valid/ — Agent Reference
+
+| File          | Language   | LOC | Comment | Blank | Functions | Classes | Branches | Loops |
+| ------------- | ---------- | --- | ------- | ----- | --------- | ------- | -------- | ----- |
+| `sample.go`   | Go         | 2   | 0       | 0     | 1         | 0       | 0        | 0     |
+| `sample.java` | Java       | 1   | 0       | 0     | 1         | 1       | 0        | 0     |
+| `sample.js`   | JavaScript | 1   | 0       | 0     | 1         | 0       | 0        | 0     |
+| `sample.lua`  | Lua        | 1   | 0       | 0     | 1         | 0       | 0        | 0     |
+| `sample.py`   | Python     | 30  | 0       | 12    | 5         | 2       | 3        | 2     |
+| `sample.rs`   | Rust       | 1   | 0       | 0     | 1         | 0       | 0        | 0     |
+| `sample.sh`   | Bash       | 1   | 1       | 0     | 0         | 0       | 0        | 0     |
+| `sample.ts`   | TypeScript | 1   | 0       | 0     | 1         | 0       | 0        | 0     |
+
+### Symbols
+
+#### `sample.go`
+
+- `function` `main` (2-2)
+
+#### `sample.java`
+
+- `class` `Sample` (1-1)
+- `method` `main` (1-1)
+
+#### `sample.js`
+
+- `function` `test` (1-1)
+
+#### `sample.lua`
+
+- `function` `test` (1-1)
+
+#### `sample.py`
+
+- `function` `greet` (1-2)
+- `class` `Calculator` (5-10)
+- `function` `add` (6-7)
+- `function` `multiply` (9-10)
+- `class` `Greeter` (13-18)
+- `function` `__init__` (14-15)
+- `function` `greet` (17-18)
+
+#### `sample.rs`
+
+- `function` `main` (1-1)
+
+#### `sample.ts`
+
+- `function` `test` (1-1)

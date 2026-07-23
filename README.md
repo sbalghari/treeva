@@ -7,11 +7,11 @@
   <a href="https://www.python.org/downloads/">
     <img src="https://img.shields.io/badge/python-3.12+-blue.svg?style=for-the-badge&labelColor=313244&color=eba0ac" alt="Python Version">
   </a>
-  
+
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge&labelColor=313244&color=f9e2af" alt="License">
   </a>
-  
+
   <a href="https://github.com/sbalghari/treeva/releases">
     <img src="https://img.shields.io/badge/release-v0.1.0a1-orange.svg?style=for-the-badge&labelColor=313244&color=cba6f7" alt="Release">
   </a>
@@ -19,8 +19,9 @@
 
 ## Status
 
-> [!NOTE]
-> **Alpha Release**: This is an early alpha release (v0.1.0a1). Core functionality is implemented, but breaking changes may occur in future versions. Bug reports and feedback are welcome!
+> [!NOTE] **Alpha Release**: This is an early alpha release (v0.1.0a1). Core
+> functionality is implemented, but breaking changes may occur in future
+> versions. Bug reports and feedback are welcome!
 
 - [x] Filesystem scanning with exclusion support
 - [x] File and dir metadata extraction
@@ -67,14 +68,18 @@ Contributions are welcome! Please feel free to:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE)
+file for details.
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and releases.
+See [CHANGELOG.md](CHANGELOG.md) for a detailed history of changes and
+releases.
 
 ## Acknowledgments
 
 - Built with [Typer](https://typer.tiangolo.com/) for CLI
-- Styled with [Rich](https://rich.readthedocs.io/) for beautiful terminal output
-- Powered by [Pathspec](https://github.com/cpburnz/python-pathspec) for pattern matching
+- Styled with [Rich](https://rich.readthedocs.io/) for beautiful terminal
+  output
+- Powered by [Pathspec](https://github.com/cpburnz/python-pathspec) for pattern
+  matching

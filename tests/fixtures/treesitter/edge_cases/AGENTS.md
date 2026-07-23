@@ -1,0 +1,18 @@
+# tests/fixtures/treesitter/edge_cases/ — Agent Reference
+
+| File               | Language   | LOC | Comment | Blank | Functions | Classes | Branches | Loops |
+| ------------------ | ---------- | --- | ------- | ----- | --------- | ------- | -------- | ----- |
+| `crlf.go`          | Go         | 2   | 0       | 0     | 1         | 0       | 0        | 0     |
+| `deeply_nested.js` | JavaScript | 1   | 0       | 0     | 0         | 0       | 0        | 0     |
+| `empty.go`         | Go         | 0   | 0       | 0     | 0         | 0       | 0        | 0     |
+| `unicode.go`       | Go         | 2   | 0       | 0     | 1         | 0       | 0        | 0     |
+
+### Symbols
+
+#### `crlf.go`
+
+- `function` `main` (2-2)
+
+#### `unicode.go`
+
+- `function` `main` (2-2)
