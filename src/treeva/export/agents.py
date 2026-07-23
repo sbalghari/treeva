@@ -22,13 +22,12 @@ def generate_agents_md(
     *,
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
-) -> str:
+) -> dict[str, str]:
     analyzer = TreeSitterAnalyzer()
     dir_files: dict[str, list[dict]] = defaultdict(list)
     total_loc = 0
     total_files = 0
     lang_loc: dict[str, int] = defaultdict(int)
-    lang_files: dict[str, int] = defaultdict(int)
 
     for path in dir_walker(
         project_root, extra_exclude_patterns=extra_exclude_patterns
@@ -85,8 +84,79 @@ def generate_agents_md(
             total_loc += metrics.lines_of_code
             lang = sf.file_type.label
             lang_loc[lang] += metrics.lines_of_code
-            lang_files[lang] += 1
 
+    result: dict[str, str] = {}
+    dirs_sorted = sorted(dir_files.items(), key=lambda x: x[0])
+
+    for dirpath, files in dirs_sorted:
+        if dirpath == ".":
+            continue
+        lines = _format_dir_agents(dirpath, files)
+        result[f"{dirpath}/AGENTS.md"] = "\n".join(lines)
+
+    root_files = dir_files.get(".", [])
+    all_dirs = sorted(
+        (d for d in dir_files if d != "."),
+        key=lambda d: d,
+    )
+    lines = _format_root_agents(
+        project_root,
+        total_files,
+        total_loc,
+        lang_loc,
+        root_files,
+        all_dirs,
+    )
+    result["AGENTS.md"] = "\n".join(lines)
+
+    return result
+
+
+def _format_dir_agents(dirpath: str, files: list[dict]) -> list[str]:
+    lines: list[str] = []
+    lines.append(f"# {dirpath}/ — Agent Reference")
+    lines.append("")
+
+    lines.append(
+        "| File | Language | LOC | Comment | Blank | Functions | Classes | Branches | Loops |"
+    )
+    lines.append(
+        "|------|----------|-----|---------|-------|-----------|---------|----------|-------|"
+    )
+    for f in sorted(files, key=lambda x: x["filename"]):
+        lines.append(
+            f"| `{f['filename']}` | {f['language']} | {f['loc']} "
+            f"| {f['comment_lines']} | {f['blank_lines']} "
+            f"| {f['functions']} | {f['classes']} "
+            f"| {f['branches']} | {f['loops']} |"
+        )
+    lines.append("")
+
+    has_symbols = any(f["symbols"] for f in files)
+    if has_symbols:
+        lines.append("### Symbols")
+        lines.append("")
+        for f in sorted(files, key=lambda x: x["filename"]):
+            if not f["symbols"]:
+                continue
+            lines.append(f"#### `{f['filename']}`")
+            for s in f["symbols"]:
+                lines.append(
+                    f"  - `{s['kind']}` `{s['name']}` ({s['start']}-{s['end']})"
+                )
+            lines.append("")
+
+    return lines
+
+
+def _format_root_agents(
+    project_root: Path,
+    total_files: int,
+    total_loc: int,
+    lang_loc: dict[str, int],
+    root_files: list[dict],
+    all_dirs: list[str],
+) -> list[str]:
     lines: list[str] = []
     lines.append(f"# {project_root.name} — Agent Reference")
     lines.append("")
@@ -97,17 +167,14 @@ def generate_agents_md(
     lines.append("")
     lines.append(f"- Total files: {total_files}")
     lines.append(f"- Total LOC: {total_loc}")
-
     sorted_langs = sorted(lang_loc.items(), key=lambda x: x[1], reverse=True)
     for lang, loc in sorted_langs:
         pct = (loc / total_loc * 100) if total_loc > 0 else 0
         lines.append(f"- {lang}: {loc} LOC ({pct:.1f}%)")
     lines.append("")
 
-    dirs_sorted = sorted(dir_files.items(), key=lambda x: x[0])
-    for dirpath, files in dirs_sorted:
-        display = dirpath if dirpath != "." else "/"
-        lines.append(f"## {display}/")
+    if root_files:
+        lines.append("## Root Files")
         lines.append("")
         lines.append(
             "| File | Language | LOC | Comment | Blank | Functions | Classes | Branches | Loops |"
@@ -115,17 +182,55 @@ def generate_agents_md(
         lines.append(
             "|------|----------|-----|---------|-------|-----------|---------|----------|-------|"
         )
-        for f in sorted(files, key=lambda x: x["filename"]):
+        for f in sorted(root_files, key=lambda x: x["filename"]):
             lines.append(
                 f"| `{f['filename']}` | {f['language']} | {f['loc']} "
                 f"| {f['comment_lines']} | {f['blank_lines']} "
                 f"| {f['functions']} | {f['classes']} "
                 f"| {f['branches']} | {f['loops']} |"
             )
-            for s in f["symbols"]:
-                lines.append(
-                    f"  - `{s['kind']}` `{s['name']}` ({s['start']}-{s['end']})"
-                )
+        lines.append("")
+        has_symbols = any(f["symbols"] for f in root_files)
+        if has_symbols:
+            lines.append("### Symbols")
+            lines.append("")
+            for f in sorted(root_files, key=lambda x: x["filename"]):
+                if not f["symbols"]:
+                    continue
+                lines.append(f"#### `{f['filename']}`")
+                for s in f["symbols"]:
+                    lines.append(
+                        f"  - `{s['kind']}` `{s['name']}` ({s['start']}-{s['end']})"
+                    )
+                lines.append("")
+
+    if all_dirs:
+        lines.append("## Directory Map")
+        lines.append("")
+        lines.append("| Directory | Description |")
+        lines.append("|-----------|-------------|")
+        for d in all_dirs:
+            display = d if d != "." else "/"
+            lines.append(
+                f"| `{display}/` | Placeholder: AI-generated description |"
+            )
         lines.append("")
 
-    return "\n".join(lines)
+    lines.append("## Agent Rules")
+    lines.append("")
+    lines.append(
+        "1. Follow the code style and conventions reflected in the codebase."
+    )
+    lines.append("2. Use patterns consistent with existing implementations.")
+    lines.append(
+        "3. Keep symbols, function signatures, and types in sync with source."
+    )
+    lines.append(
+        "4. When adding new code, match the dependency and import style of the surrounding module."
+    )
+    lines.append(
+        "5. Respect the project's directory structure — each directory has a focused responsibility."
+    )
+    lines.append("")
+
+    return lines

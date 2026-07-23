@@ -347,12 +347,12 @@ def agents(
     path = path.resolve()
 
     try:
-        content = generate_agents_md(
+        files = generate_agents_md(
             path, logger=logger, extra_exclude_patterns=exclude
         )
-        output_path = path / "AGENTS.md"
 
-        if output_path.exists():
+        root_agents = path / "AGENTS.md"
+        if root_agents.exists():
             try:
                 overwrite = typer.confirm(
                     "AGENTS.md already exists. Overwrite?",
@@ -365,8 +365,14 @@ def agents(
                 print_error("Aborted")
                 raise typer.Exit(1)
 
-        output_path.write_text(content, encoding="utf-8")
-        print_success(f"AGENTS.md written to {output_path}")
+        written = 0
+        for rel_path, content in files.items():
+            output_path = path / rel_path
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            output_path.write_text(content, encoding="utf-8")
+            written += 1
+
+        print_success(f"{written} AGENTS.md files written")
 
     except KeyboardInterrupt:
         typer.echo("Interrupted by user, exiting...")

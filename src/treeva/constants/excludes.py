@@ -78,6 +78,8 @@ DEFAULT_EXCLUDES: set[str] = {
     ".DS_Store",
     "Thumbs.db",
     "desktop.ini",
+    # Generated artifacts
+    "AGENTS.md",
     # Logs / temp
     "*.log",
     "*.tmp",
