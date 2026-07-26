@@ -1,8 +1,11 @@
+"""AST tree walker: counts nodes, tracks depth, and captures error spans."""
+
 from tree_sitter import Tree
 from treeva.models.tree_stats import ErrorSpan, TreeStats
 
 
 def walk_tree(tree: Tree) -> TreeStats:
+    """Walk a tree-sitter tree, counting nodes, tracking depth, and capturing error spans."""
     stats = TreeStats()
     cursor = tree.walk()
     depth = 0

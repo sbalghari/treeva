@@ -2,13 +2,13 @@
 
 # src/treeva/constants/ — Agent Reference
 
-| File            | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| --------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `__init__.py`   | Python   | 2   | 3       | 1     | 0         | 0       | 1       | 0     | 0        |
-| `enums.py`      | Python   | 72  | 15      | 14    | 3         | 2       | 1       | 0     | 0        |
-| `excludes.py`   | Python   | 85  | 16      | 0     | 0         | 0       | 0       | 0     | 0        |
-| `extensions.py` | Python   | 51  | 0       | 1     | 0         | 0       | 1       | 0     | 0        |
-| `theme.py`      | Python   | 36  | 0       | 1     | 0         | 0       | 0       | 0     | 0        |
+| File            | Language | Lines                 |
+| --------------- | -------- | --------------------- |
+| `__init__.py`   | Python   | 6 lines(2, 3, 1)      |
+| `enums.py`      | Python   | 101 lines(72, 15, 14) |
+| `excludes.py`   | Python   | 101 lines(85, 16, 0)  |
+| `extensions.py` | Python   | 52 lines(51, 0, 1)    |
+| `theme.py`      | Python   | 37 lines(36, 0, 1)    |
 
 ### Symbols
 

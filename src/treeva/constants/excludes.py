@@ -1,3 +1,5 @@
+"""Default directory and file patterns to skip during project scanning."""
+
 DEFAULT_EXCLUDES: set[str] = {
     # Version control
     ".git",

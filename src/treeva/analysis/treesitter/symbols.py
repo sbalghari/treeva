@@ -1,15 +1,20 @@
+"""Named-symbol extraction (function, class, method) from tree-sitter trees."""
+
 from __future__ import annotations
 
+from tree_sitter import Tree
 from treeva.models.symbol import Symbol
 from .mapping import NODE_KIND_MAP
 
 
-def extract_symbols(tree, language_name: str) -> list[Symbol]:
+def extract_symbols(tree: Tree, language_name: str) -> list[Symbol]:
+    """Extract function, class, and method symbols from a tree-sitter tree."""
     kind_map = NODE_KIND_MAP.get(language_name, {})
     func_types = kind_map.get("function", frozenset())
     class_types = kind_map.get("class", frozenset())
     method_types = kind_map.get("method", frozenset())
 
+    # Build inverted map: tree-sitter node type → semantic kind for O(1) lookup during traversal.
     type_to_kind: dict[str, str] = {}
     for t in func_types:
         type_to_kind[t] = "function"

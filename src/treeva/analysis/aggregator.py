@@ -1,3 +1,5 @@
+"""Accumulates per-file CodeMetrics into project-level ProjectMetrics."""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -7,9 +9,10 @@ from treeva.models.project_metrics import ProjectMetrics
 
 
 class MetricsAggregator:
-    """Accumulates per-file CodeMetrics into project-level totals, ProjectMetrics."""
+    """Accumulates per-file CodeMetrics into project-level ProjectMetrics."""
 
     def __init__(self) -> None:
+        """Initialize all metric counters to zero."""
         self._total_loc = 0
         self._total_comment_lines = 0
         self._blank_lines = 0
@@ -26,10 +29,15 @@ class MetricsAggregator:
         self._exception_count = 0
 
         self._max_nesting_depth = 0
+        self._nesting_depth_sum = 0
+        self._analyzed_file_count = 0
 
         self._language_locs: defaultdict[str, int] = defaultdict(int)
 
+        self._import_count = 0
+
     def add(self, metrics: CodeMetrics) -> None:
+        """Merge a file's CodeMetrics into the aggregate totals."""
         self._total_loc += metrics.lines_of_code
         self._total_comment_lines += metrics.lines_of_comment
         self._blank_lines += metrics.blank_lines
@@ -45,17 +53,28 @@ class MetricsAggregator:
         self._return_count += metrics.return_count
         self._exception_count += metrics.exception_count
 
+        self._import_count += metrics.import_count
+
         self._max_nesting_depth = max(
             self._max_nesting_depth,
             metrics.max_nesting_depth,
         )
+        self._nesting_depth_sum += metrics.max_nesting_depth
+        self._analyzed_file_count += 1
 
         self._language_locs[metrics.language.label] += metrics.lines_of_code
 
     def build_result(self) -> ProjectMetrics:
+        """Compute derived metrics and return a ProjectMetrics instance."""
         comment_density = (
             self._total_comment_lines / self._total_loc * 100
             if self._total_loc > 0
+            else 0.0
+        )
+
+        average_nesting_depth = (
+            self._nesting_depth_sum / self._analyzed_file_count
+            if self._analyzed_file_count > 0
             else 0.0
         )
 
@@ -73,10 +92,13 @@ class MetricsAggregator:
             return_count=self._return_count,
             exception_count=self._exception_count,
             max_nesting_depth=self._max_nesting_depth,
+            average_nesting_depth=average_nesting_depth,
             comment_density=comment_density,
+            import_count=self._import_count,
             top_languages=sorted(
                 self._language_locs.items(),
                 key=lambda item: item[1],
                 reverse=True,
             ),
+            language_locs=dict(self._language_locs),
         )

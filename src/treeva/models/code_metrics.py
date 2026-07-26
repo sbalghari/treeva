@@ -1,3 +1,5 @@
+"""Per-file code metrics harvested by the tree-sitter analyzer."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,6 +9,8 @@ from treeva.constants.enums import FileType
 
 @dataclass
 class CodeMetrics:
+    """Line counts, structural metrics, and complexity indicators per file."""
+
     language: FileType
 
     # Line metrics

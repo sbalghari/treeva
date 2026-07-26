@@ -1,3 +1,5 @@
+"""Base rendering functions for styled Rich console output panels and messages."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Union
 
@@ -12,8 +14,12 @@ from .console import ICONS
 
 
 def panel(
-    title: str, content: RenderableType, style: str = "border.primary", *args
+    title: str,
+    content: RenderableType,
+    style: str = "border.primary",
+    *args: object,
 ) -> Panel:
+    """Create a styled Rich Panel with rounded border."""
     return Panel(
         content,
         ROUNDED,
@@ -27,6 +33,7 @@ def panel(
 
 
 def _build_content(message: str, details: Optional[str], style: str) -> Text:
+    """Build styled Text with optional detail lines."""
     content = Text(message, style=style)
     if details:
         content.append("\n")
@@ -54,7 +61,8 @@ def _output(
 
 def info(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
-):
+) -> Union[Panel, Text]:
+    """Build an info-style message."""
     return _output(
         message=message,
         details=details,
@@ -67,7 +75,8 @@ def info(
 
 def success(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
-):
+) -> Union[Panel, Text]:
+    """Build a success-style message."""
     return _output(
         message=message,
         details=details,
@@ -80,7 +89,8 @@ def success(
 
 def error(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
-):
+) -> Union[Panel, Text]:
+    """Build an error-style message."""
     return _output(
         message=message,
         details=details,
@@ -93,7 +103,8 @@ def error(
 
 def warning(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
-):
+) -> Union[Panel, Text]:
+    """Build a warning-style message."""
     return _output(
         message=message,
         details=details,

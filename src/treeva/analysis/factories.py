@@ -1,3 +1,9 @@
+"""Filesystem-to-model factories.
+
+``source_file_from_path`` and ``dir_node_from_path`` create ``SourceFile``
+and ``DirNode`` instances from real filesystem paths.
+"""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
@@ -16,6 +22,7 @@ from treeva.scanners import dir_walker
 
 
 def _detect_file_type(filepath: Path) -> FileType:
+    """Map file extension to FileType enum."""
     extension = filepath.suffix.lower()
     for file_type, extensions in FILE_EXTENSIONS.items():
         if extension in extensions:
@@ -24,6 +31,7 @@ def _detect_file_type(filepath: Path) -> FileType:
 
 
 def _get_owner(uid: int) -> str:
+    """Resolve numeric UID to username, falling back to the UID string."""
     try:
         import pwd
 
@@ -33,6 +41,7 @@ def _get_owner(uid: int) -> str:
 
 
 def _get_group(gid: int) -> str:
+    """Resolve numeric GID to group name, falling back to the GID string."""
     try:
         import grp
 
@@ -45,6 +54,7 @@ def _get_group(gid: int) -> str:
 
 
 def source_file_from_path(filepath: Path, logger: Logger) -> SourceFile:
+    """Build a ``SourceFile`` from a real filesystem path."""
     file_stats = filepath.stat()
     is_symlink = filepath.is_symlink()
     symlink_target = str(filepath.resolve()) if is_symlink else None
@@ -75,6 +85,7 @@ def _walk_and_collect(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, Any]:
+    """Walk dirpath and collect file stats and metadata into a dict."""
     files_count = 0
     subdirectory_count = 0
     size_in_bytes = 0
@@ -155,6 +166,7 @@ def dir_node_from_path(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> DirNode:
+    """Walk ``dirpath`` and return a ``DirNode`` with all sub-file metadata."""
     stat_info = dirpath.stat()
     stats = _walk_and_collect(dirpath, logger, extra_exclude_patterns)
 

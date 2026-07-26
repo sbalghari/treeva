@@ -2,11 +2,11 @@
 
 # src/treeva/scanners/ — Agent Reference
 
-| File            | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| --------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `__init__.py`   | Python   | 8   | 0       | 1     | 0         | 0       | 2       | 0     | 0        |
-| `dir_walker.py` | Python   | 73  | 0       | 18    | 3         | 0       | 8       | 3     | 6        |
-| `exclusions.py` | Python   | 132 | 10      | 39    | 9         | 4       | 7       | 4     | 12       |
+| File            | Language | Lines                  |
+| --------------- | -------- | ---------------------- |
+| `__init__.py`   | Python   | 9 lines(8, 0, 1)       |
+| `dir_walker.py` | Python   | 91 lines(73, 0, 18)    |
+| `exclusions.py` | Python   | 181 lines(132, 10, 39) |
 
 ### Symbols
 

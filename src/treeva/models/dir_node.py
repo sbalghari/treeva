@@ -1,11 +1,8 @@
+"""Directory-level metadata and aggregated file statistics."""
+
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from pathlib import Path
-
-if TYPE_CHECKING:
-    pass
-
-
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -14,6 +11,8 @@ from .source_file import SourceFile
 
 @dataclass
 class DirNode:
+    """Metadata about a single directory and its contents."""
+
     dirname: str
     full_path: Path
     files_count: int

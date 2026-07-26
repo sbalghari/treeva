@@ -2,9 +2,9 @@
 
 # tests/analysis/ — Agent Reference
 
-| File          | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `test_git.py` | Python   | 20  | 0       | 5     | 2         | 0       | 3       | 1     | 0        |
+| File          | Language | Lines              |
+| ------------- | -------- | ------------------ |
+| `test_git.py` | Python   | 25 lines(20, 0, 5) |
 
 ### Symbols
 

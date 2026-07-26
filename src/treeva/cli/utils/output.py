@@ -1,3 +1,5 @@
+"""High-level print functions for Rich table rendering of analysis results."""
+
 from rich.columns import Columns
 from typing import Optional, TYPE_CHECKING
 
@@ -25,10 +27,12 @@ HEADING_GRADIENT = [
 
 
 def print_newline(count: int = 1) -> None:
+    """Print one or more blank lines."""
     CONSOLE.print("\n" * count, end="")
 
 
 def print_rule(title: str = "") -> None:
+    """Print a horizontal rule with an optional title."""
     CONSOLE.print(Rule(title, style="primary"), justify="full")
 
 
@@ -51,42 +55,50 @@ def print_ascii_art(text: str, font: str = "slant") -> None:
 
 
 def print_header(t: str) -> None:
+    """Print text in header style (bold mauve)."""
     CONSOLE.print(t, style="header")
 
 
 def print_subheader(t: str) -> None:
+    """Print text in subheader style (bold italic pink)."""
     CONSOLE.print(t, style="subheader")
 
 
 def print_text(t: str) -> None:
+    """Print text in default body style."""
     CONSOLE.print(t, style="text")
 
 
 def print_subtext(t: str) -> None:
+    """Print text in subtext style (dim)."""
     CONSOLE.print(t, style="subtext")
 
 
 def print_info(
     t: str, *, details: Optional[str] = None, panel: bool = True
 ) -> None:
+    """Print an info message, optionally inside a panel."""
     CONSOLE.print(info(t, details=details, use_panel=panel))
 
 
 def print_success(
     t: str, details: Optional[str] = None, panel: bool = True
 ) -> None:
+    """Print a success message, optionally inside a panel."""
     CONSOLE.print(success(t, details=details, use_panel=panel))
 
 
 def print_error(
     t: str, details: Optional[str] = None, panel: bool = True
 ) -> None:
+    """Print an error message, optionally inside a panel."""
     CONSOLE.print(error(t, details=details, use_panel=panel))
 
 
 def print_warning(
     t: str, *, details: Optional[str] = None, panel: bool = True
 ) -> None:
+    """Print a warning message, optionally inside a panel."""
     CONSOLE.print(warning(t, details=details, use_panel=panel))
 
 

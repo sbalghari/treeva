@@ -2,12 +2,12 @@
 
 # src/treeva/cli/utils/ — Agent Reference
 
-| File         | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------ | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `_base.py`   | Python   | 84  | 0       | 20    | 7         | 0       | 6       | 0     | 3        |
-| `console.py` | Python   | 67  | 0       | 10    | 2         | 0       | 3       | 0     | 0        |
-| `output.py`  | Python   | 301 | 32      | 65    | 14        | 0       | 13      | 4     | 6        |
-| `spinner.py` | Python   | 52  | 0       | 13    | 8         | 1       | 6       | 0     | 8        |
+| File         | Language | Lines                  |
+| ------------ | -------- | ---------------------- |
+| `_base.py`   | Python   | 104 lines(84, 0, 20)   |
+| `console.py` | Python   | 77 lines(67, 0, 10)    |
+| `output.py`  | Python   | 398 lines(301, 32, 65) |
+| `spinner.py` | Python   | 65 lines(52, 0, 13)    |
 
 ### Symbols
 

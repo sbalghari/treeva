@@ -1,3 +1,5 @@
+"""Git churn and hotspot analysis via ``git log --numstat``."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from pathlib import Path
@@ -10,6 +12,8 @@ if TYPE_CHECKING:
 
 @dataclass
 class GitChurn:
+    """Per-file change statistics from git history."""
+
     filepath: str
     additions: int
     deletions: int
@@ -19,6 +23,8 @@ class GitChurn:
 
 @dataclass
 class GitAnalysis:
+    """Aggregate git analysis with churn and top hotspots."""
+
     total_commits: int
     total_authors: int
     churn: list[GitChurn]
@@ -26,6 +32,7 @@ class GitAnalysis:
 
 
 def _git_log_numstat(repo_path: Path, logger: Logger) -> str:
+    """Run git log --numstat and return raw output, or '' on failure."""
     try:
         result = run(
             ["git", "log", "--all", "--numstat", "--pretty=%H %ai %an"],
@@ -48,6 +55,7 @@ def _git_log_numstat(repo_path: Path, logger: Logger) -> str:
 
 
 def analyze_git(repo_path: Path, *, logger: Logger) -> GitAnalysis | None:
+    """Return git-churn and hotspot data for *repo_path*."""
     raw = _git_log_numstat(repo_path, logger)
     if not raw:
         return None
@@ -100,7 +108,7 @@ def analyze_git(repo_path: Path, *, logger: Logger) -> GitAnalysis | None:
         churn,
         key=lambda x: x.additions + x.deletions,
         reverse=True,
-    )[:20]
+    )[:20]  # Top 20 most-churned files = hotspots
 
     return GitAnalysis(
         total_commits=len(commits),

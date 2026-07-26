@@ -1,3 +1,5 @@
+"""Tree-sitter parsing and CodeMetrics extraction for supported languages."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
@@ -15,6 +17,7 @@ from .walker import walk_tree
 from .mapping import NODE_KIND_MAP
 
 
+# Maps each FileType to its tree-sitter grammar name for parser lookup.
 TREE_SITTER_GRAMMAR_MAP: dict[FileType, str] = {
     FileType.PYTHON: "python",
     FileType.RUST: "rust",
@@ -28,6 +31,7 @@ TREE_SITTER_GRAMMAR_MAP: dict[FileType, str] = {
     FileType.C: "c",
 }
 
+# Rust and Java use distinct line_comment/block_comment node types; others use a single comment node.
 COMMENT_NODE_TYPES: dict[str, frozenset[str]] = {
     "python": frozenset({"comment"}),
     "rust": frozenset({"line_comment", "block_comment"}),
@@ -43,7 +47,10 @@ COMMENT_NODE_TYPES: dict[str, frozenset[str]] = {
 
 
 class TreeSitterAnalyzer:
+    """Parse and analyze source files via tree-sitter, producing CodeMetrics."""
+
     def parse(self, source_file: SourceFile) -> ParserResult | None:
+        """Parse a source file and return a ParserResult, or None if no grammar is mapped."""
         grammar_name = TREE_SITTER_GRAMMAR_MAP.get(source_file.file_type)
         if grammar_name is None:
             return None
@@ -64,6 +71,7 @@ class TreeSitterAnalyzer:
     def analyze(
         self, source_file: SourceFile, *, logger: Logger
     ) -> CodeMetrics:
+        """Parse and analyze a source file, returning CodeMetrics or raising UnsupportedLanguage."""
         parsed = self.parse(source_file)
         if parsed is None:
             logger.warning(
@@ -93,6 +101,7 @@ class TreeSitterAnalyzer:
         counts = parsed.stats.named_node_type_counts if parsed.stats else {}
 
         def _count(kind: str) -> int:
+            """Sum all named-node counts that map to the given semantic kind."""
             return sum(
                 counts.get(t, 0) for t in kind_map.get(kind, frozenset())
             )
@@ -113,7 +122,7 @@ class TreeSitterAnalyzer:
             loop_count=_count("loop"),
             return_count=_count("return"),
             exception_count=_count("exception"),
-            max_nesting_depth=0,
+            max_nesting_depth=parsed.stats.max_depth if parsed.stats else 0,
         )
 
     @staticmethod

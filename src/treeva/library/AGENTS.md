@@ -2,13 +2,13 @@
 
 # src/treeva/library/ — Agent Reference
 
-| File            | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| --------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `__init__.py`   | Python   | 0   | 0       | 0     | 0         | 0       | 0       | 0     | 0        |
-| `exceptions.py` | Python   | 19  | 0       | 10    | 1         | 4       | 2       | 0     | 1        |
-| `logger.py`     | Python   | 107 | 2       | 32    | 5         | 1       | 6       | 1     | 7        |
-| `utils.py`      | Python   | 33  | 2       | 12    | 2         | 0       | 2       | 1     | 3        |
-| `version.py`    | Python   | 13  | 0       | 3     | 1         | 0       | 2       | 0     | 0        |
+| File            | Language | Lines                 |
+| --------------- | -------- | --------------------- |
+| `__init__.py`   | Python   | 0 lines(0, 0, 0)      |
+| `exceptions.py` | Python   | 29 lines(19, 0, 10)   |
+| `logger.py`     | Python   | 141 lines(107, 2, 32) |
+| `utils.py`      | Python   | 68 lines(58, 0, 10)   |
+| `version.py`    | Python   | 16 lines(13, 0, 3)    |
 
 ### Symbols
 
@@ -31,8 +31,11 @@
 
 #### `utils.py`
 
-- `function` `format_size` (7-25)
-- `function` `is_hidden` (28-47)
+- `function` `format_size` (5-12)
+- `function` `is_hidden` (15-18)
+- `function` `count_directories` (21-30)
+- `function` `count_empty_directories` (33-48)
+- `function` `deepest_directory_depth` (51-68)
 
 #### `version.py`
 

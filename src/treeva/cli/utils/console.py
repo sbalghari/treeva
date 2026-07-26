@@ -1,3 +1,5 @@
+"""Rich Console theme, Catppuccin color palette, and Nerd Font icons."""
+
 from rich.console import Console
 from rich.style import Style
 from rich.theme import Theme
@@ -68,10 +70,10 @@ CONSOLE = Console(theme=_THEME)
 
 
 def reset_console() -> None:
-    """Reset console"""
+    """Reset the terminal to its initial state."""
     CONSOLE.print("\033c", end="")
 
 
 def clear_console() -> None:
-    """Clear visible console"""
+    """Clear the visible console output."""
     CONSOLE.clear()

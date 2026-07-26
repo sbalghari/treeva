@@ -1,16 +1,17 @@
+"""Top-level container for a full project analysis result."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
 from datetime import datetime
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from logging import Logger
+from typing import Any
 
 
 @dataclass
 class AnalysisResult:
+    """Aggregated metrics and metadata from analyzing a project."""
+
     project_name: str
     project_path: Path
 
@@ -36,6 +37,9 @@ class AnalysisResult:
     total_loops: int
     max_nesting_depth: int
     average_nesting_depth: float
+    total_cyclomatic_complexity: int
+    complexity_per_loc: float
+    maintainability_score: float
 
     # Language statistics
     top_languages: list[tuple[str, int]]
@@ -69,83 +73,3 @@ class AnalysisResult:
     ignored_files: int
     failed_files: int
     scan_duration_seconds: float
-
-    @classmethod
-    def get_object(
-        cls,
-        path: Path,
-        *,
-        logger: Logger,
-        extra_exclude_patterns: list[str] | None = None,
-    ) -> AnalysisResult:
-        from treeva.analysis.manager import AnalysisManager
-        from treeva.analysis.factories import dir_node_from_path
-
-        dir_node = dir_node_from_path(
-            path, logger=logger, extra_exclude_patterns=extra_exclude_patterns
-        )
-        manager = AnalysisManager()
-        return manager.analyze(dir_node, logger=logger)
-
-    @classmethod
-    def get_json(
-        cls,
-        path: Path,
-        *,
-        logger: Logger,
-        extra_exclude_patterns: list[str] | None = None,
-    ) -> dict[str, Any]:
-        result = cls.get_object(
-            path,
-            logger=logger,
-            extra_exclude_patterns=extra_exclude_patterns,
-        )
-        return {
-            "Project Name": result.project_name,
-            "Project Path": str(result.project_path),
-            "Files": result.files_count,
-            "Subdirectories": result.subdirectory_count,
-            "Size (bytes)": result.size_in_bytes,
-            "Total LOC": result.total_loc,
-            "Total Comment Lines": result.total_comment_lines,
-            "Total Blank Lines": result.total_blank_lines,
-            "Comment Density": result.comment_density,
-            "Top Languages": [
-                {"language": lang, "loc": loc}
-                for lang, loc in result.top_languages
-            ],
-            "Scanned Files": result.scanned_files,
-            "Failed Files": result.failed_files,
-            "Created At": result.created_at.isoformat(),
-            "Modified At": result.modified_at.isoformat(),
-        }
-
-    @classmethod
-    def get_plain_text(
-        cls,
-        path: Path,
-        *,
-        logger: Logger,
-        extra_exclude_patterns: list[str] | None = None,
-    ) -> str:
-        result = cls.get_object(
-            path,
-            logger=logger,
-            extra_exclude_patterns=extra_exclude_patterns,
-        )
-        lines = [
-            f"Project: {result.project_name}",
-            f"Path: {result.project_path}",
-            f"Files: {result.files_count}",
-            f"Subdirectories: {result.subdirectory_count}",
-            f"Total LOC: {result.total_loc}",
-            f"Total Comments: {result.total_comment_lines}",
-            f"Comment Density: {result.comment_density:.1f}%",
-            "Top Languages:",
-        ]
-        for lang, loc in result.top_languages[:5]:
-            lines.append(f"  {lang}: {loc} LOC")
-        lines.append(
-            f"Scanned: {result.scanned_files}, Failed: {result.failed_files}"
-        )
-        return "\n".join(lines)

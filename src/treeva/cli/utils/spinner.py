@@ -1,3 +1,5 @@
+"""Live spinner animation for long-running CLI operations via Rich."""
+
 from __future__ import annotations
 from typing import Optional
 
@@ -28,6 +30,7 @@ class SpinnerProgress:
         )
 
     def _styled_text(self, text: str) -> Text:
+        """Wrap text in default style."""
         return Text(text, style="text")
 
     def update_text(self, new_message: str) -> None:
@@ -55,11 +58,15 @@ class SpinnerProgress:
         else:
             CONSOLE.print(warning(message, details=details, use_panel=False))
 
-    def __enter__(self):
+    def __enter__(self) -> SpinnerProgress:
+        """Start the spinner on context entry unless in verbose mode."""
         if not self.verbose:
             self.live.start()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self, exc_type: object, exc_val: object, exc_tb: object
+    ) -> None:
+        """Stop the spinner on context exit unless in verbose mode."""
         if not self.verbose:
             self.live.stop()

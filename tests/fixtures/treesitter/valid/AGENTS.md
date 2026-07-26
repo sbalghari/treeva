@@ -2,16 +2,16 @@
 
 # tests/fixtures/treesitter/valid/ — Agent Reference
 
-| File          | Language   | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------- | ---------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `sample.go`   | Go         | 2   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `sample.java` | Java       | 1   | 0       | 0     | 1         | 1       | 0       | 0     | 0        |
-| `sample.js`   | JavaScript | 1   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `sample.lua`  | Lua        | 1   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `sample.py`   | Python     | 30  | 0       | 12    | 5         | 2       | 0       | 2     | 3        |
-| `sample.rs`   | Rust       | 1   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `sample.sh`   | Bash       | 1   | 1       | 0     | 0         | 0       | 0       | 0     | 0        |
-| `sample.ts`   | TypeScript | 1   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
+| File          | Language   | Lines               |
+| ------------- | ---------- | ------------------- |
+| `sample.go`   | Go         | 2 lines(2, 0, 0)    |
+| `sample.java` | Java       | 1 lines(1, 0, 0)    |
+| `sample.js`   | JavaScript | 1 lines(1, 0, 0)    |
+| `sample.lua`  | Lua        | 1 lines(1, 0, 0)    |
+| `sample.py`   | Python     | 42 lines(30, 0, 12) |
+| `sample.rs`   | Rust       | 1 lines(1, 0, 0)    |
+| `sample.sh`   | Bash       | 2 lines(1, 1, 0)    |
+| `sample.ts`   | TypeScript | 1 lines(1, 0, 0)    |
 
 ### Symbols
 

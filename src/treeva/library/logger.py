@@ -1,3 +1,5 @@
+"""Logging configuration for treeva."""
+
 import logging
 import os
 from logging.handlers import RotatingFileHandler
@@ -27,6 +29,7 @@ def _default_log_dir() -> Path:
     return home / ".local" / "state" / APP_NAME / "logs"
 
 
+# Allow override via TREEVA_LOG_DIR env var
 LOG_DIR = Path(os.getenv(f"{APP_NAME.upper()}_LOG_DIR") or _default_log_dir())
 
 
@@ -40,10 +43,12 @@ class LogLevel(Enum):
     CRITICAL = "CRITICAL"
 
 
-_GLOBAL_SETUP = {}
+# Track configured loggers to prevent duplicate setup
+_GLOBAL_SETUP: dict = {}
 
 
 def _file_fmt() -> logging.Formatter:
+    """Formatter for file-based log output."""
     return logging.Formatter(
         "[%(asctime)s] - [%(name)s] - [%(levelname)s] - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -55,7 +60,7 @@ def _get_handlers(
     file_path: Path,
     max_size_mb: int,
     backup_count: int,
-) -> list:
+) -> list[logging.Handler]:
     """Build a list of handlers based on the options provided"""
     handlers = []
 

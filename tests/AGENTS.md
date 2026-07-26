@@ -2,9 +2,9 @@
 
 # tests/ — Agent Reference
 
-| File          | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `conftest.py` | Python   | 19  | 0       | 8     | 4         | 0       | 5       | 0     | 0        |
+| File          | Language | Lines              |
+| ------------- | -------- | ------------------ |
+| `conftest.py` | Python   | 27 lines(19, 0, 8) |
 
 ### Symbols
 

@@ -1,3 +1,5 @@
+"""CLI entry point and public API surface for treeva commands."""
+
 from treeva.cli.app import cli
 from treeva.cli.utils.spinner import SpinnerProgress as Spinner
 from treeva.cli.utils.console import reset_console, clear_console

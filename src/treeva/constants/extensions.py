@@ -1,3 +1,5 @@
+"""Mapping from recognised file types to their typical file extensions."""
+
 from .enums import FileType
 
 FILE_EXTENSIONS: dict[FileType, list[str]] = {

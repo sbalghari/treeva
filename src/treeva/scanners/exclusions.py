@@ -1,3 +1,5 @@
+"""Exclusion rules for filtering files and directories during project scanning."""
+
 from logging import Logger
 from pathlib import Path
 from abc import ABC, abstractmethod
@@ -15,13 +17,11 @@ class ExcludeRule(ABC):
 
     @abstractmethod
     def should_exclude(self, path: Path) -> bool:
-        pass
+        """Return True if the given path should be excluded."""
 
 
 class DefaultExclude(ExcludeRule):
-    """
-    Built-in exclude rules for common junk, cache, build, and dependency folders..
-    """
+    """Built-in exclude rules for common junk, cache, build, and dependency folders."""
 
     def __init__(self) -> None:
         """Build pathspec specs from default patterns."""
@@ -31,7 +31,7 @@ class DefaultExclude(ExcludeRule):
             backend="best",
         )
 
-    def should_exclude(self, path) -> bool:
+    def should_exclude(self, path: Path) -> bool:
         """Return True if path matches any default exclude rule."""
         return self.spec.match_file(path)
 
@@ -87,11 +87,7 @@ class GitignoreExclude(ExcludeRule):
         )
 
     def should_exclude(self, path: Path) -> bool:
-        """
-        Return True if path matches loaded .gitignore rules.
-
-        Path is converted to project-relative form before matching.
-        """
+        """Return True if path matches loaded .gitignore rules (project-relative matching)."""
         try:
             rel_path = path.relative_to(self.proj_path)
             rel_path_str = rel_path.as_posix()
@@ -103,9 +99,7 @@ class GitignoreExclude(ExcludeRule):
             return False
 
     def _get_gitignore(self) -> tuple[Path | None, list[Path | None]]:
-        """
-        Search project for .gitignore files.
-        """
+        """Search project for .gitignore files, returning (root_gi, list_of_nested_gis)."""
         root_gitignore: Path | None = None
         subdir_gitignores: list[Path | None] = []
 
@@ -130,6 +124,7 @@ class GitignoreExclude(ExcludeRule):
 
     @property
     def gitignore_exists(self) -> bool:
+        """Return True if at least one .gitignore exists under the project path."""
         gitignore = self._get_gitignore()
 
         if not gitignore:
@@ -165,11 +160,7 @@ class UnionExclude(ExcludeRule):
                 raise
 
     def should_exclude(self, path: Path) -> bool:
-        """
-        Return True if path matches default OR gitignore patterns.
-
-        Path is excluded if either rule says it should be excluded.
-        """
+        """Return True if path matches default OR gitignore patterns."""
         # Check default rules first
         if self.default_exclude.should_exclude(path):
             return True

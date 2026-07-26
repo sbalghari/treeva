@@ -1,3 +1,5 @@
+"""Data models for treeva analysis results and source file representation."""
+
 from .source_file import SourceFile
 from .dir_node import DirNode
 from .code_metrics import CodeMetrics

@@ -1,3 +1,5 @@
+"""Generate AGENTS.md reference files for projects."""
+
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from collections import defaultdict
@@ -6,15 +8,8 @@ from pathlib import Path
 if TYPE_CHECKING:
     from logging import Logger
 
+from treeva.analysis import AnalysisManager, source_file_from_path
 from treeva.scanners import dir_walker
-from treeva.analysis.factories import source_file_from_path
-from treeva.analysis.treesitter.analyzer import (
-    TreeSitterAnalyzer,
-    TREE_SITTER_GRAMMAR_MAP,
-)
-from treeva.analysis.treesitter.symbols import extract_symbols
-from treeva.analysis.treesitter.grammars import get_parser
-from treeva.library.exceptions import UnsupportedLanguage
 from treeva.constants.enums import FileCategory
 
 START_MARKER = (
@@ -42,11 +37,13 @@ def generate_agents_md(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, str]:
-    analyzer = TreeSitterAnalyzer()
+    """Generate AGENTS.md content for every directory under project_root."""
     dir_files: dict[str, list[dict]] = defaultdict(list)
     total_loc = 0
     total_files = 0
     lang_loc: dict[str, int] = defaultdict(int)
+
+    manager = AnalysisManager()
 
     for path in dir_walker(
         project_root, extra_exclude_patterns=extra_exclude_patterns
@@ -56,34 +53,8 @@ def generate_agents_md(
         total_files += 1
 
         sf = source_file_from_path(path, logger=logger)
-        grammar_name = TREE_SITTER_GRAMMAR_MAP.get(sf.file_type)
-        try:
-            metrics = analyzer.analyze(sf, logger=logger)
-        except UnsupportedLanguage:
-            metrics = None
-
-        try:
-            total_physical_lines = len(path.read_bytes().split(b"\n"))
-        except Exception:
-            total_physical_lines = 0
-
-        symbols: list[dict] = []
-        if grammar_name is not None:
-            try:
-                parser = get_parser(grammar_name)
-                tree = parser.parse(path.read_bytes())
-                raw_symbols = extract_symbols(tree, grammar_name)
-                symbols = [
-                    {
-                        "name": s.name,
-                        "kind": s.kind,
-                        "start": s.start_line,
-                        "end": s.end_line,
-                    }
-                    for s in raw_symbols
-                ]
-            except Exception:
-                logger.warning("Failed to extract symbols from %s", path)
+        metrics = manager.analyze_source_file(sf, logger=logger)
+        symbols = manager.extract_file_symbols(sf, logger=logger)
 
         rel = path.relative_to(project_root)
         parent = str(rel.parent) if rel.parent != Path(".") else "."
@@ -91,8 +62,11 @@ def generate_agents_md(
         loc = metrics.lines_of_code if metrics else 0
         comment_lines = metrics.lines_of_comment if metrics else 0
         blank_lines = metrics.blank_lines if metrics else 0
-        if not metrics and total_physical_lines > 0:
-            loc = total_physical_lines
+        if not metrics:
+            try:
+                loc = len(path.read_bytes().split(b"\n"))
+            except Exception:
+                loc = 0
 
         entry = {
             "filename": rel.name,
@@ -149,6 +123,7 @@ def generate_agents_md(
 
 
 def split_at_markers(content: str) -> tuple[str, str, str]:
+    """Split content into pre, between, and post sections around generated markers."""
     lines = content.split("\n")
     start_idx = -1
     end_idx = -1
@@ -175,6 +150,7 @@ def write_agents_file(
     *,
     allow_overwrite: bool = False,
 ) -> bool:
+    """Write a generated AGENTS.md section to disk, merging with existing content if present."""
     if output_path.exists():
         existing = output_path.read_text(encoding="utf-8")
         pre, between, post = split_at_markers(existing)
@@ -197,24 +173,28 @@ def write_agents_file(
 
 
 def _wrap_section(lines: list[str]) -> list[str]:
+    """Wrap content lines between start/end generator markers."""
     return [START_MARKER, *lines, END_MARKER]
 
 
 def _is_code_entry(entry: dict) -> bool:
+    """Check if a file entry represents code or a script."""
     return entry["category"] in (FileCategory.CODE, FileCategory.SCRIPT)
 
 
 def _lines_cell(entry: dict) -> str:
+    """Format a file's line counts as a markdown table cell."""
     loc = entry["loc"]
     comments = entry["comment_lines"]
     blank = entry["blank_lines"]
     total = loc + comments + blank
     if _is_code_entry(entry):
-        return f"{total} ({loc}, {comments}, {blank})"
+        return f"{total} lines({loc}, {comments}, {blank})"
     return str(total)
 
 
 def _category_label(entry: dict) -> str:
+    """Return a human-readable label for a file's category."""
     cat = entry["category"]
     mapping = {
         FileCategory.CODE: "Code",
@@ -227,6 +207,7 @@ def _category_label(entry: dict) -> str:
 
 
 def _root_description(filename: str) -> str:
+    """Look up the description for a well-known root file."""
     return _ROOT_DESCRIPTIONS.get(filename, "-")
 
 
@@ -234,6 +215,7 @@ def _build_file_tree(
     project_root: Path,
     dir_files: dict[str, list[dict]],
 ) -> list[str]:
+    """Build an ASCII directory tree from the file map."""
     tree: dict = {}
     for dirpath, files in dir_files.items():
         if dirpath == ".":
@@ -262,6 +244,7 @@ def _render_tree(
     lines: list[str],
     prefix: str,
 ):
+    """Recursively render a nested dict as an ASCII tree."""
     items: list[tuple[str, bool]] = []
     for name, child in node.items():
         items.append((name, isinstance(child, dict)))
@@ -280,23 +263,15 @@ def _render_tree(
 
 
 def _format_dir_agents(dirpath: str, files: list[dict]) -> list[str]:
+    """Format AGENTS.md content for a single subdirectory."""
     header = f"# {dirpath}/ — Agent Reference"
-    table_header = (
-        "| File | Language | LOC | Comment | Blank | "
-        "Functions | Classes | Imports | Loops | Branches |"
-    )
-    sep = (
-        "|------|----------|-----|---------|-------|"
-        "-----------|---------|---------|-------|----------|"
-    )
+    table_header = "| File | Language | Lines |"
+    sep = "|------|----------|-------|"
 
     rows: list[str] = [header, "", table_header, sep]
     for f in sorted(files, key=lambda x: x["filename"]):
         rows.append(
-            f"| `{f['filename']}` | {f['language']} | {f['loc']} "
-            f"| {f['comment_lines']} | {f['blank_lines']} "
-            f"| {f['functions']} | {f['classes']} "
-            f"| {f['imports']} | {f['loops']} | {f['branches']} |"
+            f"| `{f['filename']}` | {f['language']} | {_lines_cell(f)} |"
         )
     rows.append("")
 
@@ -327,6 +302,7 @@ def _format_root_agents(
     all_dirs: list[str],
     dir_files: dict[str, list[dict]],
 ) -> list[str]:
+    """Format AGENTS.md content for the project root."""
     lines: list[str] = []
     lines.append(f"# {project_root.name} — Agent Reference")
     lines.append("")
@@ -378,32 +354,16 @@ def _format_root_agents(
     if root_files:
         lines.append("## Root Files")
         lines.append("")
-        table_header = (
-            "| File | Filetype | Description | Lines "
-            "| Functions | Classes | Imports | Loops | Branches |"
-        )
-        sep = (
-            "|------|----------|-------------|-------"
-            "|-----------|---------|---------|-------|----------|"
-        )
+        table_header = "| File | Filetype | Description | Lines |"
+        sep = "|------|----------|-------------|-------|"
         lines.append(table_header)
         lines.append(sep)
         for f in sorted(root_files, key=lambda x: x["filename"]):
-            lines_cell = _lines_cell(f)
-            cat_label = _category_label(f)
-            desc = _root_description(f["filename"])
-            if _is_code_entry(f):
-                lines.append(
-                    f"| `{f['filename']}` | {cat_label} | {desc} "
-                    f"| {lines_cell} | {f['functions']} "
-                    f"| {f['classes']} | {f['imports']} "
-                    f"| {f['loops']} | {f['branches']} |"
-                )
-            else:
-                lines.append(
-                    f"| `{f['filename']}` | {cat_label} | {desc} "
-                    f"| {lines_cell} | - | - | - | - | - |"
-                )
+            lines.append(
+                f"| `{f['filename']}` | {_category_label(f)} "
+                f"| {_root_description(f['filename'])} "
+                f"| {_lines_cell(f)} |"
+            )
         lines.append("")
 
     # ── Directory Map ──
@@ -435,15 +395,25 @@ def _format_root_agents(
         "a focused responsibility."
     )
     lines.append(
-        "6. After every change, format Python with `ruff format` and "
-        "Markdown with `prettier --write`."
+        "6. When using Version Control, i.e: git, you **MUST** follow the below commit message format for **EVERY** commit."
     )
-    lines.append("")
+    lines.append(" - format: `<type>(<scope>): <summary>`")
+    lines.append(
+        "- **type** (required): feat | fix | docs | style | refactor | perf "
+        "| test | chore"
+    )
+    lines.append(
+        "- **scope** (optional): affected area, e.g. ui, github, notes, deps"
+    )
+    lines.append("- **summary**: <= 50 chars, lowercase, NO trailing period")
+    lines.append("- **body** (optional): explain WHY, wrapped at 72 chars")
+    lines.append("- **footer** (optional): issues / breaking changes")
 
     return _wrap_section(lines)
 
 
 def _read_pyproject_field(project_root: Path, field: str) -> str:
+    """Read a field from the project's pyproject.toml (project table)."""
     pyproject = project_root / "pyproject.toml"
     if pyproject.exists():
         try:

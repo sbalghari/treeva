@@ -2,26 +2,23 @@
 
 # src/treeva/models/ — Agent Reference
 
-| File                 | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| -------------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `__init__.py`        | Python   | 19  | 0       | 1     | 0         | 0       | 8       | 0     | 0        |
-| `analysis_result.py` | Python   | 125 | 9       | 17    | 3         | 1       | 7       | 1     | 1        |
-| `code_metrics.py`    | Python   | 21  | 4       | 9     | 0         | 1       | 2       | 0     | 0        |
-| `dir_node.py`        | Python   | 32  | 0       | 6     | 0         | 1       | 5       | 0     | 1        |
-| `parser_result.py`   | Python   | 12  | 0       | 2     | 0         | 1       | 3       | 0     | 0        |
-| `project_metrics.py` | Python   | 18  | 0       | 7     | 0         | 1       | 1       | 0     | 0        |
-| `source_file.py`     | Python   | 24  | 0       | 6     | 0         | 1       | 5       | 0     | 1        |
-| `symbol.py`          | Python   | 8   | 0       | 2     | 0         | 1       | 1       | 0     | 0        |
-| `tree_stats.py`      | Python   | 13  | 0       | 4     | 0         | 2       | 1       | 0     | 0        |
+| File                 | Language | Lines               |
+| -------------------- | -------- | ------------------- |
+| `__init__.py`        | Python   | 20 lines(19, 0, 1)  |
+| `analysis_result.py` | Python   | 71 lines(50, 9, 12) |
+| `code_metrics.py`    | Python   | 34 lines(21, 4, 9)  |
+| `dir_node.py`        | Python   | 38 lines(32, 0, 6)  |
+| `parser_result.py`   | Python   | 14 lines(12, 0, 2)  |
+| `project_metrics.py` | Python   | 29 lines(21, 0, 8)  |
+| `source_file.py`     | Python   | 30 lines(24, 0, 6)  |
+| `symbol.py`          | Python   | 10 lines(8, 0, 2)   |
+| `tree_stats.py`      | Python   | 17 lines(13, 0, 4)  |
 
 ### Symbols
 
 #### `analysis_result.py`
 
-- `class` `AnalysisResult` (13-151)
-- `function` `get_object` (74-88)
-- `function` `get_json` (91-121)
-- `function` `get_plain_text` (124-151)
+- `class` `AnalysisResult` (10-71)
 
 #### `code_metrics.py`
 
@@ -37,7 +34,7 @@
 
 #### `project_metrics.py`
 
-- `class` `ProjectMetrics` (5-25)
+- `class` `ProjectMetrics` (5-29)
 
 #### `source_file.py`
 

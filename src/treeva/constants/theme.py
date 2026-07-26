@@ -1,3 +1,6 @@
+"""Theme palette (Catppuccin Mocha) and Nerd Font icon glyphs for CLI output."""
+
+# Catppuccin Mocha palette — chosen for high contrast on dark terminals
 COLORS = {
     "rosewater": "#f5e0dc",
     "flamingo": "#f2cdcd",

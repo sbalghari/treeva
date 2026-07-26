@@ -1,3 +1,5 @@
+"""Lazy-loaded tree-sitter parsers and language objects for 10 languages."""
+
 import tree_sitter_python as ts_python
 import tree_sitter_rust as ts_rust
 import tree_sitter_c as ts_c
@@ -28,10 +30,12 @@ _PARSER_CACHE: dict[str, Parser] = {}
 
 
 def get_parser(language_name: str) -> Parser:
+    """Return a cached Parser for the given language, creating it on first use."""
     if language_name not in _PARSER_CACHE:
         _PARSER_CACHE[language_name] = Parser(_LANGUAGES[language_name])
     return _PARSER_CACHE[language_name]
 
 
 def get_language(language_name: str) -> Language:
+    """Return the Language object for the given language name."""
     return _LANGUAGES[language_name]

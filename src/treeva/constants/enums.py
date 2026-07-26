@@ -1,7 +1,11 @@
+"""Enumerations for file classification and type metadata."""
+
 from enum import Enum
 
 
 class FileCategory(Enum):
+    """High-level grouping for a file's role in a project."""
+
     CODE = "code"
     SCRIPT = "script"
     CONFIG = "config"
@@ -89,13 +93,16 @@ class FileType(Enum):
     UNKNOWN = ("Unknown", FileCategory.OTHER)
 
     def __init__(self, label: str, category: FileCategory):
+        """Store the human-readable label and category for this file type."""
         self._label = label
         self._category = category
 
     @property
     def label(self) -> str:
+        """Human-readable display name (e.g. "Python", "JSON")."""
         return self._label
 
     @property
     def category(self) -> FileCategory:
+        """Logical group this file type belongs to."""
         return self._category

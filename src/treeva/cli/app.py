@@ -1,3 +1,5 @@
+"""Typer CLI application defining all treeva subcommands."""
+
 from pathlib import Path
 from logging import getLogger, Logger
 from typing import Annotated, Optional
@@ -16,13 +18,13 @@ from treeva.cli.utils.output import (
     print_dir_node,
     print_src_file,
 )
-from treeva.models import AnalysisResult
 from treeva.export.agents import (
     generate_agents_md,
     write_agents_file,
     split_at_markers,
 )
-from treeva.analysis.factories import (
+from treeva.analysis import (
+    AnalysisManager,
     source_file_from_path,
     dir_node_from_path,
 )
@@ -31,6 +33,8 @@ from treeva.cli.format import (
     source_file_format_json,
     dir_node_format_plain_text,
     dir_node_format_json,
+    analysis_result_format_json,
+    analysis_result_format_plain_text,
 )
 
 
@@ -47,7 +51,8 @@ common_options = {
 }
 
 
-def version_callback(version: bool):
+def version_callback(version: bool) -> None:
+    """Print version and exit if --version flag is set."""
     if version:
         typer.echo(get_version())
         raise typer.Exit(0)
@@ -59,15 +64,12 @@ def write_output_to_file(
     logger: Logger,
     encoding: str = "utf-8",
 ) -> bool:
-    """Write data to a file"""
-
-    # Validate inputs
+    """Write data to a file, with overwrite confirmation if it exists."""
     if not isinstance(data, str):
         logger.error(f"Data must be string, got {type(data)}")
         return False
 
     try:
-        # Check if file exists
         if filepath.exists():
             overwrite = typer.confirm(
                 f"'{filepath.name}' already exists. Overwrite?",
@@ -77,13 +79,9 @@ def write_output_to_file(
                 logger.warning(f"File {filepath} exists, skipping silently")
                 return True
 
-        # Ensure directory exists
         filepath.parent.mkdir(exist_ok=True, parents=True)
-
-        # Write the file
         filepath.write_text(data, encoding=encoding)
 
-        # Verify
         if filepath.exists() and filepath.stat().st_size > 0:
             logger.info(f"Successfully wrote {len(data)} bytes to {filepath}")
             return True
@@ -114,7 +112,8 @@ def _(
             is_eager=True,
         ),
     ] = None,
-): ...
+) -> None:
+    """CLI callback processing global flags before subcommands."""
 
 
 @cli.command(help="Analyze a project and get a detailed analysis")
@@ -129,7 +128,8 @@ def analyze(
             "--exclude", "-e", help="extra gitignore-style exclude patterns"
         ),
     ] = None,  # type: ignore[assignment]
-):
+) -> None:
+    """Analyze a project and return detailed code metrics."""
 
     setup_logging("treeva.cmd.analyze", verbose=verbose)
     logger = getLogger("treeva.cmd.analyze")
@@ -137,34 +137,21 @@ def analyze(
     path = path.resolve()
 
     try:
+        result = AnalysisManager().analyze_project(
+            path, logger=logger, extra_exclude_patterns=exclude
+        )
         if not file:
             if format == "json":
                 CONSOLE.print(
                     json.dumps(
-                        AnalysisResult.get_json(
-                            path,
-                            logger=logger,
-                            extra_exclude_patterns=exclude,
-                        ),
+                        analysis_result_format_json(result),
                         indent=2,
                     )
                 )
             elif format == "rich-table":
-                print_analysis_result(
-                    AnalysisResult.get_object(
-                        path,
-                        logger=logger,
-                        extra_exclude_patterns=exclude,
-                    )
-                )
+                print_analysis_result(result)
             else:
-                CONSOLE.print(
-                    AnalysisResult.get_plain_text(
-                        path,
-                        logger=logger,
-                        extra_exclude_patterns=exclude,
-                    )
-                )
+                CONSOLE.print(analysis_result_format_plain_text(result))
             return
 
         if file and format == "rich-table":
@@ -176,24 +163,14 @@ def analyze(
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.json"
             )
             output_content = json.dumps(
-                AnalysisResult.get_json(
-                    path,
-                    logger=logger,
-                    extra_exclude_patterns=exclude,
-                ),
+                analysis_result_format_json(result),
                 indent=2,
             )
         else:
             output_path = (
                 Path.home() / "treeva" / f"ProjectAnalysis_{path.name}.txt"
             )
-            output_content = str(
-                AnalysisResult.get_plain_text(
-                    path,
-                    logger=logger,
-                    extra_exclude_patterns=exclude,
-                )
-            )
+            output_content = analysis_result_format_plain_text(result)
 
         if write_output_to_file(output_path, output_content, logger):
             print_success(f"Analysis ready at {output_path}")
@@ -222,7 +199,8 @@ def dir(
             "--exclude", "-e", help="extra gitignore-style exclude patterns"
         ),
     ] = None,  # type: ignore[assignment]
-):
+) -> None:
+    """Return metadata for a directory."""
 
     setup_logging("treeva.cmd.dir", verbose=verbose)
     logger = getLogger("treeva.cmd.dir")
@@ -305,7 +283,8 @@ def file(
     format: OutputFormat = common_options["format"],
     file: bool = common_options["file"],
     verbose: bool = common_options["verbose"],
-):
+) -> None:
+    """Return metadata for a file."""
 
     setup_logging("treeva.cmd.file", verbose=verbose)
     logger = getLogger("treeva.cmd.file")
@@ -370,7 +349,8 @@ def agents(
             "--exclude", "-e", help="extra gitignore-style exclude patterns"
         ),
     ] = None,  # type: ignore[assignment]
-):
+) -> None:
+    """Generate AGENTS.md documentation files for a project."""
     setup_logging("treeva.cmd.agents", verbose=verbose)
     logger = getLogger("treeva.cmd.agents")
 
@@ -430,4 +410,51 @@ def agents(
             f" {LOG_DIR}/treeva.cmd.agents.log"
         )
         logger.exception("Unexpected Error: ", exc_info=e)
+        raise typer.Exit(1)
+
+
+@cli.command(help="Build a dependency graph for a project")
+def deps(
+    path: Annotated[Path, typer.Argument(help="project path")],
+    verbose: bool = common_options["verbose"],
+    exclude: Annotated[
+        Optional[list[str]],
+        typer.Option(
+            "--exclude", "-e", help="extra gitignore-style exclude patterns"
+        ),
+    ] = None,  # type: ignore[assignment]
+) -> None:
+    """Build and display a dependency graph for a project."""
+    setup_logging("treeva.cmd.deps", verbose=verbose)
+    logger = getLogger("treeva.cmd.deps")
+    path = path.resolve()
+    try:
+        graph = AnalysisManager().build_dependency_graph(
+            path, logger=logger, extra_exclude_patterns=exclude
+        )
+        CONSOLE.print(json.dumps(graph, indent=2))
+    except Exception as e:
+        print_error(str(e))
+        raise typer.Exit(1)
+
+
+@cli.command(help="Analyze git history for churn and hotspots")
+def git(
+    path: Annotated[Path, typer.Argument(help="repository path")],
+    verbose: bool = common_options["verbose"],
+) -> None:
+    """Analyze git history for churn and hotspots."""
+    setup_logging("treeva.cmd.git", verbose=verbose)
+    logger = getLogger("treeva.cmd.git")
+    path = path.resolve()
+    try:
+        result = AnalysisManager().analyze_git(path, logger=logger)
+        if result is None:
+            print_error("No git history found")
+            raise typer.Exit(1)
+        from dataclasses import asdict
+
+        CONSOLE.print(json.dumps(asdict(result), indent=2, default=str))
+    except Exception as e:
+        print_error(str(e))
         raise typer.Exit(1)

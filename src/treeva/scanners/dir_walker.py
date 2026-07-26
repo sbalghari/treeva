@@ -1,3 +1,5 @@
+"""Walk a directory tree, applying exclusion rules and yielding matching paths."""
+
 from typing import Iterator, TYPE_CHECKING, Optional
 from pathlib import Path
 
@@ -14,6 +16,7 @@ from .exclusions import UnionExclude
 def _build_extra_spec(
     patterns: list[str],
 ) -> PathSpec:
+    """Build a PathSpec from extra exclude patterns using gitignore syntax."""
     return PathSpec.from_lines(
         GitIgnoreSpecPattern,
         patterns,
@@ -24,7 +27,7 @@ def _build_extra_spec(
 def _rel_match(
     spec: PathSpec, root: Path, dir_path: Path, entry: Path
 ) -> bool:
-    """Match entry (relative to dir_path) against spec. Returns False if relative path fails."""
+    """Check if entry (relative to dir_path) matches the spec."""
     try:
         rel = (root / entry).relative_to(dir_path).as_posix()
         return spec.match_file(rel)
@@ -39,9 +42,7 @@ def dir_walker(
     include_dirs: bool = True,
     extra_exclude_patterns: Optional[list[str]] = None,
 ) -> Iterator[Path]:
-    """
-    Walk through a directory and yield all file paths recursively.
-    """
+    """Walk a directory tree, yielding files (and optionally dirs) that pass exclusion rules."""
     if not dir_path.exists():
         raise DirectoryNotFound(f"Directory does not exist: {dir_path}")
 
@@ -65,6 +66,7 @@ def dir_walker(
 
     try:
         for root, dirs, files in dir_path.walk(on_error=logger.error):
+            # Modify dirs in-place so the walker skips excluded subtrees
             dirs[:] = [
                 d
                 for d in dirs
@@ -88,4 +90,5 @@ def dir_walker(
                     yield file_path
 
     except Exception as e:
+        # Safety net: log any unexpected errors during traversal
         logger.exception("Error while walking, ", exc_info=e)

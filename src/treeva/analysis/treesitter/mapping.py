@@ -1,3 +1,9 @@
+"""Semantic node-kind mapping: tree-sitter node types → Treeva metric kinds.
+
+Each language maps logical categories (``function``, ``class``, ``branch``,
+``loop``, ``import``, …) to sets of concrete AST node type strings.
+"""
+
 from __future__ import annotations
 
 NODE_KIND_MAP: dict[str, dict[str, frozenset[str]]] = {

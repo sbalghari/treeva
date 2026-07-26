@@ -2,14 +2,14 @@
 
 # tests/analysis/treesitter/ — Agent Reference
 
-| File                   | Language | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ---------------------- | -------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `test_analyzer.py`     | Python   | 18  | 6       | 11    | 3         | 0       | 2       | 0     | 0        |
-| `test_dependencies.py` | Python   | 24  | 0       | 8     | 4         | 0       | 1       | 0     | 0        |
-| `test_grammars.py`     | Python   | 14  | 0       | 6     | 3         | 0       | 2       | 0     | 0        |
-| `test_mapping.py`      | Python   | 63  | 0       | 17    | 6         | 0       | 3       | 3     | 0        |
-| `test_symbols.py`      | Python   | 33  | 0       | 11    | 4         | 0       | 2       | 0     | 0        |
-| `test_walker.py`       | Python   | 52  | 2       | 13    | 5         | 0       | 2       | 0     | 0        |
+| File                   | Language | Lines               |
+| ---------------------- | -------- | ------------------- |
+| `test_analyzer.py`     | Python   | 35 lines(18, 6, 11) |
+| `test_dependencies.py` | Python   | 32 lines(24, 0, 8)  |
+| `test_grammars.py`     | Python   | 20 lines(14, 0, 6)  |
+| `test_mapping.py`      | Python   | 80 lines(63, 0, 17) |
+| `test_symbols.py`      | Python   | 44 lines(33, 0, 11) |
+| `test_walker.py`       | Python   | 67 lines(52, 2, 13) |
 
 ### Symbols
 

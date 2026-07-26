@@ -2,11 +2,11 @@
 
 # tests/fixtures/treesitter/broken/ — Agent Reference
 
-| File          | Language   | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------- | ---------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `broken.go`   | Go         | 2   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `broken.java` | Java       | 1   | 0       | 0     | 1         | 1       | 0       | 0     | 0        |
-| `broken.js`   | JavaScript | 1   | 0       | 0     | 0         | 0       | 0       | 0     | 0        |
+| File          | Language   | Lines            |
+| ------------- | ---------- | ---------------- |
+| `broken.go`   | Go         | 2 lines(2, 0, 0) |
+| `broken.java` | Java       | 1 lines(1, 0, 0) |
+| `broken.js`   | JavaScript | 1 lines(1, 0, 0) |
 
 ### Symbols
 

@@ -1,3 +1,5 @@
+"""Entry point for the treeva CLI application."""
+
 from treeva import cli
 
 __all__ = ["cli"]

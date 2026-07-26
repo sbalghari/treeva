@@ -2,12 +2,12 @@
 
 # tests/fixtures/treesitter/edge_cases/ — Agent Reference
 
-| File               | Language   | LOC | Comment | Blank | Functions | Classes | Imports | Loops | Branches |
-| ------------------ | ---------- | --- | ------- | ----- | --------- | ------- | ------- | ----- | -------- |
-| `crlf.go`          | Go         | 2   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
-| `deeply_nested.js` | JavaScript | 1   | 0       | 0     | 0         | 0       | 0       | 0     | 0        |
-| `empty.go`         | Go         | 0   | 0       | 0     | 0         | 0       | 0       | 0     | 0        |
-| `unicode.go`       | Go         | 2   | 0       | 0     | 1         | 0       | 0       | 0     | 0        |
+| File               | Language   | Lines            |
+| ------------------ | ---------- | ---------------- |
+| `crlf.go`          | Go         | 2 lines(2, 0, 0) |
+| `deeply_nested.js` | JavaScript | 1 lines(1, 0, 0) |
+| `empty.go`         | Go         | 0 lines(0, 0, 0) |
+| `unicode.go`       | Go         | 2 lines(2, 0, 0) |
 
 ### Symbols
 
