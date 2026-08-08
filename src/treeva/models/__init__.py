@@ -8,6 +8,7 @@ from .dir_info import DirInfo
 
 from .analysis.code_metrics import CodeMetrics
 from .analysis.code_quality import CodeQuality
+from .analysis.file_analysis import FileAnalysis
 from .analysis_result import AnalysisResult
 from .analysis.language import LanguageStatistics
 from .analysis.docs import DocumentationInfo
@@ -29,6 +30,7 @@ from .tree_sitter.symbol import Symbol
 __all__ = [
     "CodeMetrics",
     "CodeQuality",
+    "FileAnalysis",
     "FileInfo",
     "DirInfo",
     "GitChurn",

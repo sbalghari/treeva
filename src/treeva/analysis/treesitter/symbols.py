@@ -1,14 +1,7 @@
-"""Named-symbol extraction (function, class, method) from tree-sitter trees.
-
-Uses the ``NODE_KIND_MAP`` to determine which AST node types correspond to
-extractable symbols, then walks the tree to collect name, kind, and
-source location for each symbol.
-"""
-
 from __future__ import annotations
 
 from tree_sitter import Tree
-from treeva.models.symbol import Symbol
+from treeva.models import Symbol
 from .mapping import NODE_KIND_MAP
 
 
@@ -78,3 +71,38 @@ def extract_symbols(tree: Tree, language_name: str) -> list[Symbol]:
                 retracing = False
 
     return symbols
+
+
+def find_largest_symbols(
+    tree: Tree, language_name: str
+) -> tuple[Symbol | None, Symbol | None]:
+    """Find the largest function/method and class symbols in a tree.
+
+    Args:
+        tree: A parsed tree-sitter Tree.
+        language_name: The tree-sitter grammar name used to look up the
+            relevant node-kind mapping.
+
+    Returns:
+        A tuple of (largest_function, largest_class), where each is the
+        Symbol spanning the most lines, or None if no symbol of that
+        kind exists.
+    """
+    symbols = extract_symbols(tree, language_name)
+    largest_func: Symbol | None = None
+    largest_class: Symbol | None = None
+    for sym in symbols:
+        span = sym.end_line - sym.start_line
+        if sym.kind in ("function", "method"):
+            if (
+                largest_func is None
+                or span > largest_func.end_line - largest_func.start_line
+            ):
+                largest_func = sym
+        elif sym.kind == "class":
+            if (
+                largest_class is None
+                or span > largest_class.end_line - largest_class.start_line
+            ):
+                largest_class = sym
+    return largest_func, largest_class

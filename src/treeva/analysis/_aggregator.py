@@ -3,10 +3,7 @@ from treeva.constants.enums import FileType
 
 from collections import defaultdict
 
-from treeva.models import CodeMetrics, LanguageStatistics
-from ._calculators import (
-    language_distribution,
-)
+from treeva.models import CodeMetrics, DocumentationInfo, LanguageStatistics
 
 
 class MetricsAggregator:
@@ -36,6 +33,13 @@ class MetricsAggregator:
         self._nesting_depth_sum = 0
         self._analyzed_file_count = 0
 
+        self._documented_functions = 0
+        self._documented_classes = 0
+        self._documented_methods = 0
+        self._undocumented_functions = 0
+        self._undocumented_classes = 0
+        self._undocumented_methods = 0
+
         self._language_locs: defaultdict[str, int] = defaultdict(int)
 
         self._import_count = 0
@@ -44,13 +48,14 @@ class MetricsAggregator:
         self,
         code_metrics: CodeMetrics,
         language: FileType,
+        documentation: DocumentationInfo,
     ) -> None:
         """Merge a file's metrics into the aggregate totals.
 
         Args:
             code_metrics: A CodeMetrics instance for a single file.
-            complexity_metrics: A ComplexityMetrics instance of a single file
-            language: A FileType
+            language: A FileType.
+            documentation: A DocumentationInfo instance for a single file.
         """
         self._total_loc += code_metrics.lines_of_code
         self._total_comment_lines += code_metrics.lines_of_comment
@@ -74,17 +79,25 @@ class MetricsAggregator:
         )
         self._nesting_depth_sum += code_metrics.max_nesting_depth
 
+        self._documented_functions += documentation.documented_functions
+        self._documented_classes += documentation.documented_classes
+        self._documented_methods += documentation.documented_methods
+        self._undocumented_functions += documentation.undocumented_functions
+        self._undocumented_classes += documentation.undocumented_classes
+        self._undocumented_methods += documentation.undocumented_methods
+
         self._analyzed_file_count += 1
 
         self._language_locs[language.label] += code_metrics.lines_of_code
 
     def build_result(
         self,
-    ) -> tuple[CodeMetrics, LanguageStatistics]:
-        """Compute derived metrics and return a ProjectMetrics instance.
+    ) -> tuple[CodeMetrics, LanguageStatistics, DocumentationInfo]:
+        """Compute derived metrics and return project-level results.
 
         Returns:
-            A ProjectMetrics instance with aggregated totals and computed
+            A tuple of (CodeMetrics, LanguageStatistics,
+            DocumentationInfo) with aggregated totals and computed
             values such as comment_density and average_nesting_depth.
         """
 
@@ -119,9 +132,40 @@ class MetricsAggregator:
                 reverse=True,
             ),
             loc_per_language=dict(self._language_locs),
-            distribution=language_distribution(
+            distribution=MetricsAggregator._language_distribution(
                 self._total_loc, dict(self._language_locs)
             ),
         )
 
-        return code_metrics, lang_stats
+        documentation = DocumentationInfo(
+            documented_functions=self._documented_functions,
+            documented_classes=self._documented_classes,
+            documented_methods=self._documented_methods,
+            undocumented_functions=self._undocumented_functions,
+            undocumented_classes=self._undocumented_classes,
+            undocumented_methods=self._undocumented_methods,
+        )
+
+        return code_metrics, lang_stats, documentation
+
+    @staticmethod
+    def _language_distribution(
+        total_loc: int, language_locs: dict[str, int]
+    ) -> dict[str, float]:
+        """Compute LOC percentage per language, sorted highest first.
+
+        Args:
+            total_loc: Total lines of code across all languages.
+            language_locs: Dict mapping language labels to their LOC counts.
+
+        Returns:
+            Dict of {language: percentage} sorted by percentage descending.
+        """
+        if total_loc == 0:
+            return {}
+        return {
+            lang: round(loc / total_loc * 100, 2)
+            for lang, loc in sorted(
+                language_locs.items(), key=lambda x: x[1], reverse=True
+            )
+        }

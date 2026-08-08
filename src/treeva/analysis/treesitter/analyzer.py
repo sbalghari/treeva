@@ -7,11 +7,20 @@ if TYPE_CHECKING:
     from tree_sitter import Tree
 
 from treeva.constants.enums import FileType
-from treeva.models import CodeMetrics, ParserResult
+from treeva.models import (
+    CodeMetrics,
+    DocumentationInfo,
+    FileAnalysis,
+    LargestClass,
+    LargestFunction,
+    ParserResult,
+)
 from treeva.library.exceptions import UnsupportedLanguage
 from .grammars import get_parser
 from .walker import walk_tree
 from .mapping import NODE_KIND_MAP
+from .docs import count_documented_symbols
+from .symbols import find_largest_symbols
 
 
 # Maps each FileType to its tree-sitter grammar name for parser lookup.
@@ -44,11 +53,11 @@ COMMENT_NODE_TYPES: dict[str, frozenset[str]] = {
 
 
 class TreeSitterAnalyzer:
-    """Parse and analyze source files via tree-sitter, producing CodeMetrics.
+    """Parse and analyze source files via tree-sitter, producing FileAnalysis.
 
     The analyzer handles grammar lookup, tree parsing, line classification
-    (code/comment/blank), and semantic node counting for all supported
-    languages.
+    (code/comment/blank), semantic node counting, documentation detection,
+    and largest-symbol extraction for all supported languages.
     """
 
     def _parse(self, file: FileInfo) -> ParserResult | None:
@@ -70,15 +79,20 @@ class TreeSitterAnalyzer:
             stats=stats,
         )
 
-    def analyze(self, code_file: FileInfo, *, logger: Logger) -> CodeMetrics:
-        """Parse and analyze a source file, returning computed CodeMetrics.
+    def analyze(self, code_file: FileInfo, *, logger: Logger) -> FileAnalysis:
+        """Parse and analyze a source file, returning its full analysis.
+
+        Produces per-file CodeMetrics, DocumentationInfo, and
+        LargestEntities (largest function/class plus the file itself)
+        from a single tree-sitter parse.
 
         Args:
             code_file: The FileInfo of FileInfo.file_type.catogery 'code' to analyze.
             logger: Logger instance.
 
         Returns:
-            Populate CodeMetrics instance
+            A FileAnalysis with the file's metrics, documentation, and
+            largest entities.
 
         Raises:
             UnsupportedLanguage: If no tree-sitter grammar is mapped for
@@ -113,7 +127,18 @@ class TreeSitterAnalyzer:
                 counts.get(t, 0) for t in kind_map.get(kind, frozenset())
             )
 
-        return CodeMetrics(
+        nesting_node_types = frozenset().union(
+            *(
+                kind_map[kind]
+                for kind in ("branch", "loop")
+                if kind in kind_map
+            )
+        )
+        max_nesting_depth, average_nesting_depth = self._nesting_depth(
+            parsed.tree, nesting_node_types
+        )
+
+        code_metrics = CodeMetrics(
             lines_of_code=lines_of_code,
             lines_of_comment=lines_of_comment,
             blank_lines=blank_lines,
@@ -127,7 +152,132 @@ class TreeSitterAnalyzer:
             loops_count=_count("loop"),
             returns_count=_count("return"),
             try_catches_count=_count("exception"),
+            max_nesting_depth=max_nesting_depth,
+            average_nesting_depth=average_nesting_depth,
         )
+
+        largest_function, largest_class = self._largest_symbols(
+            code_file, parsed
+        )
+
+        return FileAnalysis(
+            code_metrics=code_metrics,
+            documentation=self._documentation(parsed, code_metrics),
+            largest_function=largest_function,
+            largest_class=largest_class,
+        )
+
+    @staticmethod
+    def _documentation(
+        parsed: ParserResult, code_metrics: CodeMetrics
+    ) -> DocumentationInfo:
+        """Build DocumentationInfo for a parsed file.
+
+        Docstrings are attributed per symbol kind (functions, classes,
+        methods); the undocumented counts are the remainder of the
+        symbol counts in CodeMetrics.
+        """
+        (
+            documented_functions,
+            documented_classes,
+            documented_methods,
+        ) = count_documented_symbols(parsed.tree, parsed.language)
+
+        return DocumentationInfo(
+            documented_functions=documented_functions,
+            documented_classes=documented_classes,
+            documented_methods=documented_methods,
+            undocumented_functions=max(
+                code_metrics.function_count - documented_functions, 0
+            ),
+            undocumented_classes=max(
+                code_metrics.class_count - documented_classes, 0
+            ),
+            undocumented_methods=max(
+                code_metrics.method_count - documented_methods, 0
+            ),
+        )
+
+    @staticmethod
+    def _largest_symbols(
+        code_file: FileInfo, parsed: ParserResult
+    ) -> tuple[LargestFunction | None, LargestClass | None]:
+        """Build the largest function/method and class entities for the file."""
+        largest_func, largest_class = find_largest_symbols(
+            parsed.tree, parsed.language
+        )
+
+        largest_function = (
+            LargestFunction(
+                name=largest_func.name,
+                file=code_file.full_path,
+                loc=largest_func.end_line - largest_func.start_line,
+            )
+            if largest_func
+            else None
+        )
+        largest_class_entity = (
+            LargestClass(
+                name=largest_class.name,
+                file=code_file.full_path,
+                loc=largest_class.end_line - largest_class.start_line,
+            )
+            if largest_class
+            else None
+        )
+        return largest_function, largest_class_entity
+
+    @staticmethod
+    def _nesting_depth(
+        tree: Tree, nesting_node_types: frozenset[str]
+    ) -> tuple[int, float]:
+        """Measure how deeply control-flow constructs are nested.
+
+        Walks the AST counting branch/loop nodes as nesting levels.
+        Each control-flow node is measured at its own level (top-level
+        constructs start at depth 1, a loop inside a branch is 2, and so
+        on). Sibling constructs do not increase the depth.
+
+        Returns:
+            A tuple of (max_nesting_depth, average_nesting_depth) across
+            all nesting nodes in the file. Average is rounded to 2
+            decimal places, and is 0.0 for files with no nesting nodes.
+        """
+        max_depth = 0
+        depth = 0
+        depth_sum = 0
+        nesting_count = 0
+        cursor = tree.walk()
+        reached_root = False
+
+        while not reached_root:
+            node = cursor.node
+            if node and node.type in nesting_node_types:
+                nesting_count += 1
+                depth_sum += depth
+                max_depth = max(max_depth, depth)
+
+            if cursor.goto_first_child():
+                if cursor.node.type in nesting_node_types:
+                    depth += 1
+                continue
+            if cursor.goto_next_sibling():
+                continue
+
+            retracing = True
+            while retracing:
+                node = cursor.node
+                if not cursor.goto_parent():
+                    reached_root = True
+                    retracing = False
+                else:
+                    if node and node.type in nesting_node_types:
+                        depth -= 1
+                    if cursor.goto_next_sibling():
+                        retracing = False
+
+        average_depth = depth_sum / nesting_count if nesting_count else 0.0
+        return max_depth, round(average_depth, 2)
 
     @staticmethod
     def _classify_lines(

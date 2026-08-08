@@ -22,6 +22,9 @@ class CodeMetrics:
 
     import_count: int
 
+    max_nesting_depth: int
+    average_nesting_depth: float
+
     @property
     def comment_density(cls) -> float:
         return (

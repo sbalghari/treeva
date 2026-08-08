@@ -5,7 +5,7 @@ from datetime import datetime
 import stat
 
 from treeva.models.file_info import FileInfo
-from ._utils import detect_file_type, get_group, get_owner, is_hidden
+from .._utils import detect_file_type, get_group, get_owner, is_hidden
 
 
 def file_info_from_path(filepath: Path) -> FileInfo:

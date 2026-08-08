@@ -28,5 +28,5 @@ class AnalysisResult:
     languages_stats: LanguageStatistics
     documentation_info: DocumentationInfo
     entities: LargestEntities
-    git_info: GitInfo
+    git_info: GitInfo | None
     scan_metadata: ScanMetadata

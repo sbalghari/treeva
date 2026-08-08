@@ -5,7 +5,7 @@ collect structural statistics about a parsed source file.
 """
 
 from tree_sitter import Tree
-from treeva.models.tree_stats import ErrorSpan, TreeStats
+from treeva.models import ErrorSpan, TreeStats
 
 
 def walk_tree(tree: Tree) -> TreeStats:

@@ -12,11 +12,11 @@ import json
 
 import typer
 
-from treeva.cli.utils.console import CONSOLE
+from treeva.cli..console import CONSOLE
 from treeva.library.version import get_version
 from treeva.library.logger import setup_logging, LOG_DIR
 from treeva.constants import OutputFormat
-from treeva.cli.utils.output import (
+from treeva.cli..output import (
     print_error,
     print_success,
     print_analysis_result,

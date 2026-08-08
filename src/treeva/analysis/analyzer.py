@@ -1,5 +1,6 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
+from treeva.analysis.dir_structure import dir_structure
+from typing import TYPE_CHECKING
 from pathlib import Path
 import time
 
@@ -9,30 +10,23 @@ if TYPE_CHECKING:
 from treeva.constants.enums import FileType
 from treeva.models import (
     AnalysisResult,
-    DirInfo,
-    CodeMetrics,
-    FileInfo,
-    DirDates, ScanMetadata, GitInfo, LargestEntities, DocumentationInfo, DirStructure,
+    LargestClass,
+    LargestEntities,
+    LargestFile,
+    LargestFunction,
+    ScanMetadata,
 )
 from treeva.library.exceptions import UnsupportedLanguage
 
 from .treesitter.analyzer import TreeSitterAnalyzer, TREE_SITTER_GRAMMAR_MAP
-from .dir import dir_info_from_path
-from .file import file_info_from_path
+from .code_quality import code_quality
+
+from .base import dir_info_from_path
+
 from ._aggregator import MetricsAggregator
-from ._calculators import (
-    count_python_docstrings,
-    compute_directory_metrics,
-    find_largest_symbols,
-    complexity_per_100_loc,
-    cyclomatic_complexity,
-    maintainability_score,
-    documentation_coverage,
-)
 
 
 class ProjectAnalyzer:
-
     def __init__(self):
 
         self._treesitter = TreeSitterAnalyzer()
@@ -65,103 +59,84 @@ class ProjectAnalyzer:
 
         files = list(dir_info.source_files)
         failed = 0
+        ignored = 0
 
-        largest_func: dict[str, Any] | None = None
-        largest_class: dict[str, Any] | None = None
-        documented_fns = 0
+        largest_function: LargestFunction | None = None
+        largest_class: LargestClass | None = None
+        largest_file: LargestFile | None = None
 
         for sf in files:
-            grammar_name = TREE_SITTER_GRAMMAR_MAP.get(sf.file_type)
-            if grammar_name is None:
-                continue
-
             try:
-                _code_metrics = self._treesitter.analyze(sf, logger=logger)
-                self._aggregator.add(_code_metrics, sf.file_type)
+                result = self._treesitter.analyze(sf, logger=logger)
 
-                parsed = self._treesitter.parse(sf)
-                if parsed is None:
-                    continue
-
-                func_sym, class_sym = find_largest_symbols(
-                    parsed.tree, grammar_name
+                self._aggregator.add(
+                    result.code_metrics, sf.file_type, result.documentation
                 )
-                if func_sym and (
-                    largest_func is None
-                    or func_sym["lines"] > largest_func["lines"]
+
+                _file = LargestFile(
+                    path=sf.full_path,
+                    size=sf.size_in_bytes,
+                    loc=result.code_metrics.lines_of_code,
+                )
+                if largest_file is None or _file.size > largest_file.size:
+                    largest_file = _file
+
+                files_largest_func = result.largest_function
+                if files_largest_func and (
+                    largest_function is None
+                    or files_largest_func.loc > largest_function.loc
                 ):
-                    largest_func = func_sym
-                    largest_func["file"] = str(sf.full_path)
-                if class_sym and (
+                    largest_function = files_largest_func
+
+                files_largest_class = result.largest_class
+                if files_largest_class and (
                     largest_class is None
-                    or class_sym["lines"] > largest_class["lines"]
+                    or files_largest_class.loc > largest_class.loc
                 ):
-                    largest_class = class_sym
-                    largest_class["file"] = str(sf.full_path)
-
-                doc_count = count_python_docstrings(
-                    parsed.source, grammar_name
-                )
-                fn_count = _code_metrics.function_count + _code_metrics.method_count
-                documented_functions += min(doc_count, fn_count)
+                    largest_class = files_largest_class
 
             except UnsupportedLanguage:
+                ignored += 1
                 continue
             except Exception:
                 logger.exception("Failed to analyze %s", sf.full_path)
                 failed += 1
-        
-        # Fully aggregated project-level metrics
-        code_metrics, language_stats = self._aggregator.build_result()
 
         elapsed_time = time.time() - start_time
-        
-        deepest, avg_files, empty = compute_directory_metrics(dir_node)
 
-        total_fns = code_metrics.function_count + code_metrics.method_count
-        doc_count, undocumented, doc_cov = documentation_coverage(
-            total_fns, documented_functions
+        # Fully aggregated project-level code_metrics, language_stats and documentation_info
+        _code_metrics, _lang_stats, _docs_info = (
+            self._aggregator.build_result()
         )
-        cpl = complexity_per_100_loc(code_metrics.cyclomatic_complexity, code_metrics.lines_of_code)
-        maint = maintainability_score(
-            code_metrics.comment_density,
-            cpl,
-            code_metrics.average_nesting_depth,
-            doc_cov,
+
+        # Largest entities in the project
+        _entities = LargestEntities(
+            file=largest_file or LargestFile(path=path, size=0, loc=0),
+            cls=largest_class,
+            function=largest_function,
+        )
+
+        # Scan Metadata
+        _metadata = ScanMetadata(
+            scanned_files=len(files),
+            duration_seconds=round(elapsed_time, 2),
+            failed_files=failed,
+            ignored_files=ignored,
         )
 
         return AnalysisResult(
             dir_info=dir_info,
             files=files,
-            dir_structure=DirStructure(
-                deepest_directory_depth=
-                average_files_per_directory=
-                empty_directory_count=
+            dir_structure=dir_structure(dir_info),
+            code_metrics=_code_metrics,
+            code_quality=code_quality(
+                _code_metrics, _docs_info._docs_coverage
             ),
-            languages_stats=language_stats,
-            documentation_info=DocumentationInfo(
-                docstring_count=
-                docs_coverage=
-                documented_functions=
-                undocumented_functions=
-            ),
-            entities=LargestEntities(
-                file=
-                cls=
-                function=
-            ),
-            git_info=GitInfo(
-                churn=
-                hotspots=
-                total_authors=
-                total_commits=
-            ),
-            scan_metadata=ScanMetadata(
-                scanned_files=
-                duration_seconds=
-                failed_files=
-                ignored_files=
-            )
+            languages_stats=_lang_stats,
+            documentation_info=_docs_info,
+            entities=_entities,
+            git_info=None,
+            scan_metadata=_metadata,
         )
 
     @staticmethod

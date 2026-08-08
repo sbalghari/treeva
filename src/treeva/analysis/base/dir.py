@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from treeva.models.file_info import FileInfo
 from treeva.models.dir_info import DirInfo
 from treeva.scanners import dir_walker
-from ._utils import get_group, get_owner, is_hidden
+from .._utils import get_group, get_owner, is_hidden
 from .file import file_info_from_path
 
 

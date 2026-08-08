@@ -50,22 +50,23 @@ def test_each_lang_has_all_kinds():
 
 def test_python_structural_metrics(source_file_factory):
     sf = source_file_factory("valid", "sample.py")
-    metrics = TreeSitterAnalyzer().analyze(sf, logger=LOGGER)
+    result = TreeSitterAnalyzer().analyze(sf, logger=LOGGER)
+    metrics = result.code_metrics
 
     assert metrics.function_count == 5
     assert metrics.class_count == 2
     assert metrics.method_count == 0
     assert metrics.variable_count == 3
     assert metrics.constant_count == 0
-    assert metrics.branch_count == 3
-    assert metrics.loop_count == 2
-    assert metrics.return_count == 4
-    assert metrics.exception_count == 3
+    assert metrics.branches_count == 3
+    assert metrics.loops_count == 2
+    assert metrics.returns_count == 4
+    assert metrics.try_catches_count == 3
 
 
 def test_python_line_metrics(source_file_factory):
     sf = source_file_factory("valid", "sample.py")
-    metrics = TreeSitterAnalyzer().analyze(sf, logger=LOGGER)
+    metrics = TreeSitterAnalyzer().analyze(sf, logger=LOGGER).code_metrics
 
     assert metrics.lines_of_code == 30
     assert metrics.lines_of_comment == 0
@@ -74,7 +75,7 @@ def test_python_line_metrics(source_file_factory):
 
 def test_go_structural_metrics(source_file_factory):
     sf = source_file_factory("valid", "sample.go")
-    metrics = TreeSitterAnalyzer().analyze(sf, logger=LOGGER)
+    metrics = TreeSitterAnalyzer().analyze(sf, logger=LOGGER).code_metrics
 
     assert metrics.function_count == 1
-    assert metrics.return_count == 0
+    assert metrics.returns_count == 0

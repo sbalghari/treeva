@@ -10,7 +10,7 @@ from tree_sitter import Query, QueryCursor
 from treeva.scanners import dir_walker
 from .treesitter.grammars import get_language, get_parser
 from .treesitter.analyzer import TREE_SITTER_GRAMMAR_MAP
-from .file_info import file_info_from_path
+from .file import file_info_from_path
 
 IMPORT_QUERIES: dict[str, str] = {
     "python": """

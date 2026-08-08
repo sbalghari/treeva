@@ -1,33 +1,31 @@
 from treeva.models import CodeQuality, CodeMetrics
 
 
-def calculate_code_quality(code_metrics: CodeMetrics) -> CodeQuality:
+def code_quality(
+    code_metrics: CodeMetrics, docs_coverage: int | float
+) -> CodeQuality:
 
     _cd = code_metrics.comment_density
-    _and = code_metrics.
-    _mnd = 
 
     _cc = _cyclomatic_complexity(
         code_metrics.branches_count,
         code_metrics.loops_count,
         code_metrics.returns_count,
-        code_metrics.function_count
+        code_metrics.function_count,
     )
+    _ccp100loc = _complexity_per_100_loc(_cc, code_metrics.lines_of_code)
 
     _mi = _maintainability_index(
-        avg_nesting=
-        comment_density=
-        complexity_p_loc=
-        doc_coverage=
+        code_metrics.comment_density,
+        _ccp100loc,
+        code_metrics.average_nesting_depth,
+        docs_coverage,
     )
 
     return CodeQuality(
-        average_nesting_depth=
-        comment_density=
+        comment_density=_cd,
         cyclomatic_complexity=_cc,
-        complexity_per_100_loc=_complexity_per_100_loc(_cc, code_metrics.lines_of_code),
-        maintainability_index=
-        max_nesting_depth=
+        maintainability_index=_mi,
     )
 
 
