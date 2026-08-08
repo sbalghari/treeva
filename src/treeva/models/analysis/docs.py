@@ -25,20 +25,20 @@ class DocumentationInfo:
     undocumented_methods: int
 
     @property
-    def _docs_coverage(cls) -> float:
+    def docs_coverage(self) -> float:
         """Documentation coverage."""
 
         total_documented = (
-            cls.documented_classes
-            + cls.documented_functions
-            + cls.documented_methods
+            self.documented_classes
+            + self.documented_functions
+            + self.documented_methods
         )
 
         total = (
             total_documented
-            + cls.undocumented_classes
-            + cls.undocumented_functions
-            + cls.undocumented_methods
+            + self.undocumented_classes
+            + self.undocumented_functions
+            + self.undocumented_methods
         )
         coverage = total_documented / total * 100 if total > 0 else 0.0
         return round(coverage, 1)

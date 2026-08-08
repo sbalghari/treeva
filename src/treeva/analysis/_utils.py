@@ -1,4 +1,3 @@
-from treeva.models.dir_info import DirInfo
 from typing import TYPE_CHECKING
 import platform
 

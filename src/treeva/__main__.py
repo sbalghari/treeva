@@ -3,9 +3,7 @@
 Allows running treeva as a module with ``python -m treeva``.
 """
 
-from treeva import cli
-
-__all__ = ["cli"]
+from treeva.cli import app
 
 if __name__ == "__main__":
-    cli()
+    app()

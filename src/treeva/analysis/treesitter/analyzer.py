@@ -14,13 +14,14 @@ from treeva.models import (
     LargestClass,
     LargestFunction,
     ParserResult,
+    Symbol,
 )
 from treeva.library.exceptions import UnsupportedLanguage
 from .grammars import get_parser
 from .walker import walk_tree
 from .mapping import NODE_KIND_MAP
 from .docs import count_documented_symbols
-from .symbols import find_largest_symbols
+from .symbols import extract_symbols, find_largest_symbols
 
 
 # Maps each FileType to its tree-sitter grammar name for parser lookup.
@@ -166,6 +167,21 @@ class TreeSitterAnalyzer:
             largest_function=largest_function,
             largest_class=largest_class,
         )
+
+    def extract_file_symbols(self, code_file: FileInfo) -> list[Symbol]:
+        """Extract named symbols (functions, classes, methods) from a file.
+
+        Args:
+            code_file: The FileInfo to extract symbols from.
+
+        Returns:
+            A list of Symbol, or an empty list if no grammar is mapped
+            for the file type.
+        """
+        parsed = self._parse(code_file)
+        if parsed is None:
+            return []
+        return extract_symbols(parsed.tree, parsed.language)
 
     @staticmethod
     def _documentation(

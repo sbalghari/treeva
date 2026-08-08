@@ -62,7 +62,7 @@ Issues = "https://github.com/sbalghari/treeva/issues"
 Changelog = "https://github.com/sbalghari/treeva/blob/main/CHANGELOG.md"
 
 [project.scripts]
-treeva = "treeva:cli"
+treeva = "treeva.cli:app"
 
 [tool.uv]
 package = true

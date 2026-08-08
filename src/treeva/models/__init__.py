@@ -21,7 +21,6 @@ from .analysis.entities import (
 from .analysis.structure import DirStructure
 from .scan_metadata import ScanMetadata
 from .git import GitChurn, GitInfo
-from .dates import DirDates
 
 from .tree_sitter.parser_result import ParserResult
 from .tree_sitter.tree_stats import ErrorSpan, TreeStats
@@ -35,7 +34,6 @@ __all__ = [
     "DirInfo",
     "GitChurn",
     "GitInfo",
-    "DirDates",
     "ScanMetadata",
     "DocumentationInfo",
     "LanguageStatistics",

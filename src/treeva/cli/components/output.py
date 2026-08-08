@@ -8,7 +8,7 @@ from rich.columns import Columns
 from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from treeva.models import DirNode, SourceFile, AnalysisResult
+    from treeva.models import FileInfo, DirInfo, AnalysisResult
 
 from pyfiglet import figlet_format
 from rich.text import Text
@@ -20,7 +20,7 @@ from rich.panel import Panel
 
 from .console import CONSOLE, COLORS
 from ._base import info, success, error, warning
-from treeva.library.utils import format_size
+from ..utils import format_size
 
 
 HEADING_GRADIENT = [
@@ -159,7 +159,7 @@ def print_warning(
     CONSOLE.print(warning(t, details=details, use_panel=panel))
 
 
-def print_src_file(src_file: SourceFile) -> None:
+def print_src_file(src_file: FileInfo) -> None:
     """Display FileInfo as a Rich table with detailed metadata.
 
     Args:
@@ -226,7 +226,7 @@ def print_src_file(src_file: SourceFile) -> None:
     )
 
 
-def print_dir_node(dir_node: DirNode) -> None:
+def print_dir_node(dir_node: DirInfo) -> None:
     """Display DirInfo as comprehensive Rich tables with directory statistics.
 
     Args:
@@ -341,13 +341,21 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
     Args:
         analysis_result: The AnalysisResult model to display.
     """
+    dir_info = analysis_result.dir_info
+    code_metrics = analysis_result.code_metrics
+    code_quality = analysis_result.code_quality
+    languages = analysis_result.languages_stats
+    docs = analysis_result.documentation_info
+    entities = analysis_result.entities
+    scan = analysis_result.scan_metadata
+    dir_structure = analysis_result.dir_structure
 
     # -------------------------
     # Project Overview
     # -------------------------
     overview_table = Table(show_header=False, box=None, padding=(0, 1))
-    overview_table.add_row("Project Name", analysis_result.project_name)
-    overview_table.add_row("Project Path", str(analysis_result.project_path))
+    overview_table.add_row("Project Name", dir_info.dirname)
+    overview_table.add_row("Project Path", str(dir_info.full_path))
 
     # -------------------------
     # Project Statistics
@@ -356,44 +364,109 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
     proj_stats.add_column("Metric", style=COLORS["mauve"], width=25)
     proj_stats.add_column("Value", justify="right", style=COLORS["text"])
 
-    proj_stats.add_row("Total Files", f"{analysis_result.files_count:,}")
+    proj_stats.add_row("Total Files", f"{dir_info.files_count:,}")
+    proj_stats.add_row("Total Directories", f"{dir_info.subdirectory_count:,}")
     proj_stats.add_row(
-        "Total Directories", f"{analysis_result.subdirectory_count:,}"
+        "Total Project Size", format_size(dir_info.size_in_bytes)
     )
     proj_stats.add_row(
-        "Total Project Size", format_size(analysis_result.size_in_bytes)
-    )
-
-    proj_stats.add_row(
-        "Largest File",
-        analysis_result.largest_file.get("name", "N/A"),
+        "Deepest Directory", str(dir_structure.deepest_directory_depth)
     )
     proj_stats.add_row(
-        "Largest File Size",
-        format_size(analysis_result.largest_file.get("size", 0)),
+        "Avg Files per Directory",
+        f"{dir_structure.average_files_per_directory:.2f}",
+    )
+    proj_stats.add_row(
+        "Empty Directories", str(dir_structure.empty_directory_count)
     )
 
     # -------------------------
     # Code Metrics
     # -------------------------
-    code_metrics = Table(title="Code Metrics", expand=True)
-    code_metrics.add_column("Metric", style=COLORS["mauve"], width=25)
-    code_metrics.add_column("Value", justify="right", style=COLORS["text"])
+    code_table = Table(title="Code Metrics", expand=True)
+    code_table.add_column("Metric", style=COLORS["mauve"], width=25)
+    code_table.add_column("Value", justify="right", style=COLORS["text"])
 
-    code_metrics.add_row(
-        "Total Lines of Code", f"{analysis_result.total_loc:,}"
+    code_table.add_row(
+        "Total Lines of Code", f"{code_metrics.lines_of_code:,}"
     )
-    code_metrics.add_row(
-        "Total Comments", f"{analysis_result.total_comment_lines:,}"
-    )
-    code_metrics.add_row(
-        "Comment Density", f"{analysis_result.comment_density:.2f}%"
+    code_table.add_row("Total Comments", f"{code_metrics.lines_of_comment:,}")
+    code_table.add_row("Total Blank Lines", f"{code_metrics.blank_lines:,}")
+    code_table.add_row(
+        "Comment Density", f"{code_metrics.comment_density:.1f}%"
     )
 
-    effective_loc = (
-        analysis_result.total_loc - analysis_result.total_comment_lines
+    effective_loc = code_metrics.lines_of_code - code_metrics.lines_of_comment
+    code_table.add_row("Effective LOC", f"{effective_loc:,}")
+
+    code_table.add_row("Total Imports", f"{code_metrics.import_count:,}")
+    code_table.add_row("Total Classes", f"{code_metrics.class_count:,}")
+    code_table.add_row("Total Functions", f"{code_metrics.function_count:,}")
+    code_table.add_row("Total Methods", f"{code_metrics.method_count:,}")
+    code_table.add_row("Total Branches", f"{code_metrics.branches_count:,}")
+    code_table.add_row("Total Loops", f"{code_metrics.loops_count:,}")
+    code_table.add_row(
+        "Max Nesting Depth", str(code_metrics.max_nesting_depth)
     )
-    code_metrics.add_row("Effective LOC", f"{effective_loc:,}")
+    code_table.add_row(
+        "Avg Nesting Depth", f"{code_metrics.average_nesting_depth:.2f}"
+    )
+
+    # -------------------------
+    # Code Quality
+    # -------------------------
+    quality_table = Table(title="Code Quality", expand=True)
+    quality_table.add_column("Metric", style=COLORS["mauve"], width=25)
+    quality_table.add_column("Value", justify="right", style=COLORS["text"])
+
+    quality_table.add_row(
+        "Cyclomatic Complexity", f"{code_quality.cyclomatic_complexity:,}"
+    )
+    quality_table.add_row(
+        "Maintainability Index",
+        f"{code_quality.maintainability_index:.1f}/100",
+    )
+    documented = (
+        docs.documented_functions
+        + docs.documented_classes
+        + docs.documented_methods
+    )
+    total_symbols = (
+        documented
+        + docs.undocumented_functions
+        + docs.undocumented_classes
+        + docs.undocumented_methods
+    )
+    doc_coverage = (documented / total_symbols * 100) if total_symbols else 0
+    quality_table.add_row("Documentation Coverage", f"{doc_coverage:.1f}%")
+
+    # -------------------------
+    # Largest Entities
+    # -------------------------
+    entities_table = Table(title="Largest Entities", expand=True)
+    entities_table.add_column("Entity", style=COLORS["mauve"], width=25)
+    entities_table.add_column("Name", style=COLORS["sky"])
+    entities_table.add_column(
+        "Location / Size", justify="right", style=COLORS["text"]
+    )
+
+    entities_table.add_row(
+        "File",
+        entities.file.path.name,
+        f"{format_size(entities.file.size)} ({entities.file.loc:,} LOC)",
+    )
+    if entities.function:
+        entities_table.add_row(
+            "Function",
+            entities.function.name,
+            f"{entities.function.loc:,} LOC",
+        )
+    if entities.cls:
+        entities_table.add_row(
+            "Class",
+            entities.cls.name,
+            f"{entities.cls.loc:,} LOC",
+        )
 
     # -------------------------
     # File Distribution
@@ -405,11 +478,11 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
     )
 
     for lang, count in sorted(
-        analysis_result.code_files_count.items(),
+        dir_info.source_files_count.items(),
         key=lambda item: item[1],
         reverse=True,
     ):
-        distribution_table.add_row(lang, f"{count:}")
+        distribution_table.add_row(lang, f"{count:,}")
 
     # -------------------------
     # Top Languages (LOC)
@@ -423,13 +496,21 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
         "Percentage", justify="right", style=COLORS["yellow"]
     )
 
-    for lang, loc in analysis_result.top_languages:
-        percentage = (
-            (loc / analysis_result.total_loc) * 100
-            if analysis_result.total_loc > 0
-            else 0
-        )
+    for lang, loc in languages.top_languages:
+        percentage = languages.distribution.get(lang, 0)
         lang_table.add_row(lang, f"{loc:,}", f"{percentage:.1f}%")
+
+    # -------------------------
+    # Scan Metadata
+    # -------------------------
+    scan_table = Table(title="Scan Details", expand=True)
+    scan_table.add_column("Metric", style=COLORS["mauve"], width=25)
+    scan_table.add_column("Value", justify="right", style=COLORS["text"])
+
+    scan_table.add_row("Scanned Files", f"{scan.scanned_files:,}")
+    scan_table.add_row("Ignored Files", f"{scan.ignored_files:,}")
+    scan_table.add_row("Failed Files", f"{scan.failed_files:,}")
+    scan_table.add_row("Duration", f"{scan.duration_seconds:.2f}s")
 
     # -------------------------
     # Timeline
@@ -440,22 +521,22 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
 
     timeline_table.add_row(
         "Created",
-        analysis_result.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        dir_info.created_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
     timeline_table.add_row(
         "Modified",
-        analysis_result.modified_at.strftime("%Y-%m-%d %H:%M:%S"),
+        dir_info.modified_at.strftime("%Y-%m-%d %H:%M:%S"),
     )
     timeline_table.add_row(
         "Oldest File",
-        analysis_result.oldest_file_date.strftime("%Y-%m-%d %H:%M:%S")
-        if analysis_result.oldest_file_date
+        dir_info.oldest_file_date.strftime("%Y-%m-%d %H:%M:%S")
+        if dir_info.oldest_file_date
         else "N/A",
     )
     timeline_table.add_row(
         "Newest File",
-        analysis_result.newest_file_date.strftime("%Y-%m-%d %H:%M:%S")
-        if analysis_result.newest_file_date
+        dir_info.newest_file_date.strftime("%Y-%m-%d %H:%M:%S")
+        if dir_info.newest_file_date
         else "N/A",
     )
 
@@ -470,10 +551,13 @@ def print_analysis_result(analysis_result: AnalysisResult) -> None:
     )
 
     CONSOLE.print(proj_stats)
-    CONSOLE.print(code_metrics)
+    CONSOLE.print(code_table)
+    CONSOLE.print(quality_table)
+    CONSOLE.print(entities_table)
     CONSOLE.print(distribution_table)
 
-    if analysis_result.top_languages:
+    if languages.top_languages:
         CONSOLE.print(lang_table)
 
+    CONSOLE.print(scan_table)
     CONSOLE.print(timeline_table)

@@ -12,21 +12,20 @@ from pathlib import Path
 if TYPE_CHECKING:
     from logging import Logger
 
-from treeva.analysis import source_file_from_path, dir_node_from_path
-from treeva.library.utils import format_size
+from treeva.analysis import file_info_from_path, dir_info_from_path
+from .utils import format_size
 
 
-def source_file_format_plain_text(filepath: Path, logger: Logger) -> str:
+def source_file_format_plain_text(filepath: Path) -> str:
     """Format file metadata as plain text.
 
     Args:
         filepath: Path to the file.
-        logger: Logger instance for error reporting.
 
     Returns:
         A multi-line string with file metadata.
     """
-    data = source_file_from_path(filepath, logger)
+    data = file_info_from_path(filepath)
     return (
         f"File: {data.filename}\n"
         f"Path: {data.full_path}\n"
@@ -37,17 +36,16 @@ def source_file_format_plain_text(filepath: Path, logger: Logger) -> str:
     )
 
 
-def source_file_format_json(filepath: Path, logger: Logger) -> dict[str, Any]:
+def source_file_format_json(filepath: Path) -> dict[str, Any]:
     """Format file metadata as a JSON-serializable dict.
 
     Args:
         filepath: Path to the file.
-        logger: Logger instance for error reporting.
 
     Returns:
         A dictionary with file metadata fields.
     """
-    data = source_file_from_path(filepath, logger)
+    data = file_info_from_path(filepath)
     return {
         "Filename": data.filename,
         "Full path": str(data.full_path),
@@ -84,7 +82,7 @@ def dir_node_format_plain_text(
     Returns:
         A multi-line string with directory metadata.
     """
-    data = dir_node_from_path(
+    data = dir_info_from_path(
         dirpath,
         logger=logger,
         extra_exclude_patterns=extra_exclude_patterns,
@@ -116,7 +114,7 @@ def dir_node_format_json(
     Returns:
         A dictionary with directory metadata fields.
     """
-    data = dir_node_from_path(
+    data = dir_info_from_path(
         dirpath,
         logger=logger,
         extra_exclude_patterns=extra_exclude_patterns,
@@ -138,11 +136,7 @@ def dir_node_format_json(
         "Symlinks count": data.symlinks_count,
         "Empty files count": data.empty_files_count,
         "Hidden files count": data.hidden_files_count,
-        "Largest file": {
-            "name": data.largest_file["name"],
-            "size": format_size(data.largest_file["size"]),
-            "size in bytes": data.largest_file["size"],
-        },
+        "Largest file": data.largest_file,
         "Oldest file date": (
             data.oldest_file_date.strftime("%Y-%m-%d %H:%M:%S")
             if data.oldest_file_date
@@ -155,6 +149,7 @@ def dir_node_format_json(
         ),
         "Executable files count": data.executable_files_count,
         "Readonly files count": data.readonly_files_count,
+        "Source files count per language": data.source_files_count,
     }
 
 
@@ -167,50 +162,96 @@ def analysis_result_format_json(result: Any) -> dict[str, Any]:
     Returns:
         A dictionary with all analysis metrics.
     """
+    code = result.code_metrics
+    quality = result.code_quality
+    languages = result.languages_stats
+    docs = result.documentation_info
+    entities = result.entities
+    scan = result.scan_metadata
+    dir_structure = result.dir_structure
+    dir_info = result.dir_info
+
     return {
-        "Project Name": result.project_name,
-        "Project Path": str(result.project_path),
-        "Files": result.files_count,
-        "Subdirectories": result.subdirectory_count,
-        "Size (bytes)": result.size_in_bytes,
-        "Total LOC": result.total_loc,
-        "Total Comment Lines": result.total_comment_lines,
-        "Total Blank Lines": result.total_blank_lines,
-        "Comment Density": result.comment_density,
-        "Total Functions": result.total_functions,
-        "Total Classes": result.total_classes,
-        "Total Methods": result.total_methods,
-        "Total Imports": result.total_imports,
-        "Total Branches": result.total_branches,
-        "Total Loops": result.total_loops,
-        "Max Nesting Depth": result.max_nesting_depth,
-        "Avg Nesting Depth": result.average_nesting_depth,
-        "Cyclomatic Complexity": result.total_cyclomatic_complexity,
-        "Complexity per 100 LOC": result.complexity_per_loc,
-        "Maintainability Score": result.maintainability_score,
+        "Project Name": dir_info.dirname,
+        "Project Path": str(dir_info.full_path),
+        "Files": dir_info.files_count,
+        "Subdirectories": dir_info.subdirectory_count,
+        "Size (bytes)": dir_info.size_in_bytes,
+        "Total LOC": code.lines_of_code,
+        "Total Comment Lines": code.lines_of_comment,
+        "Total Blank Lines": code.blank_lines,
+        "Comment Density": code.comment_density,
+        "Total Functions": code.function_count,
+        "Total Classes": code.class_count,
+        "Total Methods": code.method_count,
+        "Total Imports": code.import_count,
+        "Total Branches": code.branches_count,
+        "Total Loops": code.loops_count,
+        "Max Nesting Depth": code.max_nesting_depth,
+        "Avg Nesting Depth": code.average_nesting_depth,
+        "Cyclomatic Complexity": quality.cyclomatic_complexity,
+        "Maintainability Score": quality.maintainability_index,
         "Top Languages": [
             {"language": lang, "loc": loc}
-            for lang, loc in result.top_languages
+            for lang, loc in languages.top_languages
         ],
-        "Language Distribution": result.language_distribution,
-        "Language LOC": result.language_loc,
-        "Documentation Coverage": result.documentation_coverage,
-        "Documented Functions": result.documented_functions,
-        "Undocumented Functions": result.undocumented_functions,
+        "Language Distribution": languages.distribution,
+        "Language LOC": languages.loc_per_language,
+        "Documented Functions": docs.documented_functions,
+        "Documented Classes": docs.documented_classes,
+        "Documented Methods": docs.documented_methods,
+        "Undocumented Functions": docs.undocumented_functions,
+        "Undocumented Classes": docs.undocumented_classes,
+        "Undocumented Methods": docs.undocumented_methods,
         "Largest File": {
-            "name": result.largest_file.get("name", ""),
-            "size": result.largest_file.get("size", 0),
+            "path": str(entities.file.path),
+            "size": entities.file.size,
+            "loc": entities.file.loc,
         },
-        "Largest Function": result.largest_function,
-        "Largest Class": result.largest_class,
-        "Deepest Directory Depth": result.deepest_directory_depth,
-        "Avg Files per Directory": result.average_files_per_directory,
-        "Empty Directories": result.empty_directory_count,
-        "Scanned Files": result.scanned_files,
-        "Failed Files": result.failed_files,
-        "Created At": result.created_at.isoformat(),
-        "Modified At": result.modified_at.isoformat(),
-        "Scan Duration (s)": result.scan_duration_seconds,
+        "Largest Function": (
+            {
+                "name": entities.function.name,
+                "file": str(entities.function.file),
+                "loc": entities.function.loc,
+            }
+            if entities.function
+            else None
+        ),
+        "Largest Class": (
+            {
+                "name": entities.cls.name,
+                "file": str(entities.cls.file),
+                "loc": entities.cls.loc,
+            }
+            if entities.cls
+            else None
+        ),
+        "Deepest Directory Depth": dir_structure.deepest_directory_depth,
+        "Avg Files per Directory": dir_structure.average_files_per_directory,
+        "Empty Directories": dir_structure.empty_directory_count,
+        "Git Info": (
+            {
+                "total_commits": result.git_info.total_commits,
+                "total_authors": result.git_info.total_authors,
+                "hotspots": [
+                    {
+                        "filepath": hotspot.filepath,
+                        "additions": hotspot.additions,
+                        "deletions": hotspot.deletions,
+                        "commits": hotspot.commits,
+                    }
+                    for hotspot in result.git_info.hotspots
+                ],
+            }
+            if result.git_info
+            else None
+        ),
+        "Scanned Files": scan.scanned_files,
+        "Ignored Files": scan.ignored_files,
+        "Failed Files": scan.failed_files,
+        "Scan Duration (s)": scan.duration_seconds,
+        "Created At": dir_info.created_at.isoformat(),
+        "Modified At": dir_info.modified_at.isoformat(),
     }
 
 
@@ -223,40 +264,55 @@ def analysis_result_format_plain_text(result: Any) -> str:
     Returns:
         A multi-line string with formatted analysis data.
     """
+    code = result.code_metrics
+    quality = result.code_quality
+    languages = result.languages_stats
+    docs = result.documentation_info
+    entities = result.entities
+    scan = result.scan_metadata
+    dir_structure = result.dir_structure
+    dir_info = result.dir_info
+
     lines = [
-        f"Project: {result.project_name}",
-        f"Path: {result.project_path}",
-        f"Files: {result.files_count}",
-        f"Subdirectories: {result.subdirectory_count}",
-        f"Total LOC: {result.total_loc}",
-        f"Total Comments: {result.total_comment_lines}",
-        f"Comment Density: {result.comment_density:.1f}%",
-        f"Total Functions: {result.total_functions}",
-        f"Total Classes: {result.total_classes}",
-        f"Total Imports: {result.total_imports}",
-        f"Max Nesting Depth: {result.max_nesting_depth}",
-        f"Avg Nesting Depth: {result.average_nesting_depth:.2f}",
-        f"Cyclomatic Complexity: {result.total_cyclomatic_complexity}",
-        f"Complexity per 100 LOC: {result.complexity_per_loc:.2f}",
-        f"Maintainability Score: {result.maintainability_score:.1f}/100",
-        f"Documentation Coverage: {result.documentation_coverage:.1f}%",
+        f"Project: {dir_info.dirname}",
+        f"Path: {dir_info.full_path}",
+        f"Files: {dir_info.files_count}",
+        f"Subdirectories: {dir_info.subdirectory_count}",
+        f"Total LOC: {code.lines_of_code}",
+        f"Total Comments: {code.lines_of_comment}",
+        f"Total Blank Lines: {code.blank_lines}",
+        f"Comment Density: {code.comment_density:.1f}%",
+        f"Total Functions: {code.function_count}",
+        f"Total Classes: {code.class_count}",
+        f"Total Imports: {code.import_count}",
+        f"Max Nesting Depth: {code.max_nesting_depth}",
+        f"Avg Nesting Depth: {code.average_nesting_depth:.2f}",
+        f"Cyclomatic Complexity: {quality.cyclomatic_complexity}",
+        f"Maintainability Index: {quality.maintainability_index:.1f}/100",
+        f"Documented Functions: {docs.documented_functions}",
+        f"Undocumented Functions: {docs.undocumented_functions}",
         "Top Languages:",
     ]
-    for lang, loc in result.top_languages[:5]:
-        pct = result.language_distribution.get(lang, 0)
+    for lang, loc in languages.top_languages[:5]:
+        pct = languages.distribution.get(lang, 0)
         lines.append(f"  {lang}: {loc} LOC ({pct:.1f}%)")
-    if result.largest_function:
+    if entities.function:
         lines.append(
-            f"Largest Function: {result.largest_function['name']}"
-            f" ({result.largest_function['lines']} lines)"
+            f"Largest Function: {entities.function.name}"
+            f" ({entities.function.loc} lines)"
         )
-    if result.largest_class:
+    if entities.cls:
         lines.append(
-            f"Largest Class: {result.largest_class['name']}"
-            f" ({result.largest_class['lines']} lines)"
+            f"Largest Class: {entities.cls.name} ({entities.cls.loc} lines)"
         )
+    lines.append(f"Deepest Directory: {dir_structure.deepest_directory_depth}")
     lines.append(
-        f"Scanned: {result.scanned_files}, Failed: {result.failed_files}"
+        f"Avg Files per Directory: {dir_structure.average_files_per_directory}"
     )
-    lines.append(f"Duration: {result.scan_duration_seconds}s")
+    lines.append(f"Empty Directories: {dir_structure.empty_directory_count}")
+    lines.append(
+        f"Scanned: {scan.scanned_files}, Ignored: {scan.ignored_files}, "
+        f"Failed: {scan.failed_files}"
+    )
+    lines.append(f"Duration: {scan.duration_seconds}s")
     return "\n".join(lines)

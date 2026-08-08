@@ -129,9 +129,7 @@ class ProjectAnalyzer:
             files=files,
             dir_structure=dir_structure(dir_info),
             code_metrics=_code_metrics,
-            code_quality=code_quality(
-                _code_metrics, _docs_info._docs_coverage
-            ),
+            code_quality=code_quality(_code_metrics, _docs_info.docs_coverage),
             languages_stats=_lang_stats,
             documentation_info=_docs_info,
             entities=_entities,

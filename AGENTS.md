@@ -7,27 +7,13 @@
 - **Description**: Treeva - Fast project structure analysis and code metrics
   from the command line
 - **Version**: 0.1.0a1
-- **Total files**: 79
-- **Total LOC**: 3925
-- Python: 3908 LOC (99.6%)
-- Go: 8 LOC (0.2%)
-- JavaScript: 3 LOC (0.1%)
-- Java: 2 LOC (0.1%)
-- Rust: 1 LOC (0.0%)
-- TypeScript: 1 LOC (0.0%)
-- Lua: 1 LOC (0.0%)
-- Bash: 1 LOC (0.0%)
+- **Total files**: 70
+- **Total LOC**: 4862
+- Python: 4862 LOC (100.0%)
 
 ## Tech Stack
 
 - **Python**
-- **Go**
-- **JavaScript**
-- **Java**
-- **Rust**
-- **TypeScript**
-- **Lua**
-- **Bash**
   - pathlib>=1.0.1
   - pathspec>=1.0.4
   - pyfiglet>=1.0.4
@@ -53,32 +39,40 @@
 
 ```
 treeva/
+├── .zed/
+│   └── settings.json
 ├── src/
 │   └── treeva/
 │       ├── analysis/
+│       │   ├── base/
+│       │   │   ├── __init__.py
+│       │   │   ├── dir.py
+│       │   │   └── file.py
 │       │   ├── treesitter/
 │       │   │   ├── __init__.py
 │       │   │   ├── analyzer.py
+│       │   │   ├── docs.py
 │       │   │   ├── grammars.py
 │       │   │   ├── mapping.py
 │       │   │   ├── symbols.py
 │       │   │   └── walker.py
 │       │   ├── __init__.py
-│       │   ├── aggregator.py
-│       │   ├── calculator.py
+│       │   ├── _aggregator.py
+│       │   ├── _utils.py
+│       │   ├── analyzer.py
+│       │   ├── code_quality.py
 │       │   ├── dependencies.py
-│       │   ├── factories.py
-│       │   ├── git.py
-│       │   └── manager.py
+│       │   ├── dir_structure.py
+│       │   └── git.py
 │       ├── cli/
-│       │   ├── utils/
+│       │   ├── components/
 │       │   │   ├── _base.py
 │       │   │   ├── console.py
 │       │   │   ├── output.py
 │       │   │   └── spinner.py
 │       │   ├── __init__.py
-│       │   ├── app.py
-│       │   └── format.py
+│       │   ├── format.py
+│       │   └── utils.py
 │       ├── constants/
 │       │   ├── __init__.py
 │       │   ├── enums.py
@@ -92,55 +86,34 @@ treeva/
 │       │   ├── __init__.py
 │       │   ├── exceptions.py
 │       │   ├── logger.py
-│       │   ├── utils.py
 │       │   └── version.py
 │       ├── models/
+│       │   ├── analysis/
+│       │   │   ├── __init__.py
+│       │   │   ├── code_metrics.py
+│       │   │   ├── code_quality.py
+│       │   │   ├── docs.py
+│       │   │   ├── entities.py
+│       │   │   ├── file_analysis.py
+│       │   │   ├── language.py
+│       │   │   └── structure.py
+│       │   ├── tree_sitter/
+│       │   │   ├── __init__.py
+│       │   │   ├── parser_result.py
+│       │   │   ├── symbol.py
+│       │   │   └── tree_stats.py
 │       │   ├── __init__.py
 │       │   ├── analysis_result.py
-│       │   ├── code_metrics.py
-│       │   ├── dir_node.py
-│       │   ├── parser_result.py
-│       │   ├── project_metrics.py
-│       │   ├── source_file.py
-│       │   ├── symbol.py
-│       │   └── tree_stats.py
+│       │   ├── dir_info.py
+│       │   ├── file_info.py
+│       │   ├── git.py
+│       │   └── scan_metadata.py
 │       ├── scanners/
 │       │   ├── __init__.py
 │       │   ├── dir_walker.py
 │       │   └── exclusions.py
 │       ├── __init__.py
 │       └── __main__.py
-├── tests/
-│   ├── analysis/
-│   │   ├── treesitter/
-│   │   │   ├── test_analyzer.py
-│   │   │   ├── test_dependencies.py
-│   │   │   ├── test_grammars.py
-│   │   │   ├── test_mapping.py
-│   │   │   ├── test_symbols.py
-│   │   │   └── test_walker.py
-│   │   └── test_git.py
-│   ├── fixtures/
-│   │   └── treesitter/
-│   │       ├── broken/
-│   │       │   ├── broken.go
-│   │       │   ├── broken.java
-│   │       │   └── broken.js
-│   │       ├── edge_cases/
-│   │       │   ├── crlf.go
-│   │       │   ├── deeply_nested.js
-│   │       │   ├── empty.go
-│   │       │   └── unicode.go
-│   │       └── valid/
-│   │           ├── sample.go
-│   │           ├── sample.java
-│   │           ├── sample.js
-│   │           ├── sample.lua
-│   │           ├── sample.py
-│   │           ├── sample.rs
-│   │           ├── sample.sh
-│   │           └── sample.ts
-│   └── conftest.py
 ├── .gitignore
 ├── .prettierrc
 ├── .python-version
@@ -170,24 +143,22 @@ treeva/
 
 ## Directory Map
 
-| Directory                               | Description                           |
-| --------------------------------------- | ------------------------------------- |
-| `src/treeva/`                           | Placeholder: AI-generated description |
-| `src/treeva/analysis/`                  | Placeholder: AI-generated description |
-| `src/treeva/analysis/treesitter/`       | Placeholder: AI-generated description |
-| `src/treeva/cli/`                       | Placeholder: AI-generated description |
-| `src/treeva/cli/utils/`                 | Placeholder: AI-generated description |
-| `src/treeva/constants/`                 | Placeholder: AI-generated description |
-| `src/treeva/export/`                    | Placeholder: AI-generated description |
-| `src/treeva/library/`                   | Placeholder: AI-generated description |
-| `src/treeva/models/`                    | Placeholder: AI-generated description |
-| `src/treeva/scanners/`                  | Placeholder: AI-generated description |
-| `tests/`                                | Placeholder: AI-generated description |
-| `tests/analysis/`                       | Placeholder: AI-generated description |
-| `tests/analysis/treesitter/`            | Placeholder: AI-generated description |
-| `tests/fixtures/treesitter/broken/`     | Placeholder: AI-generated description |
-| `tests/fixtures/treesitter/edge_cases/` | Placeholder: AI-generated description |
-| `tests/fixtures/treesitter/valid/`      | Placeholder: AI-generated description |
+| Directory                         | Description                           |
+| --------------------------------- | ------------------------------------- |
+| `.zed/`                           | Placeholder: AI-generated description |
+| `src/treeva/`                     | Placeholder: AI-generated description |
+| `src/treeva/analysis/`            | Placeholder: AI-generated description |
+| `src/treeva/analysis/base/`       | Placeholder: AI-generated description |
+| `src/treeva/analysis/treesitter/` | Placeholder: AI-generated description |
+| `src/treeva/cli/`                 | Placeholder: AI-generated description |
+| `src/treeva/cli/components/`      | Placeholder: AI-generated description |
+| `src/treeva/constants/`           | Placeholder: AI-generated description |
+| `src/treeva/export/`              | Placeholder: AI-generated description |
+| `src/treeva/library/`             | Placeholder: AI-generated description |
+| `src/treeva/models/`              | Placeholder: AI-generated description |
+| `src/treeva/models/analysis/`     | Placeholder: AI-generated description |
+| `src/treeva/models/tree_sitter/`  | Placeholder: AI-generated description |
+| `src/treeva/scanners/`            | Placeholder: AI-generated description |
 
 ## Agent Rules
 

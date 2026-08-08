@@ -9,6 +9,7 @@ class ParserResult:
     Carries the parsed AST, source bytes, error state, and optional
     parse-tree statistics produced by the tree-sitter analyzer.
     """
+
     language: str
     tree: (
         Any  # tree_sitter.Tree — kept as Any so ts types don't leak everywhere

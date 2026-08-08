@@ -68,10 +68,12 @@ def _starts_with_docstring(body) -> bool:
     """Whether a symbol body's first statement is a string expression."""
     if body is None:
         return False
-    first_stmt = body.first_child
+    first_stmt = body.named_children[0] if body.named_children else None
     if first_stmt is None or first_stmt.type != "expression_statement":
         return False
-    string_node = first_stmt.first_child
+    string_node = (
+        first_stmt.named_children[0] if first_stmt.named_children else None
+    )
     return string_node is not None and string_node.type in (
         "string",
         "concatenated_string",
