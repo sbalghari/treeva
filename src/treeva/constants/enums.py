@@ -14,11 +14,14 @@ class FileCategory(Enum):
 
 
 class FileType(Enum):
-    """
-    Unified file type enum for all recognized file formats.
-    Each entry carries:
-    - human-readable label
-    - category (used for grouping/logical analysis)
+    """Unified file type enum for all recognised file formats.
+
+    Each entry carries a human-readable label and a category for
+    logical grouping and analysis.
+
+    Notes:
+        Members are grouped by category (code, script, config, doc)
+        to simplify filtering and reporting logic.
     """
 
     # -------------------------
@@ -93,7 +96,12 @@ class FileType(Enum):
     UNKNOWN = ("Unknown", FileCategory.OTHER)
 
     def __init__(self, label: str, category: FileCategory):
-        """Store the human-readable label and category for this file type."""
+        """Store the human-readable label and category for this file type.
+
+        Args:
+            label: Human-readable display name (e.g. "Python", "JSON").
+            category: Logical group this file type belongs to.
+        """
         self._label = label
         self._category = category
 

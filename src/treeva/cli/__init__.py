@@ -1,4 +1,8 @@
-"""CLI entry point and public API surface for treeva commands."""
+"""Treeva CLI public API surface.
+
+Exports the core CLI entry point, the spinner context manager,
+console utilities, and all high-level print functions for external use.
+"""
 
 from treeva.cli.app import cli
 from treeva.cli.utils.spinner import SpinnerProgress as Spinner

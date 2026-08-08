@@ -1,4 +1,7 @@
-"""Entry point for the treeva CLI application."""
+"""Entry point for the treeva CLI application.
+
+Allows running treeva as a module with ``python -m treeva``.
+"""
 
 from treeva import cli
 

@@ -1,5 +1,3 @@
-"""Tree-sitter AST statistics including node counts and error spans."""
-
 from dataclasses import dataclass, field
 
 

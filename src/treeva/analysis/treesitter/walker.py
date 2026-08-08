@@ -1,11 +1,29 @@
-"""AST tree walker: counts nodes, tracks depth, and captures error spans."""
+"""AST tree walker: counts nodes, tracks depth, and captures error spans.
+
+Provides the core tree traversal used by ``TreeSitterAnalyzer`` to
+collect structural statistics about a parsed source file.
+"""
 
 from tree_sitter import Tree
 from treeva.models.tree_stats import ErrorSpan, TreeStats
 
 
 def walk_tree(tree: Tree) -> TreeStats:
-    """Walk a tree-sitter tree, counting nodes, tracking depth, and capturing error spans."""
+    """Walk a tree-sitter tree and collect structural statistics.
+
+    Counts total and named nodes per type, tracks maximum nesting depth,
+    and records spans of ERROR and MISSING nodes.
+
+    Args:
+        tree: A parsed tree-sitter Tree to walk.
+
+    Returns:
+        A TreeStats instance with node counts, max depth, and error spans.
+
+    Notes:
+        The walker uses an iterative traversal via ``TreeCursor`` rather
+        than recursion to avoid stack overflow on deeply nested ASTs.
+    """
     stats = TreeStats()
     cursor = tree.walk()
     depth = 0

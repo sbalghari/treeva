@@ -1,4 +1,8 @@
-"""Logging configuration for treeva."""
+"""Logging configuration for treeva.
+
+Provides console (RichHandler) and rotating-file logging, with
+platform-aware default log directory selection.
+"""
 
 import logging
 import os
@@ -13,7 +17,14 @@ APP_NAME = "treeva"
 
 
 def _default_log_dir() -> Path:
-    """Return a platform-specific default log directory."""
+    """Return a platform-specific default log directory.
+
+    Returns:
+        Path to the platform-standard log directory for treeva.
+        On Linux: ``~/.local/state/treeva/logs``
+        On macOS: ``~/Library/Logs/treeva``
+        On Windows: ``%LOCALAPPDATA%\\treeva\\logs``
+    """
     home = Path.home()
 
     if os.name == "nt":
@@ -34,7 +45,7 @@ LOG_DIR = Path(os.getenv(f"{APP_NAME.upper()}_LOG_DIR") or _default_log_dir())
 
 
 class LogLevel(Enum):
-    """Log levels"""
+    """Standard logging levels mapped to their string representations."""
 
     DEBUG = "DEBUG"
     INFO = "INFO"
@@ -48,7 +59,12 @@ _GLOBAL_SETUP: dict = {}
 
 
 def _file_fmt() -> logging.Formatter:
-    """Formatter for file-based log output."""
+    """Build the formatter used for file-based log output.
+
+    Returns:
+        A logging.Formatter configured with timestamp, logger name,
+        level, and message fields.
+    """
     return logging.Formatter(
         "[%(asctime)s] - [%(name)s] - [%(levelname)s] - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
@@ -61,7 +77,21 @@ def _get_handlers(
     max_size_mb: int,
     backup_count: int,
 ) -> list[logging.Handler]:
-    """Build a list of handlers based on the options provided"""
+    """Build a list of logging handlers based on the options provided.
+
+    Args:
+        console: If True, include a RichHandler console handler.
+        file_path: Path to the log file for the rotating file handler.
+        max_size_mb: Maximum size of a single log file in MB before
+            rotation.
+        backup_count: Number of rotated log files to retain.
+
+    Returns:
+        A list of logging.Handler instances.
+
+    Raises:
+        ValueError: If ``file_path`` is not a valid Path.
+    """
     handlers = []
 
     if not file_path:
@@ -104,9 +134,27 @@ def setup_logging(
     backup_count: int = 3,
     log_dir: Path | None = None,
 ) -> None:
-    """
-    Configure logging for CLI applications.
-    Defaults: console if verbose else rotating file
+    """Configure logging for a treeva component.
+
+    Sets up a logger with either a RichHandler console handler (when
+    verbose is True) or a RotatingFileHandler.  Idempotent — calling
+    twice with the same ``name`` is a no-op.
+
+    Args:
+        name: Logger name (also used for the log file name).
+        verbose: If True, emit logs to stderr via RichHandler instead
+            of (or in addition to) the file handler.
+        max_size_mb: Maximum file size in MB before rotation.
+        backup_count: Number of backup log files to keep.
+        log_dir: Directory for log files.  Falls back to the
+            environment default when not provided.
+
+    Notes:
+        Log files are written to a platform-specific directory.  On Linux:
+        ``~/.local/state/treeva/logs/<name>.log``.  The
+        ``TREEVA_LOG_DIR`` environment variable overrides the default
+        location.  Files rotate when they reach ``max_size_mb`` up to
+        ``backup_count`` times.
     """
     if name in _GLOBAL_SETUP:
         return  # already configured
@@ -140,7 +188,12 @@ def setup_logging(
 
 
 def get_caller_logger(default: str = APP_NAME) -> logging.Logger:
-    """
-    Fallback for helper functions when caller didn't pass a logger.
+    """Return a logger for callers that did not provide one explicitly.
+
+    Args:
+        default: Logger name to use as a fallback.
+
+    Returns:
+        A logging.Logger instance for the given name.
     """
     return logging.getLogger(default)

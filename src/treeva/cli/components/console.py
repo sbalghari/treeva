@@ -1,4 +1,9 @@
-"""Rich Console theme, Catppuccin color palette, and Nerd Font icons."""
+"""Rich Console theme, Catppuccin color palette, and Nerd Font icons.
+
+Defines the Catppuccin Mocha color palette, icon mappings used for
+status indicators, and the shared Rich Console instance with a
+custom theme applied.
+"""
 
 from rich.console import Console
 from rich.style import Style

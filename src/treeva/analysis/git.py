@@ -1,38 +1,28 @@
-"""Git churn and hotspot analysis via ``git log --numstat``."""
-
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from pathlib import Path
-from dataclasses import dataclass, field
 from subprocess import run, CalledProcessError
+
+from treeva.models.git import GitInfo, GitChurn
 
 if TYPE_CHECKING:
     from logging import Logger
 
 
-@dataclass
-class GitChurn:
-    """Per-file change statistics from git history."""
-
-    filepath: str
-    additions: int
-    deletions: int
-    commits: int
-    authors: set[str] = field(default_factory=set)
-
-
-@dataclass
-class GitAnalysis:
-    """Aggregate git analysis with churn and top hotspots."""
-
-    total_commits: int
-    total_authors: int
-    churn: list[GitChurn]
-    hotspots: list[GitChurn]
-
-
 def _git_log_numstat(repo_path: Path, logger: Logger) -> str:
-    """Run git log --numstat and return raw output, or '' on failure."""
+    """Run git log --numstat and return raw output, or '' on failure.
+
+    Args:
+        repo_path: Path to the git repository.
+        logger: Logger instance for warnings.
+
+    Returns:
+        Raw git log output string, or empty string on failure.
+
+    Notes:
+        Uses a 30-second timeout. Returns empty string for any failure
+        (missing git binary, non-repo path, git errors, etc.).
+    """
     try:
         result = run(
             ["git", "log", "--all", "--numstat", "--pretty=%H %ai %an"],
@@ -54,8 +44,20 @@ def _git_log_numstat(repo_path: Path, logger: Logger) -> str:
         return ""
 
 
-def analyze_git(repo_path: Path, *, logger: Logger) -> GitAnalysis | None:
-    """Return git-churn and hotspot data for *repo_path*."""
+def analyze_git(repo_path: Path, *, logger: Logger) -> GitInfo | None:
+    """Return git-churn and hotspot data for repo_path.
+
+    Args:
+        repo_path: Path to the git repository.
+        logger: Logger instance for warnings.
+
+    Returns:
+        A GitAnalysis instance, or None if git analysis fails.
+
+    Notes:
+        Hotspots are defined as the top 20 most-churned files by
+        total additions + deletions.
+    """
     raw = _git_log_numstat(repo_path, logger)
     if not raw:
         return None
@@ -110,7 +112,7 @@ def analyze_git(repo_path: Path, *, logger: Logger) -> GitAnalysis | None:
         reverse=True,
     )[:20]  # Top 20 most-churned files = hotspots
 
-    return GitAnalysis(
+    return GitInfo(
         total_commits=len(commits),
         total_authors=len(authors),
         churn=churn,

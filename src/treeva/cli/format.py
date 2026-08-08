@@ -1,4 +1,9 @@
-"""Format analysis data as plain text or JSON for CLI output."""
+"""Format analysis data as plain text or JSON for CLI output.
+
+Provides formatting functions that transform internal analysis models
+(source_file, dir_node, analysis_result) into either human-readable
+plain text or JSON-serializable dictionaries.
+"""
 
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
@@ -12,7 +17,15 @@ from treeva.library.utils import format_size
 
 
 def source_file_format_plain_text(filepath: Path, logger: Logger) -> str:
-    """Format file metadata as plain text."""
+    """Format file metadata as plain text.
+
+    Args:
+        filepath: Path to the file.
+        logger: Logger instance for error reporting.
+
+    Returns:
+        A multi-line string with file metadata.
+    """
     data = source_file_from_path(filepath, logger)
     return (
         f"File: {data.filename}\n"
@@ -25,7 +38,15 @@ def source_file_format_plain_text(filepath: Path, logger: Logger) -> str:
 
 
 def source_file_format_json(filepath: Path, logger: Logger) -> dict[str, Any]:
-    """Format file metadata as a JSON-serializable dict."""
+    """Format file metadata as a JSON-serializable dict.
+
+    Args:
+        filepath: Path to the file.
+        logger: Logger instance for error reporting.
+
+    Returns:
+        A dictionary with file metadata fields.
+    """
     data = source_file_from_path(filepath, logger)
     return {
         "Filename": data.filename,
@@ -53,7 +74,16 @@ def dir_node_format_plain_text(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> str:
-    """Format directory metadata as plain text."""
+    """Format directory metadata as plain text.
+
+    Args:
+        dirpath: Path to the directory.
+        logger: Logger instance for error reporting.
+        extra_exclude_patterns: Additional gitignore-style patterns to exclude.
+
+    Returns:
+        A multi-line string with directory metadata.
+    """
     data = dir_node_from_path(
         dirpath,
         logger=logger,
@@ -76,7 +106,16 @@ def dir_node_format_json(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Format directory metadata as a JSON-serializable dict."""
+    """Format directory metadata as a JSON-serializable dict.
+
+    Args:
+        dirpath: Path to the directory.
+        logger: Logger instance for error reporting.
+        extra_exclude_patterns: Additional gitignore-style patterns to exclude.
+
+    Returns:
+        A dictionary with directory metadata fields.
+    """
     data = dir_node_from_path(
         dirpath,
         logger=logger,
@@ -120,7 +159,14 @@ def dir_node_format_json(
 
 
 def analysis_result_format_json(result: Any) -> dict[str, Any]:
-    """Format analysis result as a JSON-serializable dict."""
+    """Format analysis result as a JSON-serializable dict.
+
+    Args:
+        result: The AnalysisResult object to format.
+
+    Returns:
+        A dictionary with all analysis metrics.
+    """
     return {
         "Project Name": result.project_name,
         "Project Path": str(result.project_path),
@@ -169,7 +215,14 @@ def analysis_result_format_json(result: Any) -> dict[str, Any]:
 
 
 def analysis_result_format_plain_text(result: Any) -> str:
-    """Format analysis result as readable plain text."""
+    """Format analysis result as readable plain text.
+
+    Args:
+        result: The AnalysisResult object to format.
+
+    Returns:
+        A multi-line string with formatted analysis data.
+    """
     lines = [
         f"Project: {result.project_name}",
         f"Path: {result.project_path}",

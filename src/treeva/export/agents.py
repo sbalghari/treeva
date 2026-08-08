@@ -1,4 +1,8 @@
-"""Generate AGENTS.md reference files for projects."""
+"""Generate AGENTS.md reference files for projects.
+
+Walks the project tree, analyzes all source files, and produces
+structured AGENTS.md documentation for the root and each subdirectory.
+"""
 
 from __future__ import annotations
 from typing import TYPE_CHECKING
@@ -37,7 +41,21 @@ def generate_agents_md(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, str]:
-    """Generate AGENTS.md content for every directory under project_root."""
+    """Generate AGENTS.md content for every directory under project_root.
+
+    Walks the project tree, analyzes all source files for metrics and
+    symbols, and formats the results as AGENTS.md sections for the
+    root directory and each subdirectory.
+
+    Args:
+        project_root: Root path of the project to analyze.
+        logger: Logger instance for diagnostic output.
+        extra_exclude_patterns: Additional glob patterns to exclude from scanning.
+
+    Returns:
+        A mapping from AGENTS.md file paths (relative to project_root)
+        to their generated markdown content.
+    """
     dir_files: dict[str, list[dict]] = defaultdict(list)
     total_loc = 0
     total_files = 0
@@ -123,7 +141,22 @@ def generate_agents_md(
 
 
 def split_at_markers(content: str) -> tuple[str, str, str]:
-    """Split content into pre, between, and post sections around generated markers."""
+    """Split content around the generated START/END markers.
+
+    Looks for START_MARKER and END_MARKER comment lines. If both markers
+    are found in order, returns the content split into three parts.
+    If markers are missing or out of order, returns the original content
+    as ``pre`` with empty ``between`` and ``post``.
+
+    Args:
+        content: The full file content to split.
+
+    Returns:
+        A tuple of (pre, between, post) where pre is content before
+        the start marker, between is content between markers (inclusive),
+        and post is content after the end marker. If markers are not
+        found correctly, returns (content, "", "").
+    """
     lines = content.split("\n")
     start_idx = -1
     end_idx = -1
@@ -150,7 +183,23 @@ def write_agents_file(
     *,
     allow_overwrite: bool = False,
 ) -> bool:
-    """Write a generated AGENTS.md section to disk, merging with existing content if present."""
+    """Write a generated AGENTS.md section to disk, merging with existing content if present.
+
+    If the file already exists, attempts to merge the new section between
+    existing markers. If no markers are found, the behavior depends on
+    ``allow_overwrite``: if True the new section is prepended; otherwise
+    the write is refused and the function returns False.
+
+    Args:
+        output_path: Path where the AGENTS.md file should be written.
+        new_section: The generated markdown content to write.
+        allow_overwrite: Whether to overwrite a file that exists but
+            has no markers.
+
+    Returns:
+        True if the file was written successfully, False if the file
+        already existed without markers and ``allow_overwrite`` was False.
+    """
     if output_path.exists():
         existing = output_path.read_text(encoding="utf-8")
         pre, between, post = split_at_markers(existing)
@@ -173,7 +222,14 @@ def write_agents_file(
 
 
 def _wrap_section(lines: list[str]) -> list[str]:
-    """Wrap content lines between start/end generator markers."""
+    """Wrap content lines between start/end generator markers.
+
+    Args:
+        lines: Content lines to wrap.
+
+    Returns:
+        A new list with START_MARKER, the content lines, and END_MARKER.
+    """
     return [START_MARKER, *lines, END_MARKER]
 
 
@@ -183,7 +239,16 @@ def _is_code_entry(entry: dict) -> bool:
 
 
 def _lines_cell(entry: dict) -> str:
-    """Format a file's line counts as a markdown table cell."""
+    """Format a file's line counts as a markdown table cell.
+
+    Args:
+        entry: A file entry dictionary with ``loc``, ``comment_lines``,
+            and ``blank_lines`` keys.
+
+    Returns:
+        For code entries, a formatted string like ``"100 lines(80, 10, 10)"``.
+        For non-code entries, the raw total line count as a string.
+    """
     loc = entry["loc"]
     comments = entry["comment_lines"]
     blank = entry["blank_lines"]
@@ -194,7 +259,15 @@ def _lines_cell(entry: dict) -> str:
 
 
 def _category_label(entry: dict) -> str:
-    """Return a human-readable label for a file's category."""
+    """Return a human-readable label for a file's category.
+
+    Args:
+        entry: A file entry dictionary with a ``category`` key of type
+            FileCategory.
+
+    Returns:
+        A human-readable label such as ``"Code"``, ``"Config"``, or ``"Doc"``.
+    """
     cat = entry["category"]
     mapping = {
         FileCategory.CODE: "Code",
@@ -215,7 +288,18 @@ def _build_file_tree(
     project_root: Path,
     dir_files: dict[str, list[dict]],
 ) -> list[str]:
-    """Build an ASCII directory tree from the file map."""
+    """Build an ASCII directory tree from the file map.
+
+    Constructs a nested dictionary representing the project directory
+    structure, then renders it as an ASCII tree inside a fenced code block.
+
+    Args:
+        project_root: Root path of the project (used for the tree label).
+        dir_files: Mapping from directory path to list of file entries.
+
+    Returns:
+        Lines of the rendered ASCII directory tree including code fences.
+    """
     tree: dict = {}
     for dirpath, files in dir_files.items():
         if dirpath == ".":
@@ -244,7 +328,16 @@ def _render_tree(
     lines: list[str],
     prefix: str,
 ):
-    """Recursively render a nested dict as an ASCII tree."""
+    """Recursively render a nested dict as an ASCII tree.
+
+    Modifies ``lines`` in place, appending tree connectors with
+    appropriate indentation for each depth level.
+
+    Args:
+        node: The current dictionary node to render (subtree).
+        lines: Accumulator list for output lines (modified in place).
+        prefix: Indentation prefix for the current depth level.
+    """
     items: list[tuple[str, bool]] = []
     for name, child in node.items():
         items.append((name, isinstance(child, dict)))
@@ -263,7 +356,18 @@ def _render_tree(
 
 
 def _format_dir_agents(dirpath: str, files: list[dict]) -> list[str]:
-    """Format AGENTS.md content for a single subdirectory."""
+    """Format AGENTS.md content for a single subdirectory.
+
+    Generates a header, file table, and optional symbols section
+    for the given directory's files.
+
+    Args:
+        dirpath: Relative path of the subdirectory (e.g. ``"src/treeva"``).
+        files: List of file entry dictionaries for files in this directory.
+
+    Returns:
+        Lines of the AGENTS.md section, wrapped between generator markers.
+    """
     header = f"# {dirpath}/ — Agent Reference"
     table_header = "| File | Language | Lines |"
     sep = "|------|----------|-------|"
@@ -302,7 +406,24 @@ def _format_root_agents(
     all_dirs: list[str],
     dir_files: dict[str, list[dict]],
 ) -> list[str]:
-    """Format AGENTS.md content for the project root."""
+    """Format AGENTS.md content for the project root.
+
+    Generates the full root AGENTS.md including project overview,
+    tech stack, directory structure tree, root files table, directory
+    map, and agent rules.
+
+    Args:
+        project_root: Root path of the project.
+        total_files: Total number of files discovered in the project.
+        total_loc: Total lines of code across all files.
+        lang_loc: Mapping from language name to total LOC.
+        root_files: List of file entries for files in the project root.
+        all_dirs: Sorted list of all subdirectory paths.
+        dir_files: Full mapping from directory path to list of file entries.
+
+    Returns:
+        Lines of the root AGENTS.md section, wrapped between generator markers.
+    """
     lines: list[str] = []
     lines.append(f"# {project_root.name} — Agent Reference")
     lines.append("")
@@ -413,7 +534,16 @@ def _format_root_agents(
 
 
 def _read_pyproject_field(project_root: Path, field: str) -> str:
-    """Read a field from the project's pyproject.toml (project table)."""
+    """Read a field from the project's pyproject.toml (project table).
+
+    Args:
+        project_root: Root path of the project.
+        field: The field name to read from the ``[project]`` table.
+
+    Returns:
+        The field value as a string, or an empty string if the field
+        is not found or the file cannot be read.
+    """
     pyproject = project_root / "pyproject.toml"
     if pyproject.exists():
         try:

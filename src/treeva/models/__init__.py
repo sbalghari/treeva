@@ -1,20 +1,48 @@
-"""Data models for treeva analysis results and source file representation."""
+"""
+These dataclasses form the core data layer used throughout the analysis
+pipeline
+"""
 
-from .source_file import SourceFile
-from .dir_node import DirNode
-from .code_metrics import CodeMetrics
+from .file_info import FileInfo
+from .dir_info import DirInfo
+
+from .analysis.code_metrics import CodeMetrics
+from .analysis.code_quality import CodeQuality
 from .analysis_result import AnalysisResult
-from .parser_result import ParserResult
-from .project_metrics import ProjectMetrics
-from .tree_stats import ErrorSpan, TreeStats
-from .symbol import Symbol
+from .analysis.language import LanguageStatistics
+from .analysis.docs import DocumentationInfo
+from .analysis.entities import (
+    LargestClass,
+    LargestFile,
+    LargestFunction,
+    LargestEntities,
+)
+from .analysis.structure import DirStructure
+from .scan_metadata import ScanMetadata
+from .git import GitChurn, GitInfo
+from .dates import DirDates
+
+from .tree_sitter.parser_result import ParserResult
+from .tree_sitter.tree_stats import ErrorSpan, TreeStats
+from .tree_sitter.symbol import Symbol
 
 __all__ = [
-    "SourceFile",
-    "DirNode",
     "CodeMetrics",
+    "CodeQuality",
+    "FileInfo",
+    "DirInfo",
+    "GitChurn",
+    "GitInfo",
+    "DirDates",
+    "ScanMetadata",
+    "DocumentationInfo",
+    "LanguageStatistics",
+    "DirStructure",
+    "LargestEntities",
+    "LargestFunction",
+    "LargestClass",
+    "LargestFile",
     "AnalysisResult",
-    "ProjectMetrics",
     "ParserResult",
     "ErrorSpan",
     "TreeStats",

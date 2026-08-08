@@ -1,14 +1,14 @@
-"""Result of parsing a single source file with tree-sitter."""
-
 from dataclasses import dataclass
 from typing import Any
-from treeva.models.tree_stats import TreeStats
+from .tree_stats import TreeStats
 
 
 @dataclass(slots=True)
 class ParserResult:
-    """Parsed AST, source bytes, and error state from tree-sitter."""
-
+    """
+    Carries the parsed AST, source bytes, error state, and optional
+    parse-tree statistics produced by the tree-sitter analyzer.
+    """
     language: str
     tree: (
         Any  # tree_sitter.Tree — kept as Any so ts types don't leak everywhere

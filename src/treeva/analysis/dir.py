@@ -1,9 +1,3 @@
-"""Filesystem-to-model factories.
-
-``source_file_from_path`` and ``dir_node_from_path`` create ``SourceFile``
-and ``DirNode`` instances from real filesystem paths.
-"""
-
 from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from pathlib import Path
@@ -13,71 +7,11 @@ import stat
 if TYPE_CHECKING:
     from logging import Logger
 
-from treeva.constants.extensions import FILE_EXTENSIONS
-from treeva.constants.enums import FileType
-from treeva.library.utils import is_hidden
-from treeva.models.source_file import SourceFile
-from treeva.models.dir_node import DirNode
+from treeva.models.file_info import FileInfo
+from treeva.models.dir_info import DirInfo
 from treeva.scanners import dir_walker
-
-
-def _detect_file_type(filepath: Path) -> FileType:
-    """Map file extension to FileType enum."""
-    extension = filepath.suffix.lower()
-    for file_type, extensions in FILE_EXTENSIONS.items():
-        if extension in extensions:
-            return file_type
-    return FileType.UNKNOWN
-
-
-def _get_owner(uid: int) -> str:
-    """Resolve numeric UID to username, falling back to the UID string."""
-    try:
-        import pwd
-
-        return pwd.getpwuid(uid).pw_name
-    except (KeyError, ImportError):
-        return str(uid)
-
-
-def _get_group(gid: int) -> str:
-    """Resolve numeric GID to group name, falling back to the GID string."""
-    try:
-        import grp
-
-        return grp.getgrgid(gid).gr_name
-    except (KeyError, ImportError):
-        return str(gid)
-
-
-# --- SourceFile ---
-
-
-def source_file_from_path(filepath: Path, logger: Logger) -> SourceFile:
-    """Build a ``SourceFile`` from a real filesystem path."""
-    file_stats = filepath.stat()
-    is_symlink = filepath.is_symlink()
-    symlink_target = str(filepath.resolve()) if is_symlink else None
-
-    return SourceFile(
-        filename=filepath.name,
-        full_path=filepath,
-        extension=filepath.suffix,
-        is_hidden=is_hidden(filepath),
-        size_in_bytes=file_stats.st_size,
-        file_type=_detect_file_type(filepath),
-        created_at=datetime.fromtimestamp(file_stats.st_ctime),
-        modified_at=datetime.fromtimestamp(file_stats.st_mtime),
-        accessed_at=datetime.fromtimestamp(file_stats.st_atime),
-        permissions=stat.filemode(file_stats.st_mode),
-        owner=_get_owner(file_stats.st_uid),
-        group=_get_group(file_stats.st_gid),
-        is_symlink=is_symlink,
-        symlink_target=symlink_target,
-    )
-
-
-# --- DirNode ---
+from ._utils import get_group, get_owner, is_hidden
+from .file import file_info_from_path
 
 
 def _walk_and_collect(
@@ -85,7 +19,19 @@ def _walk_and_collect(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, Any]:
-    """Walk dirpath and collect file stats and metadata into a dict."""
+    """Walk dirpath and collect file stats and metadata into a dict.
+
+    Args:
+        dirpath: Directory path to walk.
+        logger: Logger instance for warnings.
+        extra_exclude_patterns: Additional gitignore-style exclusion patterns.
+
+    Returns:
+        Dict with keys: files_count, subdirectory_count, size_in_bytes,
+        symlinks_count, empty_files_count, source_files_count,
+        hidden_files_count, largest_file, oldest_file_date, newest_file_date,
+        executable_files_count, readonly_files_count, source_files.
+    """
     files_count = 0
     subdirectory_count = 0
     size_in_bytes = 0
@@ -98,7 +44,7 @@ def _walk_and_collect(
     newest_file_date: datetime | None = None
     executable_files_count = 0
     readonly_files_count = 0
-    source_files: list[SourceFile] = []
+    source_files: list[FileInfo] = []
 
     for file in dir_walker(
         dirpath, extra_exclude_patterns=extra_exclude_patterns
@@ -107,7 +53,7 @@ def _walk_and_collect(
             subdirectory_count += 1
         else:
             files_count += 1
-            fileinfo = source_file_from_path(file, logger)
+            fileinfo = file_info_from_path(file)
             source_files.append(fileinfo)
 
             size_in_bytes += fileinfo.size_in_bytes
@@ -160,17 +106,26 @@ def _walk_and_collect(
     }
 
 
-def dir_node_from_path(
+def dir_info_from_path(
     dirpath: Path,
     *,
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
-) -> DirNode:
-    """Walk ``dirpath`` and return a ``DirNode`` with all sub-file metadata."""
+) -> DirInfo:
+    """Walk dirpath and return a DirNode with all sub-file metadata.
+
+    Args:
+        dirpath: Directory path to analyze.
+        logger: Logger instance for warnings.
+        extra_exclude_patterns: Additional gitignore-style exclusion patterns.
+
+    Returns:
+        A DirNode instance populated with directory metadata and source files.
+    """
     stat_info = dirpath.stat()
     stats = _walk_and_collect(dirpath, logger, extra_exclude_patterns)
 
-    return DirNode(
+    return DirInfo(
         dirname=dirpath.name,
         full_path=dirpath,
         is_hidden=is_hidden(dirpath),
@@ -182,8 +137,8 @@ def dir_node_from_path(
         modified_at=datetime.fromtimestamp(stat_info.st_mtime),
         accessed_at=datetime.fromtimestamp(stat_info.st_atime),
         permissions=stat.filemode(stat_info.st_mode),
-        owner=_get_owner(stat_info.st_uid),
-        group=_get_group(stat_info.st_gid),
+        owner=get_owner(stat_info.st_uid),
+        group=get_group(stat_info.st_gid),
         subdirectory_count=stats["subdirectory_count"],
         symlinks_count=stats["symlinks_count"],
         empty_files_count=stats["empty_files_count"],

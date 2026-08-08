@@ -3,11 +3,15 @@ from typer import echo
 
 
 def get_version() -> str:
-    """
-    Return the installed version of treeva.
+    """Return the installed version of treeva.
 
     Returns:
-        str: version string, or "unknown" if metadata is unavailable.
+        Version string, or ``"unknown"`` if package metadata is
+        unavailable.
+
+    Examples:
+        >>> get_version()
+        '0.1.0a1'
     """
     try:
         return version("treeva")

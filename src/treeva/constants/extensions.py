@@ -1,4 +1,9 @@
-"""Mapping from recognised file types to their typical file extensions."""
+"""Mapping from recognised file types to their typical file extensions.
+
+Notes:
+    Multiple extensions per file type (e.g. .js and .jsx for JavaScript,
+    .cpp and .hpp for C++) are included to cover common naming conventions.
+"""
 
 from .enums import FileType
 

@@ -1,4 +1,8 @@
-"""High-level print functions for Rich table rendering of analysis results."""
+"""High-level print functions for Rich table rendering of analysis results.
+
+Wraps low-level _base builders with CONSOLE.print calls and provides
+specialized formatters for DirNode, SourceFile, and AnalysisResult models.
+"""
 
 from rich.columns import Columns
 from typing import Optional, TYPE_CHECKING
@@ -27,17 +31,30 @@ HEADING_GRADIENT = [
 
 
 def print_newline(count: int = 1) -> None:
-    """Print one or more blank lines."""
+    """Print one or more blank lines.
+
+    Args:
+        count: Number of blank lines to print (default 1).
+    """
     CONSOLE.print("\n" * count, end="")
 
 
 def print_rule(title: str = "") -> None:
-    """Print a horizontal rule with an optional title."""
+    """Print a horizontal rule with an optional title.
+
+    Args:
+        title: Optional title text to display in the rule.
+    """
     CONSOLE.print(Rule(title, style="primary"), justify="full")
 
 
 def print_ascii_art(text: str, font: str = "slant") -> None:
-    """Print ASCII art title with gradient effect"""
+    """Print ASCII art title with gradient effect using pyfiglet.
+
+    Args:
+        text: Text to render as ASCII art.
+        font: pyfiglet font name (default slant).
+    """
     ascii_art = figlet_format(text, font=font)
     lines = ascii_art.split("\n")
     styled_lines = []
@@ -55,55 +72,99 @@ def print_ascii_art(text: str, font: str = "slant") -> None:
 
 
 def print_header(t: str) -> None:
-    """Print text in header style (bold mauve)."""
+    """Print text in header style (bold mauve).
+
+    Args:
+        t: Text to print.
+    """
     CONSOLE.print(t, style="header")
 
 
 def print_subheader(t: str) -> None:
-    """Print text in subheader style (bold italic pink)."""
+    """Print text in subheader style (bold italic pink).
+
+    Args:
+        t: Text to print.
+    """
     CONSOLE.print(t, style="subheader")
 
 
 def print_text(t: str) -> None:
-    """Print text in default body style."""
+    """Print text in default body style.
+
+    Args:
+        t: Text to print.
+    """
     CONSOLE.print(t, style="text")
 
 
 def print_subtext(t: str) -> None:
-    """Print text in subtext style (dim)."""
+    """Print text in subtext style (dim).
+
+    Args:
+        t: Text to print.
+    """
     CONSOLE.print(t, style="subtext")
 
 
 def print_info(
     t: str, *, details: Optional[str] = None, panel: bool = True
 ) -> None:
-    """Print an info message, optionally inside a panel."""
+    """Print an info message, optionally inside a panel.
+
+    Args:
+        t: Message text.
+        details: Optional secondary detail text.
+        panel: When True, wrap in a panel (default True).
+    """
     CONSOLE.print(info(t, details=details, use_panel=panel))
 
 
 def print_success(
     t: str, details: Optional[str] = None, panel: bool = True
 ) -> None:
-    """Print a success message, optionally inside a panel."""
+    """Print a success message, optionally inside a panel.
+
+    Args:
+        t: Message text.
+        details: Optional secondary detail text.
+        panel: When True, wrap in a panel (default True).
+    """
     CONSOLE.print(success(t, details=details, use_panel=panel))
 
 
 def print_error(
     t: str, details: Optional[str] = None, panel: bool = True
 ) -> None:
-    """Print an error message, optionally inside a panel."""
+    """Print an error message, optionally inside a panel.
+
+    Args:
+        t: Message text.
+        details: Optional secondary detail text.
+        panel: When True, wrap in a panel (default True).
+    """
     CONSOLE.print(error(t, details=details, use_panel=panel))
 
 
 def print_warning(
     t: str, *, details: Optional[str] = None, panel: bool = True
 ) -> None:
-    """Print a warning message, optionally inside a panel."""
+    """Print a warning message, optionally inside a panel.
+
+    Args:
+        t: Message text.
+        details: Optional secondary detail text.
+        panel: When True, wrap in a panel (default True).
+    """
     CONSOLE.print(warning(t, details=details, use_panel=panel))
 
 
 def print_src_file(src_file: SourceFile) -> None:
-    """Display FileInfo as a rich table with detailed metadata."""
+    """Display FileInfo as a Rich table with detailed metadata.
+
+    Args:
+        src_file: The SourceFile model to display.
+    """
     # Basic Info Table
     basic_table = Table(
         title="Basic Information", show_header=False, box=None, padding=(0, 1)
@@ -166,7 +227,11 @@ def print_src_file(src_file: SourceFile) -> None:
 
 
 def print_dir_node(dir_node: DirNode) -> None:
-    """Display DirInfo as comprehensive rich tables with directory statistics."""
+    """Display DirInfo as comprehensive Rich tables with directory statistics.
+
+    Args:
+        dir_node: The DirNode model to display.
+    """
     # Basic Directory Info Table
     basic_table = Table(show_header=False, box=None, padding=(0, 1))
     basic_table.add_row("Directory", dir_node.dirname)
@@ -271,7 +336,11 @@ def print_dir_node(dir_node: DirNode) -> None:
 
 
 def print_analysis_result(analysis_result: AnalysisResult) -> None:
-    """Display AnalysisResult as comprehensive Rich tables."""
+    """Display AnalysisResult as comprehensive Rich tables.
+
+    Args:
+        analysis_result: The AnalysisResult model to display.
+    """
 
     # -------------------------
     # Project Overview

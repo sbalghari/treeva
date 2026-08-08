@@ -1,16 +1,27 @@
-"""Public API — import from here, not from submodules.
+from typing import TYPE_CHECKING
 
-Re-exports AnalysisManager, build_analysis_result, source_file_from_path,
-and dir_node_from_path for convenient top-level access.
-"""
+if TYPE_CHECKING:
+    from pathlib import Path
 
 from .manager import AnalysisManager
-from .calculator import build_analysis_result
-from .factories import source_file_from_path, dir_node_from_path
+
 
 __all__ = [
     "AnalysisManager",
-    "build_analysis_result",
-    "source_file_from_path",
-    "dir_node_from_path",
 ]
+
+
+# Used by the export/agents
+def _extract_imports_for_file(filepath: Path, lang: str) -> list[str]:
+    """Parse a single file and return its import strings.
+
+    Args:
+        filepath: Path to the source file.
+        lang: Language identifier for grammar selection.
+
+    Returns:
+        List of unique import strings found in the file.
+    """
+    from .dependencies import extract_imports
+
+    return extract_imports(filepath, lang)

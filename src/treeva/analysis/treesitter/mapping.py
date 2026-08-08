@@ -1,7 +1,14 @@
-"""Semantic node-kind mapping: tree-sitter node types → Treeva metric kinds.
+"""Semantic node-kind mapping: tree-sitter node types to Treeva metric kinds.
 
 Each language maps logical categories (``function``, ``class``, ``branch``,
 ``loop``, ``import``, …) to sets of concrete AST node type strings.
+
+Notes:
+    Some languages have multiple AST node types mapping to the same
+    semantic kind. For example, Rust maps ``struct_item``, ``enum_item``,
+    ``trait_item``, and ``impl_item`` all to the ``class`` kind.
+    Languages without a given feature (e.g. Bash has no classes) use an
+    empty ``frozenset`` for that kind.
 """
 
 from __future__ import annotations

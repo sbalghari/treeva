@@ -1,8 +1,3 @@
-"""Import-dependency extraction via tree-sitter queries.
-
-Supports Python, Go, JavaScript, TypeScript, Rust, Java, C, C++, and Lua.
-"""
-
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from pathlib import Path
@@ -15,7 +10,7 @@ from tree_sitter import Query, QueryCursor
 from treeva.scanners import dir_walker
 from .treesitter.grammars import get_language, get_parser
 from .treesitter.analyzer import TREE_SITTER_GRAMMAR_MAP
-from .factories import source_file_from_path
+from .file_info import file_info_from_path
 
 IMPORT_QUERIES: dict[str, str] = {
     "python": """
@@ -58,14 +53,34 @@ IMPORT_QUERIES: dict[str, str] = {
 
 
 def _normalize_import_text(text: str, lang: str) -> str:
-    """Strip surrounding quotes/whitespace from import text per language convention."""
+    """Strip surrounding quotes/whitespace from import text per language convention.
+
+    Args:
+        text: Raw import text from the AST node.
+        lang: Language identifier (e.g. "go", "python").
+
+    Returns:
+        Cleaned import string without quotes or surrounding whitespace.
+
+    Notes:
+        Go, JS/TS, C/C++, and Lua imports are quoted in the AST and need
+        quote stripping. Python imports are bare dotted names.
+    """
     if lang in ("go", "javascript", "typescript", "cpp", "c", "lua"):
         return text.strip("\"'")
     return text.strip()
 
 
 def extract_imports(filepath: Path, lang: str) -> list[str]:
-    """Parse a single file and return its import strings."""
+    """Parse a single file and return its import strings.
+
+    Args:
+        filepath: Path to the source file.
+        lang: Language identifier for grammar selection.
+
+    Returns:
+        List of unique import strings found in the file.
+    """
     parser = get_parser(lang)
     source_bytes = filepath.read_bytes()
     tree = parser.parse(source_bytes)
@@ -108,7 +123,16 @@ def build_dependency_graph(
     logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
 ) -> dict[str, list[str]]:
-    """Build a full project dependency graph ``{rel_filepath: [imports]}``."""
+    """Build a full project dependency graph {rel_filepath: [imports]}.
+
+    Args:
+        project_root: Root directory of the project.
+        logger: Logger instance for warnings.
+        extra_exclude_patterns: Additional gitignore-style exclusion patterns.
+
+    Returns:
+        Dict mapping relative file paths to lists of their import strings.
+    """
     graph: dict[str, list[str]] = {}
 
     for path in dir_walker(
@@ -117,7 +141,7 @@ def build_dependency_graph(
         if not path.is_file():
             continue
 
-        sf = source_file_from_path(path, logger=logger)
+        sf = file_info_from_path(path)
         grammar_name = TREE_SITTER_GRAMMAR_MAP.get(sf.file_type)
         if grammar_name is None:
             continue

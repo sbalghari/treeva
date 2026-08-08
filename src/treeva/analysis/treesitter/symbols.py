@@ -1,4 +1,9 @@
-"""Named-symbol extraction (function, class, method) from tree-sitter trees."""
+"""Named-symbol extraction (function, class, method) from tree-sitter trees.
+
+Uses the ``NODE_KIND_MAP`` to determine which AST node types correspond to
+extractable symbols, then walks the tree to collect name, kind, and
+source location for each symbol.
+"""
 
 from __future__ import annotations
 
@@ -8,7 +13,25 @@ from .mapping import NODE_KIND_MAP
 
 
 def extract_symbols(tree: Tree, language_name: str) -> list[Symbol]:
-    """Extract function, class, and method symbols from a tree-sitter tree."""
+    """Extract function, class, and method symbols from a tree-sitter tree.
+
+    Builds an inverted map from node type to semantic kind for efficient
+    lookup during traversal, then walks the tree collecting symbol metadata.
+
+    Args:
+        tree: A parsed tree-sitter Tree.
+        language_name: The tree-sitter grammar name used to look up the
+            relevant node-kind mapping.
+
+    Returns:
+        A list of Symbol objects representing named symbols found in the
+        tree.
+
+    Notes:
+        Only nodes with a ``name`` child field are extracted. Node types
+        not present in the mapping for the given language are silently
+        skipped.
+    """
     kind_map = NODE_KIND_MAP.get(language_name, {})
     func_types = kind_map.get("function", frozenset())
     class_types = kind_map.get("class", frozenset())

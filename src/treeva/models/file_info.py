@@ -1,5 +1,3 @@
-"""Represents a single source file on disk with its metadata."""
-
 from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass
@@ -9,9 +7,7 @@ from treeva.constants.enums import FileType
 
 
 @dataclass
-class SourceFile:
-    """Metadata for a single source file on disk."""
-
+class FileInfo:
     filename: str
     full_path: Path
     size_in_bytes: int

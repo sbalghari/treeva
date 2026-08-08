@@ -1,4 +1,9 @@
-"""Lazy-loaded tree-sitter parsers and language objects for 10 languages."""
+"""Lazy-loaded tree-sitter parsers and language objects for 10 languages.
+
+Parsers are cached after first creation to avoid repeated initialization
+overhead. Supports Python, Rust, C, C++, Go, Java, JavaScript, TypeScript,
+TSX, Lua, and Bash.
+"""
 
 import tree_sitter_python as ts_python
 import tree_sitter_rust as ts_rust
@@ -30,12 +35,34 @@ _PARSER_CACHE: dict[str, Parser] = {}
 
 
 def get_parser(language_name: str) -> Parser:
-    """Return a cached Parser for the given language, creating it on first use."""
+    """Return a cached Parser for the given language.
+
+    Creates and caches the parser on first use for a language.
+
+    Args:
+        language_name: The tree-sitter grammar name (e.g. "python", "rust").
+
+    Returns:
+        A tree-sitter Parser instance configured for the specified language.
+
+    Raises:
+        KeyError: If the language name is not in the supported set.
+    """
     if language_name not in _PARSER_CACHE:
         _PARSER_CACHE[language_name] = Parser(_LANGUAGES[language_name])
     return _PARSER_CACHE[language_name]
 
 
 def get_language(language_name: str) -> Language:
-    """Return the Language object for the given language name."""
+    """Return the Language object for the given language name.
+
+    Args:
+        language_name: The tree-sitter grammar name (e.g. "python", "rust").
+
+    Returns:
+        The Language object for the specified grammar.
+
+    Raises:
+        KeyError: If the language name is not in the supported set.
+    """
     return _LANGUAGES[language_name]

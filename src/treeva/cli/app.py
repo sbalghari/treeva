@@ -1,4 +1,9 @@
-"""Typer CLI application defining all treeva subcommands."""
+"""Typer CLI application defining all treeva subcommands.
+
+Registers the main typer app and all commands: analyze, dir, file,
+agents, deps, and git. Each command delegates to the analysis layer
+and formats output as JSON, plain text, or Rich tables.
+"""
 
 from pathlib import Path
 from logging import getLogger, Logger
@@ -64,7 +69,17 @@ def write_output_to_file(
     logger: Logger,
     encoding: str = "utf-8",
 ) -> bool:
-    """Write data to a file, with overwrite confirmation if it exists."""
+    """Write data to a file with overwrite confirmation if it exists.
+
+    Args:
+        filepath: Path to the output file.
+        data: String content to write.
+        logger: Logger instance for status messages.
+        encoding: File encoding (default utf-8).
+
+    Returns:
+        True if the write succeeded, False otherwise.
+    """
     if not isinstance(data, str):
         logger.error(f"Data must be string, got {type(data)}")
         return False
@@ -113,7 +128,11 @@ def _(
         ),
     ] = None,
 ) -> None:
-    """CLI callback processing global flags before subcommands."""
+    """CLI callback processing global flags before subcommands.
+
+    Args:
+        version: When True, displays version and exits.
+    """
 
 
 @cli.command(help="Analyze a project and get a detailed analysis")
@@ -129,7 +148,19 @@ def analyze(
         ),
     ] = None,  # type: ignore[assignment]
 ) -> None:
-    """Analyze a project and return detailed code metrics."""
+    """Analyze a project and return detailed code metrics.
+
+    Args:
+        path: Project path to analyze.
+        format: Output format (json, rich-table, or plain-text).
+        file: Whether to redirect output to a file.
+        verbose: Enable verbose logging.
+        exclude: Extra gitignore-style exclude patterns.
+
+    Raises:
+        KeyboardInterrupt: When the user interrupts the process.
+        typer.Exit: When an unexpected error occurs.
+    """
 
     setup_logging("treeva.cmd.analyze", verbose=verbose)
     logger = getLogger("treeva.cmd.analyze")
@@ -200,7 +231,19 @@ def dir(
         ),
     ] = None,  # type: ignore[assignment]
 ) -> None:
-    """Return metadata for a directory."""
+    """Return metadata for a directory.
+
+    Args:
+        path: Directory path to inspect.
+        format: Output format (json, rich-table, or plain-text).
+        file: Whether to redirect output to a file.
+        verbose: Enable verbose logging.
+        exclude: Extra gitignore-style exclude patterns.
+
+    Raises:
+        KeyboardInterrupt: When the user interrupts the process.
+        typer.Exit: When an unexpected error occurs.
+    """
 
     setup_logging("treeva.cmd.dir", verbose=verbose)
     logger = getLogger("treeva.cmd.dir")
@@ -284,7 +327,18 @@ def file(
     file: bool = common_options["file"],
     verbose: bool = common_options["verbose"],
 ) -> None:
-    """Return metadata for a file."""
+    """Return metadata for a file.
+
+    Args:
+        path: File path to inspect.
+        format: Output format (json, rich-table, or plain-text).
+        file: Whether to redirect output to a file.
+        verbose: Enable verbose logging.
+
+    Raises:
+        KeyboardInterrupt: When the user interrupts the process.
+        typer.Exit: When an unexpected error occurs.
+    """
 
     setup_logging("treeva.cmd.file", verbose=verbose)
     logger = getLogger("treeva.cmd.file")
@@ -350,7 +404,17 @@ def agents(
         ),
     ] = None,  # type: ignore[assignment]
 ) -> None:
-    """Generate AGENTS.md documentation files for a project."""
+    """Generate AGENTS.md documentation files for a project.
+
+    Args:
+        path: Project path to generate agents documentation for.
+        verbose: Enable verbose logging.
+        exclude: Extra gitignore-style exclude patterns.
+
+    Raises:
+        KeyboardInterrupt: When the user interrupts the process.
+        typer.Exit: When an unexpected error occurs.
+    """
     setup_logging("treeva.cmd.agents", verbose=verbose)
     logger = getLogger("treeva.cmd.agents")
 
@@ -424,7 +488,16 @@ def deps(
         ),
     ] = None,  # type: ignore[assignment]
 ) -> None:
-    """Build and display a dependency graph for a project."""
+    """Build and display a dependency graph for a project.
+
+    Args:
+        path: Project path to analyze dependencies for.
+        verbose: Enable verbose logging.
+        exclude: Extra gitignore-style exclude patterns.
+
+    Raises:
+        typer.Exit: When dependency analysis fails.
+    """
     setup_logging("treeva.cmd.deps", verbose=verbose)
     logger = getLogger("treeva.cmd.deps")
     path = path.resolve()
@@ -443,7 +516,15 @@ def git(
     path: Annotated[Path, typer.Argument(help="repository path")],
     verbose: bool = common_options["verbose"],
 ) -> None:
-    """Analyze git history for churn and hotspots."""
+    """Analyze git history for churn and hotspots.
+
+    Args:
+        path: Repository path to analyze.
+        verbose: Enable verbose logging.
+
+    Raises:
+        typer.Exit: When git analysis fails or no history is found.
+    """
     setup_logging("treeva.cmd.git", verbose=verbose)
     logger = getLogger("treeva.cmd.git")
     path = path.resolve()

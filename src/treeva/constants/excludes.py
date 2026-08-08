@@ -1,4 +1,10 @@
-"""Default directory and file patterns to skip during project scanning."""
+"""Default directory and file patterns to skip during project scanning.
+
+Notes:
+    Patterns are organised by ecosystem (Python, Node, Java, etc.)
+    and cover version control directories, build artifacts, caches,
+    IDE files, OS junk, and generated files.
+"""
 
 DEFAULT_EXCLUDES: set[str] = {
     # Version control
