@@ -92,8 +92,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   their respective new modules
 - **`src/treeva/lib/README.md`**: Deleted
 - **`src/treeva/models/analysis_info.py`**: Replaced by `analysis_result.py`
-- **`src/treeva/models/dir_info.py`**: Replaced by `dir_node.py`
-- **`src/treeva/models/file_info.py`**: Replaced by `source_file.py`
 - **\`src/treeva/scanners/loc.py\`**: Legacy LOC calculation, superseded by
   tree-sitter
 - **`ROADMAP.md`**: Deleted from project root
