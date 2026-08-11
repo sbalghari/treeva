@@ -9,14 +9,14 @@ from .._utils import detect_file_type, get_group, get_owner, is_hidden
 
 
 def file_info_from_path(filepath: Path) -> FileInfo:
-    """Build a FileInfo from a real filesystem path.
+    """Build a FileInfo from 'filepath'.
 
     Args:
-        filepath: Path to the source file.
-        logger: Logger instance for warnings.
+        filepath: Path to the file.
+        logger: Logger instance for logging.
 
     Returns:
-        A populated FileInfo instance with file metadata.
+        A populated FileInfo instance.
     """
     file_stats = filepath.stat()
     is_symlink = filepath.is_symlink()

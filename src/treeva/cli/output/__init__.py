@@ -6,7 +6,12 @@ from rich.style import Style
 from rich.console import Group
 from rich.rule import Rule
 
-from .console import CONSOLE, COLORS
+from .console import (
+    CONSOLE,
+    COLORS,
+    is_no_rich,
+    plain_print,
+)
 from ._base import info, success, error, warning
 
 HEADING_GRADIENT = [
@@ -22,6 +27,9 @@ def print_newline(count: int = 1) -> None:
     Args:
         count: Number of blank lines to print (default 1).
     """
+    if is_no_rich():
+        plain_print("\n" * count, end="")
+        return
     CONSOLE.print("\n" * count, end="")
 
 
@@ -31,6 +39,9 @@ def print_rule(title: str = "") -> None:
     Args:
         title: Optional title text to display in the rule.
     """
+    if is_no_rich():
+        plain_print("-" * 80)
+        return
     CONSOLE.print(Rule(title, style="primary"), justify="full")
 
 
@@ -42,6 +53,11 @@ def print_ascii_art(text: str, font: str = "slant") -> None:
         font: pyfiglet font name (default slant).
     """
     ascii_art = figlet_format(text, font=font)
+
+    if is_no_rich():
+        plain_print(ascii_art.rstrip())
+        return
+
     lines = ascii_art.split("\n")
     styled_lines = []
 
@@ -63,6 +79,9 @@ def print_header(t: str) -> None:
     Args:
         t: Text to print.
     """
+    if is_no_rich():
+        plain_print(t)
+        return
     CONSOLE.print(t, style="header")
 
 
@@ -72,6 +91,9 @@ def print_subheader(t: str) -> None:
     Args:
         t: Text to print.
     """
+    if is_no_rich():
+        plain_print(t)
+        return
     CONSOLE.print(t, style="subheader")
 
 
@@ -81,6 +103,9 @@ def print_text(t: str) -> None:
     Args:
         t: Text to print.
     """
+    if is_no_rich():
+        plain_print(t)
+        return
     CONSOLE.print(t, style="text")
 
 
@@ -90,6 +115,9 @@ def print_subtext(t: str) -> None:
     Args:
         t: Text to print.
     """
+    if is_no_rich():
+        plain_print(t)
+        return
     CONSOLE.print(t, style="subtext")
 
 
@@ -103,6 +131,12 @@ def print_info(
         details: Optional secondary detail text.
         panel: When True, wrap in a panel (default True).
     """
+    if is_no_rich():
+        plain_print(t)
+        if details:
+            plain_print(details)
+        plain_print()
+        return
     CONSOLE.print(info(t, details=details, use_panel=panel))
 
 
@@ -116,6 +150,12 @@ def print_success(
         details: Optional secondary detail text.
         panel: When True, wrap in a panel (default True).
     """
+    if is_no_rich():
+        plain_print(t)
+        if details:
+            plain_print(details)
+        plain_print()
+        return
     CONSOLE.print(success(t, details=details, use_panel=panel))
 
 
@@ -129,6 +169,12 @@ def print_error(
         details: Optional secondary detail text.
         panel: When True, wrap in a panel (default True).
     """
+    if is_no_rich():
+        plain_print(t)
+        if details:
+            plain_print(details)
+        plain_print()
+        return
     CONSOLE.print(error(t, details=details, use_panel=panel))
 
 
@@ -142,4 +188,10 @@ def print_warning(
         details: Optional secondary detail text.
         panel: When True, wrap in a panel (default True).
     """
+    if is_no_rich():
+        plain_print(t)
+        if details:
+            plain_print(details)
+        plain_print()
+        return
     CONSOLE.print(warning(t, details=details, use_panel=panel))

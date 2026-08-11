@@ -12,20 +12,22 @@ from rich.text import Text
 from rich.live import Live
 from rich.spinner import Spinner
 
-from .console import CONSOLE
+from .console import CONSOLE, is_no_rich, plain_print
 from ._base import panel, success, error, warning
 
 
 class SpinnerProgress:
     """Context manager for showing a live console spinner.
 
-    Manages a Rich Live display with a spinning animation during
-    long-running operations. Supports status transitions to success,
-    error, or warning messages upon completion.
+        Manages a Rich Live display with a spinning animation during
+        long-running operations. Supports status transitions to success,
+        error, or warning messages upon completion.
 
     Notes:
-        In verbose mode the spinner is suppressed and status messages
-        are printed directly to the console instead.
+                In verbose mode the spinner is suppressed and status messages
+                are printed directly to the console instead. When Rich output
+                is disabled globally (--no-rich) the spinner is suppressed as
+                well and messages are printed as plain text.
     """
 
     def __init__(
@@ -40,7 +42,7 @@ class SpinnerProgress:
         """
         self.message = message
         self.spinner_type = spinner_type
-        self.verbose = verbose
+        self.verbose = verbose or is_no_rich()
 
         self.spinner = Spinner(self.spinner_type, text=message, style="text")
         self.live = Live(
@@ -76,7 +78,12 @@ class SpinnerProgress:
             message: Success message text.
             details: Optional secondary detail text.
         """
-        if not self.verbose:
+        if is_no_rich():
+            plain_print(message)
+            if details:
+                plain_print(details)
+            plain_print()
+        elif not self.verbose:
             self.live.update(success(message, details=details, use_panel=True))
         else:
             CONSOLE.print(success(message, details=details, use_panel=False))
@@ -88,7 +95,12 @@ class SpinnerProgress:
             message: Error message text.
             details: Optional secondary detail text.
         """
-        if not self.verbose:
+        if is_no_rich():
+            plain_print(message)
+            if details:
+                plain_print(details)
+            plain_print()
+        elif not self.verbose:
             self.live.update(error(message, details=details, use_panel=True))
         else:
             CONSOLE.print(error(message, details=details, use_panel=False))
@@ -100,7 +112,12 @@ class SpinnerProgress:
             message: Warning message text.
             details: Optional secondary detail text.
         """
-        if not self.verbose:
+        if is_no_rich():
+            plain_print(message)
+            if details:
+                plain_print(details)
+            plain_print()
+        elif not self.verbose:
             self.live.update(warning(message, details=details, use_panel=True))
         else:
             CONSOLE.print(warning(message, details=details, use_panel=False))

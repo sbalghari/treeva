@@ -1,8 +1,5 @@
-"""Theme palette (Catppuccin Mocha) and Nerd Font icon glyphs for CLI output.
-
-Notes:
-    The Catppuccin Mocha palette is chosen for high contrast on dark
-    terminals. Icon glyphs require a Nerd Font patched terminal.
+"""
+Theme palette (Catppuccin Mocha) and Nerd Font icon glyphs for CLI output.
 """
 
 # Catppuccin Mocha palette — chosen for high contrast on dark terminals

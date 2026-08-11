@@ -12,7 +12,6 @@ from .analysis.docs import DocumentationInfo
 from .analysis.entities import LargestEntities
 from .analysis.structure import DirStructure
 from .scan_metadata import ScanMetadata
-from .git import GitInfo
 
 
 @dataclass
@@ -27,5 +26,4 @@ class AnalysisResult:
     languages_stats: LanguageStatistics
     documentation_info: DocumentationInfo
     entities: LargestEntities
-    git_info: GitInfo | None
     scan_metadata: ScanMetadata

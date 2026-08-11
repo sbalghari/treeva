@@ -5,6 +5,10 @@ status indicators, and the shared Rich Console instance with a
 custom theme applied.
 """
 
+from __future__ import annotations
+
+import sys
+
 from rich.console import Console
 from rich.style import Style
 from rich.theme import Theme
@@ -72,6 +76,34 @@ _THEME = Theme(
 
 
 CONSOLE = Console(theme=_THEME)
+
+NO_RICH = False
+
+
+def set_no_rich(enabled: bool = True) -> None:
+    """Globally enable or disable Rich rendering for the current CLI run.
+
+    Args:
+        enabled: When True, all Rich output (panels, tables, colors,
+            spinners) is replaced with plain text output.
+    """
+    global NO_RICH
+    NO_RICH = enabled
+
+
+def is_no_rich() -> bool:
+    """Return True if Rich rendering is disabled for the current run."""
+    return NO_RICH
+
+
+def plain_print(text: str = "", end: str = "\n") -> None:
+    """Print plain text directly to stdout without any Rich rendering.
+
+    Args:
+        text: Text to print.
+        end: String appended after the text (default newline).
+    """
+    sys.stdout.write(f"{text}{end}")
 
 
 def reset_console() -> None:

@@ -4,12 +4,17 @@ from typing import Any, TYPE_CHECKING
 if TYPE_CHECKING:
     from treeva.models import AnalysisResult
 
+from ..output.console import is_no_rich, plain_print
 from .tables.analysis_result import analysis_result_table
+
 
 class AnalysisResultFormat:
     @staticmethod
     def print_table(result: AnalysisResult) -> None:
         """Format analysis result in a rich table and print it on the screen"""
+        if is_no_rich():
+            plain_print(AnalysisResultFormat.plain_text(result))
+            return
         return analysis_result_table(result)
 
     @staticmethod

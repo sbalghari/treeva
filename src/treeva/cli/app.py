@@ -11,6 +11,7 @@ from typing import Annotated, Optional
 import typer
 
 from treeva.library.version import get_version
+from treeva.cli.output.console import set_no_rich
 from .commands import register_commands
 
 app = typer.Typer(name="treeva", add_completion=False)
@@ -23,6 +24,12 @@ def version_callback(version: bool) -> None:
         raise typer.Exit(0)
 
 
+# CLI callback processing global flags before subcommands.
+#
+# Callbacks:
+#     version: When True, displays version and exits.
+#     no_rich: When True, disables Rich rendering for the
+#         invoked subcommand.
 @app.callback(invoke_without_command=False)
 def _(
     version: Annotated[
@@ -34,12 +41,16 @@ def _(
             is_eager=True,
         ),
     ] = None,
+    no_rich: Annotated[
+        Optional[bool],
+        typer.Option(
+            "--no-rich",
+            help="disable rich output (panels, tables, colors, spinners)",
+        ),
+    ] = None,
 ) -> None:
-    """CLI callback processing global flags before subcommands.
-
-    Args:
-        version: When True, displays version and exits.
-    """
+    if no_rich:
+        set_no_rich()
 
 
 register_commands(app)

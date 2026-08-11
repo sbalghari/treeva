@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from treeva.models import DirInfo
 
 from ..utils import format_size
+from ..output.console import is_no_rich, plain_print
 from .tables.dir_info import dir_info_table
 
 
@@ -12,6 +13,9 @@ class DirInfoFormat:
     @staticmethod
     def print_table(dir_info: DirInfo) -> None:
         """Format directory metadata in a rich table and print it on the screen"""
+        if is_no_rich():
+            plain_print(DirInfoFormat.plain_text(dir_info))
+            return
         return dir_info_table(dir_info)
 
     @staticmethod

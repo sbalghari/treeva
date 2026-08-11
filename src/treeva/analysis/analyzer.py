@@ -21,7 +21,7 @@ from treeva.library.exceptions import UnsupportedLanguage
 from .treesitter.analyzer import TreeSitterAnalyzer, TREE_SITTER_GRAMMAR_MAP
 from .code_quality import code_quality
 
-from .base import dir_info_from_path
+from .base.dir import dir_info_from_path
 
 from ._aggregator import MetricsAggregator
 
@@ -133,7 +133,6 @@ class ProjectAnalyzer:
             languages_stats=_lang_stats,
             documentation_info=_docs_info,
             entities=_entities,
-            git_info=None,
             scan_metadata=_metadata,
         )
 

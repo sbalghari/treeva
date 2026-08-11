@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from treeva.models import FileInfo
 
 from ..utils import format_size
+from ..output.console import is_no_rich, plain_print
 from .tables.file_info import file_info_table
 
 
@@ -12,6 +13,9 @@ class FileInfoFormat:
     @staticmethod
     def print_table(file_info: FileInfo) -> None:
         """Format file metadata in a rich table and print it on the screen"""
+        if is_no_rich():
+            plain_print(FileInfoFormat.plain_text(file_info))
+            return
         return file_info_table(file_info)
 
     @staticmethod

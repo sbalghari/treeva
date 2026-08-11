@@ -9,7 +9,8 @@ if TYPE_CHECKING:
 from .analyzer import ProjectAnalyzer
 from .git import analyze_git
 from .dependencies import extract_imports, build_dependency_graph
-from .base import file_info_from_path, dir_info_from_path
+from .base.file import file_info_from_path
+from .base.dir import dir_info_from_path
 
 
 __all__ = [

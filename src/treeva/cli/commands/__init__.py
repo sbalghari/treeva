@@ -14,8 +14,7 @@ if TYPE_CHECKING:
 
 from ._common import common_options, write_output_to_file
 from .analyze import register as register_analyze
-from .dir import register as register_dir
-from .file import register as register_file
+from .inspect import register as register_inspect
 from .agents import register as register_agents
 from .deps import register as register_deps
 from .git import register as register_git
@@ -34,8 +33,7 @@ def register_commands(app: typer.Typer) -> None:
         app: The typer application to attach commands to.
     """
     register_analyze(app)
-    register_dir(app)
-    register_file(app)
+    register_inspect(app)
     register_agents(app)
     register_deps(app)
     register_git(app)

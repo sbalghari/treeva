@@ -1,4 +1,5 @@
-"""Generate AGENTS.md reference files for projects.
+"""
+Generate AGENTS.md reference files for projects.
 
 Walks the project tree, analyzes all source files, and produces
 structured AGENTS.md documentation for the root and each subdirectory.
@@ -190,6 +191,59 @@ def split_at_markers(content: str) -> tuple[str, str, str]:
         return pre, between, post
 
     return content, "", ""
+
+
+def remove_generated_sections(
+    project_root: Path,
+    *,
+    logger: Logger,
+    extra_exclude_patterns: list[str] | None = None,
+) -> tuple[int, int]:
+    """Remove treeva-generated sections from AGENTS.md files.
+
+    Strips the content between the START/END markers from every
+    AGENTS.md under project_root (respecting exclusion rules).
+    Files whose remaining content is empty are deleted entirely.
+
+    Args:
+        project_root: Root path of the project.
+        logger: Logger instance for diagnostic output.
+        extra_exclude_patterns: Additional glob patterns to exclude from scanning.
+
+    Returns:
+        A tuple of (files_updated, files_deleted).
+    """
+    targets: list[Path] = []
+    root_agents = project_root / "AGENTS.md"
+    if root_agents.exists():
+        targets.append(root_agents)
+    for dir_path in dir_walker(
+        project_root,
+        logger=logger,
+        extra_exclude_patterns=extra_exclude_patterns,
+    ):
+        if not dir_path.is_dir():
+            continue
+        agents_file = dir_path / "AGENTS.md"
+        if agents_file.exists():
+            targets.append(agents_file)
+
+    updated = 0
+    deleted = 0
+    for agents_file in targets:
+        content = agents_file.read_text(encoding="utf-8")
+        pre, between, post = split_at_markers(content)
+        if between == "":
+            continue
+        remainder = f"{pre}\n{post}".strip()
+        if remainder == "":
+            agents_file.unlink()
+            deleted += 1
+        else:
+            agents_file.write_text(remainder + "\n", encoding="utf-8")
+            updated += 1
+
+    return updated, deleted
 
 
 def write_agents_file(
