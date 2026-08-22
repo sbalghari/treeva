@@ -1,7 +1,7 @@
 """Base rendering functions for styled Rich console output panels and messages.
 
 Provides low-level panel creation and styled message builders used
-by the higher-level print functions in output.py.
+by the higher-level print functions.
 """
 
 from __future__ import annotations
@@ -23,17 +23,6 @@ def panel(
     style: str = "border.primary",
     *args: object,
 ) -> Panel:
-    """Create a styled Rich Panel with rounded border.
-
-    Args:
-        title: Panel title text.
-        content: Renderable content for the panel body.
-        style: Border style name from the theme (default border.primary).
-        *args: Additional positional arguments passed to Panel constructor.
-
-    Returns:
-        A configured Rich Panel instance.
-    """
     return Panel(
         content,
         ROUNDED,
@@ -47,16 +36,6 @@ def panel(
 
 
 def _build_content(message: str, details: Optional[str], style: str) -> Text:
-    """Build styled Text with optional detail lines.
-
-    Args:
-        message: Primary message text.
-        details: Optional secondary detail text.
-        style: Rich style name for the primary message.
-
-    Returns:
-        A Rich Text instance with styled content.
-    """
     content = Text(message, style=style)
     if details:
         content.append("\n")
@@ -74,19 +53,6 @@ def _output(
     border_style: str,
     use_panel: bool,
 ) -> Union[Panel, Text]:
-    """Build and return styled output as either a Panel or plain Text.
-
-    Args:
-        message: Primary message text.
-        details: Optional secondary detail text.
-        text_style: Rich style name for the message.
-        title: Panel title text.
-        border_style: Border style for the panel.
-        use_panel: When True, wrap in a Panel; otherwise return plain Text.
-
-    Returns:
-        A Panel or Text renderable.
-    """
     content = _build_content(message, details, text_style)
 
     if not use_panel:
@@ -98,16 +64,6 @@ def _output(
 def info(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
 ) -> Union[Panel, Text]:
-    """Build an info-style message.
-
-    Args:
-        message: Info message text.
-        details: Optional secondary detail text.
-        use_panel: When True, render in a panel (default True).
-
-    Returns:
-        A Panel or Text renderable styled as an info message.
-    """
     return _output(
         message=message,
         details=details,
@@ -121,16 +77,6 @@ def info(
 def success(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
 ) -> Union[Panel, Text]:
-    """Build a success-style message.
-
-    Args:
-        message: Success message text.
-        details: Optional secondary detail text.
-        use_panel: When True, render in a panel (default True).
-
-    Returns:
-        A Panel or Text renderable styled as a success message.
-    """
     return _output(
         message=message,
         details=details,
@@ -144,16 +90,6 @@ def success(
 def error(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
 ) -> Union[Panel, Text]:
-    """Build an error-style message.
-
-    Args:
-        message: Error message text.
-        details: Optional secondary detail text.
-        use_panel: When True, render in a panel (default True).
-
-    Returns:
-        A Panel or Text renderable styled as an error message.
-    """
     return _output(
         message=message,
         details=details,
@@ -167,16 +103,6 @@ def error(
 def warning(
     message: str, *, details: Optional[str] = None, use_panel: bool = True
 ) -> Union[Panel, Text]:
-    """Build a warning-style message.
-
-    Args:
-        message: Warning message text.
-        details: Optional secondary detail text.
-        use_panel: When True, render in a panel (default True).
-
-    Returns:
-        A Panel or Text renderable styled as a warning message.
-    """
     return _output(
         message=message,
         details=details,

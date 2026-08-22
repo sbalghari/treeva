@@ -84,20 +84,18 @@ class TreeSitterAnalyzer:
         """Parse and analyze a source file, returning its full analysis.
 
         Produces per-file CodeMetrics, DocumentationInfo, and
-        LargestEntities (largest function/class plus the file itself)
-        from a single tree-sitter parse.
+        LargestEntities
 
         Args:
             code_file: The FileInfo of FileInfo.file_type.catogery 'code' to analyze.
             logger: Logger instance.
 
         Returns:
-            A FileAnalysis with the file's metrics, documentation, and
-            largest entities.
+            A populated FileAnalysis instance
 
         Raises:
             UnsupportedLanguage: If no tree-sitter grammar is mapped for
-                the file type.
+                that file type.
         """
         parsed = self._parse(code_file)
         if parsed is None:
@@ -169,7 +167,7 @@ class TreeSitterAnalyzer:
         )
 
     def extract_file_symbols(self, code_file: FileInfo) -> list[Symbol]:
-        """Extract named symbols (functions, classes, methods) from a file.
+        """Extract named symbols like functions and classes from a code file.
 
         Args:
             code_file: The FileInfo to extract symbols from.

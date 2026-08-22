@@ -1,6 +1,5 @@
 """
-These dataclasses form the core data layer used throughout the analysis
-pipeline
+These dataclasses form the core data layer used throughout treeva
 """
 
 from .file_info import FileInfo
@@ -10,6 +9,7 @@ from .analysis.code_metrics import CodeMetrics
 from .analysis.code_quality import CodeQuality
 from .analysis.file_analysis import FileAnalysis
 from .analysis_result import AnalysisResult
+from .generate import FileEntry, ScanContext
 from .analysis.language import LanguageStatistics
 from .analysis.docs import DocumentationInfo
 from .analysis.entities import (
@@ -20,7 +20,6 @@ from .analysis.entities import (
 )
 from .analysis.structure import DirStructure
 from .scan_metadata import ScanMetadata
-from .git import GitChurn, GitInfo
 
 from .tree_sitter.parser_result import ParserResult
 from .tree_sitter.tree_stats import ErrorSpan, TreeStats
@@ -32,12 +31,12 @@ __all__ = [
     "FileAnalysis",
     "FileInfo",
     "DirInfo",
-    "GitChurn",
-    "GitInfo",
     "ScanMetadata",
     "DocumentationInfo",
     "LanguageStatistics",
     "DirStructure",
+    "FileEntry",
+    "ScanContext",
     "LargestEntities",
     "LargestFunction",
     "LargestClass",

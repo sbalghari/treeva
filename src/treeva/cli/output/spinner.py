@@ -1,10 +1,3 @@
-"""Live spinner animation for long-running CLI operations via Rich.
-
-Provides SpinnerProgress, a context manager that displays an animated
-spinner during processing and can transition to success/error/warning
-status messages on completion.
-"""
-
 from __future__ import annotations
 from typing import Optional
 
@@ -19,15 +12,15 @@ from ._base import panel, success, error, warning
 class SpinnerProgress:
     """Context manager for showing a live console spinner.
 
-        Manages a Rich Live display with a spinning animation during
-        long-running operations. Supports status transitions to success,
-        error, or warning messages upon completion.
+    Manages a Rich Live display with a spinning animation during
+    long-running operations. Supports status transitions to success,
+    error, or warning messages upon completion.
 
     Notes:
-                In verbose mode the spinner is suppressed and status messages
-                are printed directly to the console instead. When Rich output
-                is disabled globally (--no-rich) the spinner is suppressed as
-                well and messages are printed as plain text.
+        In verbose mode the spinner is suppressed and status messages
+        are printed directly to the console instead. When Rich output
+        is disabled globally (--no-rich) the spinner is suppressed as
+        well and messages are printed as plain text.
     """
 
     def __init__(
@@ -53,31 +46,13 @@ class SpinnerProgress:
         )
 
     def _styled_text(self, text: str) -> Text:
-        """Wrap text in default body style.
-
-        Args:
-            text: Text to style.
-
-        Returns:
-            A Rich Text instance with the default text style.
-        """
+        """Wrap text in default body style."""
         return Text(text, style="text")
 
     def update_text(self, new_message: str) -> None:
-        """Update the spinner text dynamically during operation.
-
-        Args:
-            new_message: New text to display alongside the spinner.
-        """
         self.spinner.update(text=new_message, style="text")
 
     def success(self, message: str, details: Optional[str] = None) -> None:
-        """Show success message, replacing the spinner.
-
-        Args:
-            message: Success message text.
-            details: Optional secondary detail text.
-        """
         if is_no_rich():
             plain_print(message)
             if details:
@@ -89,12 +64,6 @@ class SpinnerProgress:
             CONSOLE.print(success(message, details=details, use_panel=False))
 
     def error(self, message: str, details: Optional[str] = None) -> None:
-        """Show error message, replacing the spinner.
-
-        Args:
-            message: Error message text.
-            details: Optional secondary detail text.
-        """
         if is_no_rich():
             plain_print(message)
             if details:
@@ -106,12 +75,6 @@ class SpinnerProgress:
             CONSOLE.print(error(message, details=details, use_panel=False))
 
     def warning(self, message: str, details: Optional[str] = None) -> None:
-        """Show warning message, replacing the spinner.
-
-        Args:
-            message: Warning message text.
-            details: Optional secondary detail text.
-        """
         if is_no_rich():
             plain_print(message)
             if details:
@@ -123,14 +86,6 @@ class SpinnerProgress:
             CONSOLE.print(warning(message, details=details, use_panel=False))
 
     def __enter__(self) -> SpinnerProgress:
-        """Start the spinner on context entry.
-
-        Returns:
-            The SpinnerProgress instance for use in the with block.
-
-        Notes:
-            In verbose mode the spinner is not started.
-        """
         if not self.verbose:
             self.live.start()
         return self
@@ -138,15 +93,5 @@ class SpinnerProgress:
     def __exit__(
         self, exc_type: object, exc_val: object, exc_tb: object
     ) -> None:
-        """Stop the spinner on context exit.
-
-        Args:
-            exc_type: Exception type if an error occurred.
-            exc_val: Exception value if an error occurred.
-            exc_tb: Exception traceback if an error occurred.
-
-        Notes:
-            In verbose mode the spinner is not stopped.
-        """
         if not self.verbose:
             self.live.stop()

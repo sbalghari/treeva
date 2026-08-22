@@ -7,17 +7,12 @@ if TYPE_CHECKING:
     from treeva.models import FileAnalysis, FileInfo, Symbol
 
 from .analyzer import ProjectAnalyzer
-from .git import analyze_git
-from .dependencies import extract_imports, build_dependency_graph
 from .base.file import file_info_from_path
 from .base.dir import dir_info_from_path
 
 
 __all__ = [
     "ProjectAnalyzer",
-    "analyze_git",
-    "extract_imports",
-    "build_dependency_graph",
     "file_info_from_path",
     "dir_info_from_path",
     "analyze_file",

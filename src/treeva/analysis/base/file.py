@@ -9,11 +9,10 @@ from .._utils import detect_file_type, get_group, get_owner, is_hidden
 
 
 def file_info_from_path(filepath: Path) -> FileInfo:
-    """Build a FileInfo from 'filepath'.
-
+    """
     Args:
         filepath: Path to the file.
-        logger: Logger instance for logging.
+        logger: Logger instance.
 
     Returns:
         A populated FileInfo instance.

@@ -32,20 +32,6 @@ def register(app: typer.Typer) -> None:
             ),
         ] = None,  # type: ignore[assignment]
     ) -> None:
-        """Analyze a project and return detailed analytics.
-
-        Args:
-            path: Project path to analyze.
-            format: Output format (json, rich-table, or plain-text).
-            file: Whether to redirect output to a file.
-            verbose: Enable verbose logging.
-            exclude: Extra gitignore-style exclude patterns.
-
-        Raises:
-            KeyboardInterrupt: When the user interrupts the process.
-            typer.Exit: When an unexpected error occurs.
-        """
-
         setup_logging("treeva.cmd.analyze", verbose=verbose)
         logger = getLogger("treeva.cmd.analyze")
 

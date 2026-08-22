@@ -1,4 +1,6 @@
-"""Shared helpers for CLI subcommands."""
+"""
+Shared helpers for CLI subcommands.
+"""
 
 from __future__ import annotations
 
@@ -24,17 +26,6 @@ def write_output_to_file(
     logger: Logger,
     encoding: str = "utf-8",
 ) -> bool:
-    """Write data to a file with overwrite confirmation if it exists.
-
-    Args:
-        filepath: Path to the output file.
-        data: String content to write.
-        logger: Logger instance for status messages.
-        encoding: File encoding (default utf-8).
-
-    Returns:
-        True if the write succeeded, False otherwise.
-    """
     if not isinstance(data, str):
         logger.error(f"Data must be string, got {type(data)}")
         return False

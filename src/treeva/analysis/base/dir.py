@@ -17,15 +17,14 @@ from .file import file_info_from_path
 def dir_info_from_path(
     dirpath: Path,
     *,
-    logger: Logger,
     extra_exclude_patterns: list[str] | None = None,
+    logger: Logger,
 ) -> DirInfo:
-    """Walk dirpath and return a DirInfo with all sub-file metadata.
-
+    """
     Args:
-        dirpath: Directory path to analyze.
-        logger: Logger instance for logging.
+        dirpath: Directory path to walk.
         extra_exclude_patterns: Additional gitignore-style exclusion patterns.
+        logger: Logger instance.
 
     Returns:
         A populated DirInfo instance.

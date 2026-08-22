@@ -16,8 +16,6 @@ from ._common import common_options, write_output_to_file
 from .analyze import register as register_analyze
 from .inspect import register as register_inspect
 from .agents import register as register_agents
-from .deps import register as register_deps
-from .git import register as register_git
 
 __all__ = [
     "common_options",
@@ -35,5 +33,3 @@ def register_commands(app: typer.Typer) -> None:
     register_analyze(app)
     register_inspect(app)
     register_agents(app)
-    register_deps(app)
-    register_git(app)

@@ -7,11 +7,11 @@ from typing import Annotated, Optional
 import typer
 
 from treeva.library.logger import setup_logging, LOG_DIR
-from treeva.export.agents import (
+from treeva.generate import (
+    SECTION_NAMES,
     generate_agents_md,
-    remove_generated_sections,
-    write_agents_file,
-    split_at_markers,
+    remove_agents_sections,
+    resolve_sections,
 )
 from treeva.cli.output import print_error, print_success
 from treeva.cli.output.console import CONSOLE
@@ -19,9 +19,7 @@ from ._common import common_options
 
 
 def register(app: typer.Typer) -> None:
-    @app.command(
-        help="Manage AGENTS.md references for AI agents"
-    )
+    @app.command(help="Manage AGENTS.md reference docs for AI agents")
     def agents(
         path: Annotated[Path, typer.Argument(help="project path")],
         generate: Annotated[
@@ -48,6 +46,15 @@ def register(app: typer.Typer) -> None:
                 help="remove treeva-generated sections from AGENTS.md files",
             ),
         ] = False,
+        section: Annotated[
+            Optional[list[str]],
+            typer.Option(
+                "--section",
+                "-s",
+                help="sections to operate on: repeatable, comma-separated, "
+                "or 'all' (default); valid: " + ", ".join(SECTION_NAMES),
+            ),
+        ] = None,
         verbose: bool = common_options["verbose"],
         exclude: Annotated[
             Optional[list[str]],
@@ -58,15 +65,12 @@ def register(app: typer.Typer) -> None:
             ),
         ] = None,  # type: ignore[assignment]
     ) -> None:
-        """Generate, update, or remove AGENTS.md documentation for a project.
+        """Generate, update, or remove AGENTS.md's content for a project.
 
-        Args:
-            path: Project path to manage agents documentation for.
-            generate: Generate AGENTS.md files (default mode).
-            update: Refresh existing treeva-generated sections.
-            remove: Strip treeva-generated sections from AGENTS.md files.
-            verbose: Enable verbose logging.
-            exclude: Extra gitignore-style exclude patterns.
+        The AGENTS.md's content is split into multiple sections. By
+        default every section is processed; ``--section/-s`` restricts
+        the operation to one or more named sections (repeat the flag or
+        comma-separate).
 
         Raises:
             KeyboardInterrupt: When the user interrupts the process.
@@ -88,67 +92,60 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(1)
 
         try:
+            sections = resolve_sections(section)
+        except ValueError as e:
+            print_error(str(e))
+            raise typer.Exit(1)
+
+        try:
             if remove:
-                updated, deleted = remove_generated_sections(
+                remove_result = remove_agents_sections(
                     path,
                     logger=logger,
                     extra_exclude_patterns=exclude,
+                    sections=sections,
                 )
                 print_success(
-                    f"{updated} AGENTS.md sections removed, "
-                    f"{deleted} AGENTS.md files deleted"
+                    f"{remove_result.updated} AGENTS.md files updated, "
+                    f"{remove_result.deleted} AGENTS.md files deleted"
                 )
                 return
 
-            files = generate_agents_md(
-                path, logger=logger, extra_exclude_patterns=exclude
+            result = generate_agents_md(
+                path,
+                logger=logger,
+                extra_exclude_patterns=exclude,
+                sections=sections,
+                mode="update" if update else "generate",
             )
 
-            root_agents = path / "AGENTS.md"
-            has_markers = False
-            if root_agents.exists():
-                _, between, _ = split_at_markers(
-                    root_agents.read_text(encoding="utf-8")
-                )
-                has_markers = between != ""
-
-            if not update and has_markers:
+            if result.root_already_generated:
                 CONSOLE.print(
                     "AGENTS.md already generated. "
                     "Run `treeva agents --update` to refresh it."
                 )
                 raise typer.Exit(0)
 
-            allow_root_overwrite = not root_agents.exists() or has_markers
-            if not update and root_agents.exists() and not has_markers:
-                try:
-                    overwrite = typer.confirm(
-                        "AGENTS.md already exists without treeva markers."
-                        " Prepend generated section?",
-                        default=True,
-                    )
-                    if not overwrite:
+            written = 0
+            for write in result.writes:
+                if write.needs_confirm:
+                    try:
+                        overwrite = typer.confirm(
+                            "AGENTS.md already exists without treeva "
+                            "markers. Prepend generated section?",
+                            default=True,
+                        )
+                        if not overwrite:
+                            print_error("Aborted")
+                            raise typer.Exit(1)
+                    except typer.Abort:
                         print_error("Aborted")
                         raise typer.Exit(1)
-                    allow_root_overwrite = True
-                except typer.Abort:
-                    print_error("Aborted")
-                    raise typer.Exit(1)
-
-            written = 0
-            for rel_path, content in files.items():
-                output_path = path / rel_path
-                is_root = rel_path == "AGENTS.md"
-                output_path.parent.mkdir(parents=True, exist_ok=True)
-
-                allow_overwrite = allow_root_overwrite if is_root else True
-                ok = write_agents_file(
-                    output_path,
-                    content,
-                    allow_overwrite=allow_overwrite if not update else False,
+                write.path.parent.mkdir(parents=True, exist_ok=True)
+                write.path.write_text(
+                    write.content.strip() + "\n", encoding="utf-8"
                 )
-                if ok:
-                    written += 1
+                written += 1
 
             print_success(f"{written} AGENTS.md files written")
 

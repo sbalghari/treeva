@@ -1,11 +1,3 @@
-"""
-Docstring detection for documentation coverage metrics.
-
-Only Python docstrings are recognized: a symbol counts as documented
-when its body's first statement is a string expression. Other
-languages report zero documented symbols.
-"""
-
 from __future__ import annotations
 
 from tree_sitter import Tree

@@ -34,20 +34,6 @@ def register(app: typer.Typer) -> None:
             ),
         ] = None,  # type: ignore[assignment]
     ) -> None:
-        """Return metadata for a file or a directory.
-
-        Args:
-            path: File or directory path to inspect.
-            format: Output format (json, rich-table, or plain-text).
-            file: Whether to redirect output to a file.
-            verbose: Enable verbose logging.
-            exclude: Extra gitignore-style exclude patterns.
-
-        Raises:
-            KeyboardInterrupt: When the user interrupts the process.
-            typer.Exit: When an unexpected error occurs.
-        """
-
         setup_logging("treeva.cmd.inspect", verbose=verbose)
         logger = getLogger("treeva.cmd.inspect")
 

@@ -87,23 +87,6 @@ class AnalysisResultFormat:
             "Deepest Directory Depth": dir_structure.deepest_directory_depth,
             "Avg Files per Directory": dir_structure.average_files_per_directory,
             "Empty Directories": dir_structure.empty_directory_count,
-            "Git Info": (
-                {
-                    "total_commits": result.git_info.total_commits,
-                    "total_authors": result.git_info.total_authors,
-                    "hotspots": [
-                        {
-                            "filepath": hotspot.filepath,
-                            "additions": hotspot.additions,
-                            "deletions": hotspot.deletions,
-                            "commits": hotspot.commits,
-                        }
-                        for hotspot in result.git_info.hotspots
-                    ],
-                }
-                if result.git_info
-                else None
-            ),
             "Scanned Files": scan.scanned_files,
             "Ignored Files": scan.ignored_files,
             "Failed Files": scan.failed_files,

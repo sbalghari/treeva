@@ -6,7 +6,7 @@ from dataclasses import dataclass
 class Symbol:
     """A named symbol (function, class, etc.) found during analysis.
 
-    Each symbol records its name, kind (function/class/method/variable),
+    Each symbol records its name, kind (function/class/method),
     and the source line range it occupies.
     """
 

@@ -41,12 +41,9 @@ class ProjectAnalyzer:
     ) -> AnalysisResult:
         """Walk a directory tree and return a complete AnalysisResult.
 
-        One-shot convenience wrapper around analyze() that first builds
-        a DirNode from the given path.
-
         Args:
             path: Root directory of the project to analyze.
-            logger: Logger instance for warnings and errors.
+            logger: logging.Logger instance.
             extra_exclude_patterns: Additional gitignore-style exclusion patterns.
 
         Returns:

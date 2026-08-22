@@ -1,9 +1,3 @@
-"""Typer CLI application for treeva.
-
-Creates the top-level ``app``, registers the global callback, and
-delegates subcommand registration to :mod:`treeva.cli.commands`.
-"""
-
 from __future__ import annotations
 
 from typing import Annotated, Optional

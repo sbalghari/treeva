@@ -4,8 +4,6 @@ from enum import Enum
 
 
 class FileCategory(Enum):
-    """High-level grouping for a file's role in a project."""
-
     CODE = "code"
     SCRIPT = "script"
     CONFIG = "config"
