@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from enum import Enum
 from logging import getLogger
 from pathlib import Path
 from typing import Annotated, Optional
@@ -8,26 +9,42 @@ import typer
 
 from treeva.library.logger import setup_logging, LOG_DIR
 from treeva.generate import (
-    SECTION_NAMES,
     generate_agents_md,
     remove_agents_sections,
-    resolve_sections,
 )
+from treeva.generate.agentsmd import resolve_sections as resolve_agent_sections
 from treeva.cli.output import print_error, print_success
 from treeva.cli.output.console import CONSOLE
 from ._common import common_options
 
 
+class Target(str, Enum):
+    """Documentation targets supported by ``treeva generate``."""
+
+    AGENTS = "agents"
+
+
 def register(app: typer.Typer) -> None:
-    @app.command(help="Manage AGENTS.md reference docs for AI agents")
-    def agents(
+    @app.command(
+        name="generate",
+        help="Generate treeva-managed docs (AGENTS.md) for AI agents",
+    )
+    def generate(
         path: Annotated[Path, typer.Argument(help="project path")],
-        generate: Annotated[
+        target: Annotated[
+            Target,
+            typer.Option(
+                "--target",
+                "-t",
+                help="docs target to operate on",
+            ),
+        ] = Target.AGENTS,
+        generate_flag: Annotated[
             bool,
             typer.Option(
                 "--generate",
                 "-g",
-                help="generate AGENTS.md files (default)",
+                help="generate docs files (default)",
             ),
         ] = False,
         update: Annotated[
@@ -43,7 +60,7 @@ def register(app: typer.Typer) -> None:
             typer.Option(
                 "--remove",
                 "-rm",
-                help="remove treeva-generated sections from AGENTS.md files",
+                help="remove treeva-generated sections from docs files",
             ),
         ] = False,
         section: Annotated[
@@ -52,7 +69,7 @@ def register(app: typer.Typer) -> None:
                 "--section",
                 "-s",
                 help="sections to operate on: repeatable, comma-separated, "
-                "or 'all' (default); valid: " + ", ".join(SECTION_NAMES),
+                "or 'all' (default)",
             ),
         ] = None,
         verbose: bool = common_options["verbose"],
@@ -65,19 +82,19 @@ def register(app: typer.Typer) -> None:
             ),
         ] = None,  # type: ignore[assignment]
     ) -> None:
-        """Generate, update, or remove AGENTS.md's content for a project.
+        """Generate, update, or remove managed docs for a project.
 
-        The AGENTS.md's content is split into multiple sections. By
-        default every section is processed; ``--section/-s`` restricts
-        the operation to one or more named sections (repeat the flag or
-        comma-separate).
+        Managed files are split into named sections wrapped in treeva
+        markers. By default every section is processed;
+        ``--section/-s`` restricts the operation to one or more named
+        sections (repeat the flag or comma-separate).
 
         Raises:
             KeyboardInterrupt: When the user interrupts the process.
             typer.Exit: When an unexpected error occurs.
         """
-        setup_logging("treeva.cmd.agents", verbose=verbose)
-        logger = getLogger("treeva.cmd.agents")
+        setup_logging("treeva.cmd.generate", verbose=verbose)
+        logger = getLogger("treeva.cmd.generate")
 
         path = path.resolve()
 
@@ -85,14 +102,18 @@ def register(app: typer.Typer) -> None:
             print_error(f"Path does not exist: {path}")
             raise typer.Exit(1)
 
-        if int(generate) + int(update) + int(remove) > 1:
+        if int(generate_flag) + int(update) + int(remove) > 1:
             print_error(
                 "--generate, --update, and --remove are mutually exclusive"
             )
             raise typer.Exit(1)
 
         try:
-            sections = resolve_sections(section)
+            if target is Target.AGENTS:
+                sections = resolve_agent_sections(section)
+            else:  # pragma: no cover - enum exhaustiveness guard
+                print_error(f"Unsupported target: {target.value}")
+                raise typer.Exit(1)
         except ValueError as e:
             print_error(str(e))
             raise typer.Exit(1)
@@ -122,7 +143,7 @@ def register(app: typer.Typer) -> None:
             if result.root_already_generated:
                 CONSOLE.print(
                     "AGENTS.md already generated. "
-                    "Run `treeva agents --update` to refresh it."
+                    "Run `treeva generate <path> --update` to refresh it."
                 )
                 raise typer.Exit(0)
 
@@ -157,7 +178,7 @@ def register(app: typer.Typer) -> None:
         except Exception as e:
             print_error(
                 f"Unexpected Error: {str(e)}, check logs for details:"
-                f" {LOG_DIR}/treeva.cmd.agents.log"
+                f" {LOG_DIR}/treeva.cmd.generate.log"
             )
             logger.exception("Unexpected Error: ", exc_info=e)
             raise typer.Exit(1)

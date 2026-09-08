@@ -1,3 +1,11 @@
+"""
+Single-pass project scanning shared by all generators.
+
+Walks and analyzes a project tree once, producing a
+:class:`~treeva.models.ScanContext` that section renderers derive
+their content from.
+"""
+
 from __future__ import annotations
 
 from pathlib import Path

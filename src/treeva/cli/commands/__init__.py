@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 from ._common import common_options, write_output_to_file
 from .analyze import register as register_analyze
 from .inspect import register as register_inspect
-from .agents import register as register_agents
+from .generate import register as register_generate
 
 __all__ = [
     "common_options",
@@ -32,4 +32,4 @@ def register_commands(app: typer.Typer) -> None:
     """
     register_analyze(app)
     register_inspect(app)
-    register_agents(app)
+    register_generate(app)

@@ -1,5 +1,5 @@
 """
-Marker parsing and merging for generated AGENTS.md content.
+Marker parsing and merging for generated documentation content.
 
 Every generated section is wrapped in its own marker pair so that
 sections can be generated, updated, or removed independently. A
