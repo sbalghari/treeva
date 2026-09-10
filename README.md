@@ -25,10 +25,11 @@
 
 - [x] Filesystem scanning with exclusion support
 - [x] File and dir metadata extraction
-- [x] Language detection (40+ languages)
-- [x] Multiple output formats
-- [ ] AST/Tree-sitter-based analysis for deeper code insights
-- [ ] Custom exclusions support
+- [x] Language detection (10 languages via tree-sitter)
+- [x] Multiple output formats (JSON, rich table, plain text)
+- [x] AST/Tree-sitter-based analysis for deeper code insights
+- [x] Custom exclusions support (`--exclude` flag)
+- [x] Supported languages query (`--supported-langs` flag)
 - [ ] Terminal user interface
 - [ ] AI-powered analysis and recommendations
 - [ ] CI/CD integration support
