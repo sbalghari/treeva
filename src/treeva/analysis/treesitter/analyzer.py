@@ -272,7 +272,7 @@ class TreeSitterAnalyzer:
                 max_depth = max(max_depth, depth)
 
             if cursor.goto_first_child():
-                if cursor.node.type in nesting_node_types:
+                if cursor.node.type in nesting_node_types:  # ty:ignore[unresolved-attribute]
                     depth += 1
                 continue
             if cursor.goto_next_sibling():

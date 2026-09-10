@@ -31,8 +31,12 @@ class DirectoriesSection(Section):
             Content lines of the directory AGENTS.md section.
         """
         header = f"# {dirpath}/ — Agent Reference"
-        rows: list[str] = [header, "", "| File | Language | Lines |",
-                           "|------|----------|-------|"]
+        rows: list[str] = [
+            header,
+            "",
+            "| File | Language | Lines |",
+            "|------|----------|-------|",
+        ]
         for f in sorted(files, key=lambda x: x.filename):
             rows.append(
                 f"| `{f.filename}` | {f.language} | {_lines_cell(f)} |"

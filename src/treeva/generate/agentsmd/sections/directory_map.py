@@ -20,8 +20,6 @@ class DirectoryMapSection(Section):
         lines.append("| Directory | Description |")
         lines.append("|-----------|-------------|")
         for d in all_dirs:
-            lines.append(
-                f"| `{d}/` | Placeholder: AI-generated description |"
-            )
+            lines.append(f"| `{d}/` | Placeholder: AI-generated description |")
         lines.append("")
         return {ROOT_FILE: lines}

@@ -5,7 +5,6 @@ from treeva.models import ScanContext
 
 
 class AgentRulesSection(Section):
-
     name = "rules"
     title = "Agent Rules"
     description = "Conventions and commit format for AI agents"
@@ -15,7 +14,9 @@ class AgentRulesSection(Section):
         lines.append(
             "1. Follow the code style and conventions reflected in the codebase."
         )
-        lines.append("2. Use patterns consistent with existing implementations.")
+        lines.append(
+            "2. Use patterns consistent with existing implementations."
+        )
         lines.append(
             "3. Keep symbols, function signatures, and types in sync with "
             "source."
@@ -44,9 +45,7 @@ class AgentRulesSection(Section):
         lines.append(
             "- **summary**: <= 50 chars, lowercase, NO trailing period"
         )
-        lines.append(
-            "- **body** (optional): explain WHY, wrapped at 72 chars"
-        )
+        lines.append("- **body** (optional): explain WHY, wrapped at 72 chars")
         lines.append("- **footer** (optional): issues / breaking changes")
         lines.append("")
         return {ROOT_FILE: lines}

@@ -133,7 +133,9 @@ def merge_sections(existing: str, sections: dict[str, str]) -> str | None:
             out.extend(segment)
         cursor = block.end + 1
 
-    missing = [(name, text) for name, text in sections.items() if name not in written]
+    missing = [
+        (name, text) for name, text in sections.items() if name not in written
+    ]
     if missing:
         if cursor < len(lines) and lines[cursor].strip() == "":
             cursor += 1

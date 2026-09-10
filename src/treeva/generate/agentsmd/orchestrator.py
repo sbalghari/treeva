@@ -165,7 +165,9 @@ def generate_agents_md(
     result = GenerateResult()
     for rel, blocks in _requested_files(all_blocks, names).items():
         target = project_root / rel
-        existing = target.read_text(encoding="utf-8") if target.exists() else ""
+        existing = (
+            target.read_text(encoding="utf-8") if target.exists() else ""
+        )
         parsed = parse_blocks(existing) if existing else []
 
         if not parsed:

@@ -30,8 +30,7 @@ class OverviewSection(Section):
     name = "overview"
     title = "Project Overview"
     description = (
-        "Project heading, description, version, totals, and language "
-        "breakdown"
+        "Project heading, description, version, totals, and language breakdown"
     )
 
     def render(self, ctx: ScanContext) -> dict[str, list[str]]:

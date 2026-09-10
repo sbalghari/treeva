@@ -12,7 +12,6 @@ from treeva.cli.output import print_newline
 from ...utils import format_size
 
 
-
 def dir_info_table(dir_info: DirInfo) -> None:
     """Display DirInfo as a Rich table.
 

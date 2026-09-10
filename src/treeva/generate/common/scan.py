@@ -86,6 +86,8 @@ def scan_project(
         if metrics:
             ctx.total_loc += metrics.lines_of_code
             lang = sf.file_type.label
-            ctx.lang_loc[lang] = ctx.lang_loc.get(lang, 0) + metrics.lines_of_code
+            ctx.lang_loc[lang] = (
+                ctx.lang_loc.get(lang, 0) + metrics.lines_of_code
+            )
 
     return ctx

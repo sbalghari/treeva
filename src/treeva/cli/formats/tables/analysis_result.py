@@ -10,7 +10,6 @@ from treeva.cli.output.console import CONSOLE, COLORS
 from ...utils import format_size
 
 
-
 def analysis_result_table(analysis_result: AnalysisResult) -> None:
     """Display AnalysisResult as a Rich tables.
 
