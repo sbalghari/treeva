@@ -1,40 +1,23 @@
-name: ruff_action_CI
-on: push
+name: Lint
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
 
 jobs:
-  lint:
+  ruff:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write  
     steps:
       - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          enable-cache: true
 
-      - name: Install Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
+      - name: Ruff check
+        run: uv run ruff check src/
 
-      - name: Install Ruff
-        run: |
-          python -m pip install --upgrade pip
-          pip install ruff
-
-      - name: Run ruff check with auto-fix
-        run: ruff check --fix .
-
-      - name: Run ruff format
-        run: ruff format
-        
-      - name: Commit and push fixes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          if [[ `git status --porcelain` ]]; then
-            git add .
-            git commit -m "chore: auto-fix lint issues via Ruff"
-            git push
-          else
-            echo "No changes to commit"
-          fi
+      - name: Ruff format check
+        run: uv run ruff format --check src/
