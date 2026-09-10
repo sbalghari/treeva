@@ -8,7 +8,7 @@ version = "0.1.0a1"
 description = "Treeva - A Simple, Fast and Feature-Rich CodeBase Analysis and Management Tool"
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 authors = [{ name = "Saifullah Balghari", email = "sbalghari@proton.me" }]
 keywords = [
     "cli",
@@ -26,8 +26,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: System :: Shells",
 ]
@@ -70,7 +68,7 @@ package = true
 [tool.ruff]
 src = ["."]
 line-length = 79
-target-version = "py311"
+target-version = "py312"
 
 [dependency-groups]
 dev = ["mypy>=1.20.0", "pytest>=9.0.3", "ruff>=0.15.10", "ty>=0.0.29"]

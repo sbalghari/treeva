@@ -60,7 +60,7 @@
 
 ### Requirements
 
-- Python 3.14+
+- Python 3.12+
 - pip or [uv](https://github.com/astral-sh/uv)
 
 ### Using uv (Recommended)

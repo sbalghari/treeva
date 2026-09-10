@@ -60,7 +60,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **`scanners/dir_walker.py`** rewritten: accepts `extra_exclude_patterns`,
   uses in-place `dirs[:]` mutation to skip entire subtrees, no double-walk
 - **Package dependencies updated**: added `tree-sitter` and 10 grammar
-  packages, `requests`; Python floor bumped to `>=3.14`; entry point moved to
+  packages, `requests`; Python floor bumped to `>=3.12`; entry point moved to
   `treeva.cli:app`
 - **`AnalysisResultFormat.json()`** now produces nested dict mirroring
   dataclass hierarchy instead of a flat key-value dict
