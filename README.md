@@ -19,9 +19,8 @@
 
 ## Status
 
-> [!NOTE] **Alpha Release**: This is an early alpha release (v0.1.0a1). Core
-> functionality is implemented, but breaking changes may occur in future
-> versions. Bug reports and feedback are welcome!
+> [!WARNING]
+> **Alpha Software**: treeva is in its early development phase, future versions may introduce breaking changes. 
 
 - [x] Filesystem scanning with exclusion support
 - [x] File and dir metadata extraction
@@ -39,21 +38,21 @@
 #### Best Support
 
 <div align="left">
-  <img src="https://img.shields.io/badge/Python-3776AB.svg?style=flat-square&labelColor=313244" alt="Python">
+  <img src="https://img.shields.io/badge/Python-3776AB.svg?style=for-the-badge&labelColor=313244" alt="Python">
 </div>
 
 #### Minor Support
 
 <div align="left">
-  <img src="https://img.shields.io/badge/Bash-4EAA25.svg?style=flat-square&labelColor=313244" alt="Bash">
-  <img src="https://img.shields.io/badge/C-A8B9CC.svg?style=flat-square&labelColor=313244" alt="C">
-  <img src="https://img.shields.io/badge/C++-00599C.svg?style=flat-square&labelColor=313244" alt="C++">
-  <img src="https://img.shields.io/badge/Go-00ADD8.svg?style=flat-square&labelColor=313244" alt="Go">
-  <img src="https://img.shields.io/badge/Java-ED8B00.svg?style=flat-square&labelColor=313244" alt="Java">
-  <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=flat-square&labelColor=313244" alt="JavaScript">
-  <img src="https://img.shields.io/badge/Lua-2C2D72.svg?style=flat-square&labelColor=313244" alt="Lua">
-  <img src="https://img.shields.io/badge/Rust-000000.svg?style=flat-square&labelColor=313244&color=ffffff" alt="Rust">
-  <img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=flat-square&labelColor=313244" alt="TypeScript">
+  <img src="https://img.shields.io/badge/Bash-4EAA25.svg?style=for-the-badge&labelColor=313244" alt="Bash">
+  <img src="https://img.shields.io/badge/C-A8B9CC.svg?style=for-the-badge&labelColor=313244" alt="C">
+  <img src="https://img.shields.io/badge/C++-00599C.svg?style=for-the-badge&labelColor=313244" alt="C++">
+  <img src="https://img.shields.io/badge/Go-00ADD8.svg?style=for-the-badge&labelColor=313244" alt="Go">
+  <img src="https://img.shields.io/badge/Java-ED8B00.svg?style=for-the-badge&labelColor=313244" alt="Java">
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E.svg?style=for-the-badge&labelColor=313244" alt="JavaScript">
+  <img src="https://img.shields.io/badge/Lua-2C2D72.svg?style=for-the-badge&labelColor=313244" alt="Lua">
+  <img src="https://img.shields.io/badge/Rust-000000.svg?style=for-the-badge&labelColor=313244&color=ffffff" alt="Rust">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6.svg?style=for-the-badge&labelColor=313244" alt="TypeScript">
 </div>
 
 ## Installation
