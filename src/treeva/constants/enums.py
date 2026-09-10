@@ -31,32 +31,9 @@ class FileType(Enum):
     JAVA = ("Java", FileCategory.CODE)
     CPP = ("C++", FileCategory.CODE)
     C = ("C", FileCategory.CODE)
-    CSHARP = ("C#", FileCategory.CODE)
     GO = ("Go", FileCategory.CODE)
     RUST = ("Rust", FileCategory.CODE)
-    RUBY = ("Ruby", FileCategory.CODE)
-    PHP = ("PHP", FileCategory.CODE)
-    SWIFT = ("Swift", FileCategory.CODE)
-    KOTLIN = ("Kotlin", FileCategory.CODE)
-    SCALA = ("Scala", FileCategory.CODE)
-    GROOVY = ("Groovy", FileCategory.CODE)
-    PERL = ("Perl", FileCategory.CODE)
-    R = ("R", FileCategory.CODE)
     LUA = ("Lua", FileCategory.CODE)
-    DART = ("Dart", FileCategory.CODE)
-    ELIXIR = ("Elixir", FileCategory.CODE)
-    CLOJURE = ("Clojure", FileCategory.CODE)
-    HASKELL = ("Haskell", FileCategory.CODE)
-    OCAML = ("OCaml", FileCategory.CODE)
-
-    HTML = ("HTML", FileCategory.CODE)
-    CSS = ("CSS", FileCategory.CODE)
-    SCSS = ("SCSS", FileCategory.CODE)
-    SASS = ("Sass", FileCategory.CODE)
-    LESS = ("Less", FileCategory.CODE)
-
-    SQL = ("SQL", FileCategory.CODE)
-    QML = ("QML", FileCategory.CODE)
 
     # -------------------------
     # Script Files
