@@ -1,4 +1,9 @@
 from __future__ import annotations
+
+import dataclasses
+from datetime import datetime
+from enum import Enum
+from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -6,6 +11,37 @@ if TYPE_CHECKING:
 
 from ..output.console import is_no_rich, plain_print
 from .tables.analysis_result import analysis_result_table
+
+
+def _serialize_value(value: Any) -> Any:
+    """Recursively convert a value to a JSON-safe representation."""
+    if isinstance(value, Path):
+        return str(value)
+    if isinstance(value, datetime):
+        return value.isoformat()
+    if isinstance(value, Enum):
+        if isinstance(value.value, tuple):
+            return {"label": value.value[0], "category": value.value[1].value}
+        return value.value
+    if dataclasses.is_dataclass(value) and not isinstance(value, type):
+        return _serialize_dataclass(value)
+    if isinstance(value, dict):
+        return {str(k): _serialize_value(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_serialize_value(v) for v in value]
+    return value
+
+
+def _serialize_dataclass(obj: Any) -> dict[str, Any]:
+    """Serialize a dataclass instance to a JSON-safe dict.
+
+    Uses the field names as keys (snake_case) and recursively
+    handles nested dataclasses, Paths, datetimes, and enums.
+    """
+    return {
+        field.name: _serialize_value(getattr(obj, field.name))
+        for field in dataclasses.fields(obj)
+    }
 
 
 class AnalysisResultFormat:
@@ -19,81 +55,13 @@ class AnalysisResultFormat:
 
     @staticmethod
     def json(result: AnalysisResult) -> dict[str, Any]:
-        """Format analysis result as a JSON-serializable dict."""
-        code = result.code_metrics
-        quality = result.code_quality
-        languages = result.languages_stats
-        docs = result.documentation_info
-        entities = result.entities
-        scan = result.scan_metadata
-        dir_structure = result.dir_structure
-        dir_info = result.dir_info
+        """Format analysis result as a JSON-serializable dict.
 
-        return {
-            "Project Name": dir_info.dirname,
-            "Project Path": str(dir_info.full_path),
-            "Files": dir_info.files_count,
-            "Subdirectories": dir_info.subdirectory_count,
-            "Size (bytes)": dir_info.size_in_bytes,
-            "Total LOC": code.lines_of_code,
-            "Total Comment Lines": code.lines_of_comment,
-            "Total Blank Lines": code.blank_lines,
-            "Comment Density": code.comment_density,
-            "Total Functions": code.function_count,
-            "Total Classes": code.class_count,
-            "Total Methods": code.method_count,
-            "Total Imports": code.import_count,
-            "Total Branches": code.branches_count,
-            "Total Loops": code.loops_count,
-            "Max Nesting Depth": code.max_nesting_depth,
-            "Avg Nesting Depth": code.average_nesting_depth,
-            "Cyclomatic Complexity": quality.cyclomatic_complexity,
-            "Maintainability Score": quality.maintainability_index,
-            "Top Languages": [
-                {"language": lang, "loc": loc}
-                for lang, loc in languages.top_languages
-            ],
-            "Language Distribution": languages.distribution,
-            "Language LOC": languages.loc_per_language,
-            "Documented Functions": docs.documented_functions,
-            "Documented Classes": docs.documented_classes,
-            "Documented Methods": docs.documented_methods,
-            "Undocumented Functions": docs.undocumented_functions,
-            "Undocumented Classes": docs.undocumented_classes,
-            "Undocumented Methods": docs.undocumented_methods,
-            "Largest File": {
-                "path": str(entities.file.path),
-                "size": entities.file.size,
-                "loc": entities.file.loc,
-            },
-            "Largest Function": (
-                {
-                    "name": entities.function.name,
-                    "file": str(entities.function.file),
-                    "loc": entities.function.loc,
-                }
-                if entities.function
-                else None
-            ),
-            "Largest Class": (
-                {
-                    "name": entities.cls.name,
-                    "file": str(entities.cls.file),
-                    "loc": entities.cls.loc,
-                }
-                if entities.cls
-                else None
-            ),
-            "Deepest Directory Depth": dir_structure.deepest_directory_depth,
-            "Avg Files per Directory": dir_structure.average_files_per_directory,
-            "Empty Directories": dir_structure.empty_directory_count,
-            "Scanned Files": scan.scanned_files,
-            "Ignored Files": scan.ignored_files,
-            "Failed Files": scan.failed_files,
-            "Scan Duration (s)": scan.duration_seconds,
-            "Created At": dir_info.created_at.isoformat(),
-            "Modified At": dir_info.modified_at.isoformat(),
-        }
+        Produces a nested structure mirroring the dataclass hierarchy:
+        dir_info, files, dir_structure, code_metrics, code_quality,
+        languages_stats, documentation_info, entities, scan_metadata.
+        """
+        return _serialize_dataclass(result)
 
     @staticmethod
     def plain_text(result: Any) -> str:
