@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="assets/temp_logo.png" alt="Treeva Logo" width="200">
   <h1>Treeva</h1>
   <p>A fast, feature-rich directory analyzer for inspecting project structures, codebases, and file metrics</p>
 </div>
