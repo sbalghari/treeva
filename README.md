@@ -1,7 +1,7 @@
 <div align="center">
-  <img src="assets/temp_logo.png" alt="Treeva Logo" width="200">
+  <img src="assets/temp_logo.png" alt="Treeva Logo" width="120">
   <h1>Treeva</h1>
-  <p>A fast, feature-rich directory analyzer for inspecting project structures, codebases, and file metrics</p>
+  <p>A Simple, Fast and Feature-Rich CodeBase Analysis and Management Tool</p>
 </div>
 
 <div align="center">
@@ -105,4 +105,5 @@ releases.
 - Styled with [Rich](https://rich.readthedocs.io/) for beautiful terminal
   output
 - Powered by [Pathspec](https://github.com/cpburnz/python-pathspec) for pattern
-  matching
+  matching for exclusions
+- Powered by [Tree-sitter]() for AST parsing
