@@ -1,5 +1,4 @@
 <div align="center">
-  <img src="assets/temp_logo.png" alt="Treeva Logo" width="120">
   <h1>Treeva</h1>
   <p>A Simple, Fast and Feature-Rich CodeBase Analysis and Management Tool</p>
 </div>
@@ -23,15 +22,20 @@
 > [!WARNING]
 > **Alpha Software**: treeva is in its early development phase, future versions may introduce breaking changes. 
 
-- [x] Filesystem scanning with exclusion support
-- [x] File and dir metadata extraction
+- [x] Filesystem scanning with default and custom exclusion support
+- [x] File and dir metadata inspection
 - [x] Language detection (10 languages via tree-sitter)
 - [x] Multiple output formats (JSON, rich table, plain text)
 - [x] AST/Tree-sitter-based analysis for deeper code insights
-- [x] Custom exclusions support (`--exclude` flag)
-- [x] Supported languages query (`--supported-langs` flag)
+- [x] Per-Dir AGENTS.md generator
+- [x] Basic structure and code analysis and metrics
+- [ ] IMPORTANT: WRITE TESTS
+- [ ] Improve the public API and publish on PyPi
+- [ ] Create a Docs site - GitHub Pages
+- [ ] Dependencies and git analysis
 - [ ] Terminal user interface
 - [ ] AI-powered analysis and recommendations
+- [ ] Symbols based cache and query system + `treeva` skill for AI-Agents for token optimization
 - [ ] CI/CD integration support
 
 ### Language Support
