@@ -122,7 +122,7 @@ def dir_walker(
                 if not exclude_rule.should_exclude(root / d)
                 and (
                     not extra_spec
-                    or not _rel_match(extra_spec, root, dir_path, d)
+                    or not _rel_match(extra_spec, root, dir_path, d)  # ty:ignore[invalid-argument-type]
                 )
             ]
 
@@ -134,7 +134,7 @@ def dir_walker(
                 file_path = root / f
                 if not exclude_rule.should_exclude(file_path) and (
                     not extra_spec
-                    or not _rel_match(extra_spec, root, dir_path, f)
+                    or not _rel_match(extra_spec, root, dir_path, f)  # ty:ignore[invalid-argument-type]
                 ):
                     yield file_path
 

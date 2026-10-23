@@ -32,10 +32,10 @@ def count_documented_symbols(
     reached_root = False
     while not reached_root:
         node = cursor.node
-        if node.type in function_types or node.type in class_types:
-            body = node.child_by_field_name("body")
+        if node.type in function_types or node.type in class_types:  # ty:ignore[unresolved-attribute]
+            body = node.child_by_field_name("body")  # ty:ignore[unresolved-attribute]
             if _starts_with_docstring(body):
-                if node.type in class_types:
+                if node.type in class_types:  # ty:ignore[unresolved-attribute]
                     documented_classes += 1
                 else:
                     documented_functions += 1

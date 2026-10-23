@@ -45,15 +45,15 @@ def extract_symbols(tree: Tree, language_name: str) -> list[Symbol]:
     reached_root = False
     while not reached_root:
         node = cursor.node
-        if node.type in type_to_kind:
-            name_node = node.child_by_field_name("name")
+        if node.type in type_to_kind:  # ty:ignore[unresolved-attribute]
+            name_node = node.child_by_field_name("name")  # ty:ignore[unresolved-attribute]
             if name_node is not None and name_node.text is not None:
                 symbols.append(
                     Symbol(
                         name=name_node.text.decode("utf-8"),
-                        kind=type_to_kind[node.type],
-                        start_line=node.start_point[0] + 1,
-                        end_line=node.end_point[0] + 1,
+                        kind=type_to_kind[node.type],  # ty:ignore[unresolved-attribute]
+                        start_line=node.start_point[0] + 1,  # ty:ignore[unresolved-attribute]
+                        end_line=node.end_point[0] + 1,  # ty:ignore[unresolved-attribute]
                     )
                 )
 

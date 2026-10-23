@@ -67,11 +67,11 @@ def register(app: typer.Typer) -> None:
 
             if not file:
                 if format == "json":
-                    CONSOLE.print(json.dumps(formatter.json(info), indent=2))
+                    CONSOLE.print(json.dumps(formatter.json(info), indent=2))  # ty:ignore[invalid-argument-type]
                 elif format == "rich-table":
-                    formatter.print_table(info)
+                    formatter.print_table(info)  # ty:ignore[invalid-argument-type]
                 else:
-                    CONSOLE.print(formatter.plain_text(info))
+                    CONSOLE.print(formatter.plain_text(info))  # ty:ignore[invalid-argument-type]
                 return
 
             if format == "rich-table":
@@ -84,12 +84,12 @@ def register(app: typer.Typer) -> None:
                 output_path = (
                     Path.home() / "treeva" / f"{kind}_{path.name}.json"
                 )
-                output_content = json.dumps(formatter.json(info), indent=2)
+                output_content = json.dumps(formatter.json(info), indent=2)  # ty:ignore[invalid-argument-type]
             else:
                 output_path = (
                     Path.home() / "treeva" / f"{kind}_{path.name}.txt"
                 )
-                output_content = formatter.plain_text(info)
+                output_content = formatter.plain_text(info)  # ty:ignore[invalid-argument-type]
 
             if write_output_to_file(output_path, output_content, logger):
                 print_success(f"Metadata ready at {output_path}")
