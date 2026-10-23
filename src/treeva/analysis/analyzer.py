@@ -30,7 +30,6 @@ class ProjectAnalyzer:
     def __init__(self):
 
         self._treesitter = TreeSitterAnalyzer()
-        self._aggregator = MetricsAggregator()
 
     def analyze(
         self,
@@ -54,6 +53,7 @@ class ProjectAnalyzer:
         )
         start_time = time.time()
 
+        aggregator = MetricsAggregator()
         files = list(dir_info.source_files)
         failed = 0
         ignored = 0
@@ -66,7 +66,7 @@ class ProjectAnalyzer:
             try:
                 result = self._treesitter.analyze(sf, logger=logger)
 
-                self._aggregator.add(
+                aggregator.add(
                     result.code_metrics, sf.file_type, result.documentation
                 )
 
@@ -102,9 +102,7 @@ class ProjectAnalyzer:
         elapsed_time = time.time() - start_time
 
         # Fully aggregated project-level code_metrics, language_stats and documentation_info
-        _code_metrics, _lang_stats, _docs_info = (
-            self._aggregator.build_result()
-        )
+        _code_metrics, _lang_stats, _docs_info = aggregator.build_result()
 
         # Largest entities in the project
         _entities = LargestEntities(
