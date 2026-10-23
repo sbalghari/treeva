@@ -67,7 +67,11 @@ class ProjectAnalyzer:
                 result = self._treesitter.analyze(sf, logger=logger)
 
                 aggregator.add(
-                    result.code_metrics, sf.file_type, result.documentation
+                    result.code_metrics,
+                    sf.file_type,
+                    result.documentation,
+                    nesting_depth_sum=result.nesting_depth_sum,
+                    nesting_node_count=result.nesting_node_count,
                 )
 
                 _file = LargestFile(

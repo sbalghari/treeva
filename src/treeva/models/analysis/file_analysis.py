@@ -17,3 +17,5 @@ class FileAnalysis:
     documentation: DocumentationInfo
     largest_function: LargestFunction | None
     largest_class: LargestClass | None
+    nesting_depth_sum: int
+    nesting_node_count: int
