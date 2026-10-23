@@ -10,6 +10,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- **Dependabot configuration**: weekly updates for `uv`-managed Python
+  dependencies and GitHub Actions, with minor and patch bumps grouped into
+  single PRs and major updates kept separate
+
+### Fixed
+
+- **Import-time `NameError`**: modules that import types only under
+  `TYPE_CHECKING` now use postponed annotation evaluation, so annotations are
+  no longer evaluated when a module is imported
+- **`ty` false positives**: added targeted ignore comments for expected
+  `invalid-argument-type` and `unresolved-attribute` diagnostics in the
+  tree-sitter analyzers and `inspect` command
+
+## [0.1.0a2] - 2026-09-11
+
+### Added
+
 - **Structural code metrics**: function, class, method, variable, constant,
   branch, loop, return, and import counts; max/average nesting depth extracted
   from ASTs instead of regex heuristics
@@ -82,7 +99,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - **Monolithic `constants.py`**: replaced by `constants/` package
 - **Monolithic `__init__.py`**: removed `cli` entry point (now in `cli/app.py`)
 
-## [0.1.0-alpha] - 2026-05-11
+## [0.1.0a1] - 2026-05-11
 
 ### Added
 
