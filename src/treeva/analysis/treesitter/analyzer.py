@@ -136,9 +136,12 @@ class TreeSitterAnalyzer:
                 if kind in kind_map
             )
         )
-        max_nesting_depth, average_nesting_depth = self._nesting_depth(
-            parsed.tree, nesting_node_types
-        )
+        (
+            max_nesting_depth,
+            average_nesting_depth,
+            nesting_depth_sum,
+            nesting_node_count,
+        ) = self._nesting_depth(parsed.tree, nesting_node_types)
 
         code_metrics = CodeMetrics(
             lines_of_code=lines_of_code,
@@ -167,6 +170,8 @@ class TreeSitterAnalyzer:
             documentation=self._documentation(parsed, code_metrics),
             largest_function=largest_function,
             largest_class=largest_class,
+            nesting_depth_sum=nesting_depth_sum,
+            nesting_node_count=nesting_node_count,
         )
 
     def extract_file_symbols(self, code_file: FileInfo) -> list[Symbol]:
@@ -247,7 +252,7 @@ class TreeSitterAnalyzer:
     @staticmethod
     def _nesting_depth(
         tree: Tree, nesting_node_types: frozenset[str]
-    ) -> tuple[int, float]:
+    ) -> tuple[int, float, int, int]:
         """Measure how deeply control-flow constructs are nested.
 
         Walks the AST counting branch/loop nodes as nesting levels.
@@ -256,45 +261,34 @@ class TreeSitterAnalyzer:
         on). Sibling constructs do not increase the depth.
 
         Returns:
-            A tuple of (max_nesting_depth, average_nesting_depth) across
-            all nesting nodes in the file. Average is rounded to 2
-            decimal places, and is 0.0 for files with no nesting nodes.
+            A tuple of (max_nesting_depth, average_nesting_depth,
+            nesting_depth_sum, nesting_node_count) across all nesting
+            nodes in the file. Average is rounded to 2 decimal places,
+            and is 0.0 for files with no nesting nodes.
         """
         max_depth = 0
-        depth = 0
         depth_sum = 0
         nesting_count = 0
-        cursor = tree.walk()
-        reached_root = False
 
-        while not reached_root:
-            node = cursor.node
-            if node and node.type in nesting_node_types:
-                nesting_count += 1
-                depth_sum += depth
-                max_depth = max(max_depth, depth)
-
-            if cursor.goto_first_child():
-                if cursor.node.type in nesting_node_types:  # ty:ignore[unresolved-attribute]
-                    depth += 1
-                continue
-            if cursor.goto_next_sibling():
-                continue
-
-            retracing = True
-            while retracing:
-                node = cursor.node
-                if not cursor.goto_parent():
-                    reached_root = True
-                    retracing = False
+        # Depth is tracked per control-flow node rather than per AST
+        # level: descending into a branch/loop node increases it, and
+        # leaving that node decreases it. Using an explicit stack keeps
+        # deeply nested files from hitting the recursion limit.
+        stack: list[tuple[object, int]] = [(tree.root_node, 0)]
+        while stack:
+            node, depth = stack.pop()
+            for child in node.children:  # ty:ignore[unresolved-attribute]
+                if child.type in nesting_node_types:
+                    child_depth = depth + 1
+                    nesting_count += 1
+                    depth_sum += child_depth
+                    max_depth = max(max_depth, child_depth)
+                    stack.append((child, child_depth))
                 else:
-                    if node and node.type in nesting_node_types:
-                        depth -= 1
-                    if cursor.goto_next_sibling():
-                        retracing = False
+                    stack.append((child, depth))
 
         average_depth = depth_sum / nesting_count if nesting_count else 0.0
-        return max_depth, round(average_depth, 2)
+        return max_depth, round(average_depth, 2), depth_sum, nesting_count
 
     @staticmethod
     def _classify_lines(

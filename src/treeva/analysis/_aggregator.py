@@ -31,7 +31,7 @@ class MetricsAggregator:
 
         self._max_nesting_depth = 0
         self._nesting_depth_sum = 0
-        self._analyzed_file_count = 0
+        self._nesting_node_count = 0
 
         self._documented_functions = 0
         self._documented_classes = 0
@@ -49,6 +49,9 @@ class MetricsAggregator:
         code_metrics: CodeMetrics,
         language: FileType,
         documentation: DocumentationInfo,
+        *,
+        nesting_depth_sum: int,
+        nesting_node_count: int,
     ) -> None:
         """Merge a file's metrics into the aggregate totals.
 
@@ -56,6 +59,9 @@ class MetricsAggregator:
             code_metrics: A CodeMetrics instance for a single file.
             language: A FileType.
             documentation: A DocumentationInfo instance for a single file.
+            nesting_depth_sum: Sum of control-flow nesting depths in the
+                file, used to weight the project average.
+            nesting_node_count: Number of control-flow nodes in the file.
         """
         self._total_loc += code_metrics.lines_of_code
         self._total_comment_lines += code_metrics.lines_of_comment
@@ -77,7 +83,8 @@ class MetricsAggregator:
             self._max_nesting_depth,
             code_metrics.max_nesting_depth,
         )
-        self._nesting_depth_sum += code_metrics.max_nesting_depth
+        self._nesting_depth_sum += nesting_depth_sum
+        self._nesting_node_count += nesting_node_count
 
         self._documented_functions += documentation.documented_functions
         self._documented_classes += documentation.documented_classes
@@ -85,8 +92,6 @@ class MetricsAggregator:
         self._undocumented_functions += documentation.undocumented_functions
         self._undocumented_classes += documentation.undocumented_classes
         self._undocumented_methods += documentation.undocumented_methods
-
-        self._analyzed_file_count += 1
 
         self._language_locs[language.label] += code_metrics.lines_of_code
 
@@ -102,8 +107,8 @@ class MetricsAggregator:
         """
 
         average_nesting_depth = (
-            self._nesting_depth_sum / self._analyzed_file_count
-            if self._analyzed_file_count > 0
+            self._nesting_depth_sum / self._nesting_node_count
+            if self._nesting_node_count > 0
             else 0.0
         )
 
