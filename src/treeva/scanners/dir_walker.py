@@ -5,6 +5,8 @@ Files and directories can be excluded via gitignore rules, default patterns,
 and extra user-defined patterns.
 """
 
+from __future__ import annotations
+
 from typing import Iterator, TYPE_CHECKING, Optional
 from pathlib import Path
 
