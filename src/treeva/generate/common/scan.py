@@ -62,7 +62,7 @@ def scan_project(
         if not metrics:
             try:
                 loc = len(path.read_bytes().split(b"\n"))
-            except Exception:
+            except OSError:
                 loc = 0
 
         entry = FileEntry(

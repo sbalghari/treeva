@@ -1,20 +1,21 @@
 from __future__ import annotations
 
-from logging import getLogger
-from pathlib import Path
-from typing import Annotated, Optional
 import json
 import os
+from logging import getLogger
+from pathlib import Path
+from typing import Annotated
 
 import typer
 
-from treeva.constants import OutputFormat
-from treeva.library.logger import setup_logging, LOG_DIR
 from treeva.analysis import dir_info_from_path, file_info_from_path
-from treeva.cli.output import print_error, print_success
-from treeva.cli.output.console import CONSOLE
 from treeva.cli.formats.dir_info import DirInfoFormat
 from treeva.cli.formats.file_info import FileInfoFormat
+from treeva.cli.output import print_error, print_success
+from treeva.cli.output.console import CONSOLE
+from treeva.constants import OutputFormat
+from treeva.library.logger import LOG_DIR, setup_logging
+
 from ._common import common_options, write_output_to_file
 
 
@@ -26,7 +27,7 @@ def register(app: typer.Typer) -> None:
         file: bool = common_options["file"],
         verbose: bool = common_options["verbose"],
         exclude: Annotated[
-            Optional[list[str]],
+            list[str] | None,
             typer.Option(
                 "--exclude",
                 "-e",
@@ -99,7 +100,7 @@ def register(app: typer.Typer) -> None:
             raise typer.Exit(1)
         except Exception as e:
             print_error(
-                f"Unexpected Error: {str(e)}, check logs for details:"
+                f"Unexpected Error: {e!s}, check logs for details:"
                 f" {LOG_DIR}/treeva.cmd.inspect.log"
             )
             logger.exception("Unexpected Error: ", exc_info=e)

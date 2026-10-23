@@ -4,19 +4,19 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
+
     from treeva.models import FileAnalysis, FileInfo, Symbol
 
 from .analyzer import ProjectAnalyzer
-from .base.file import file_info_from_path
 from .base.dir import dir_info_from_path
-
+from .base.file import file_info_from_path
 
 __all__ = [
     "ProjectAnalyzer",
-    "file_info_from_path",
-    "dir_info_from_path",
     "analyze_file",
+    "dir_info_from_path",
     "extract_file_symbols",
+    "file_info_from_path",
 ]
 
 

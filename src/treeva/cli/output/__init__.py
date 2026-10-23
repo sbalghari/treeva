@@ -1,18 +1,16 @@
-from typing import Optional
-
 from pyfiglet import figlet_format
-from rich.text import Text
-from rich.style import Style
 from rich.console import Group
 from rich.rule import Rule
+from rich.style import Style
+from rich.text import Text
 
+from ._base import error, info, success, warning
 from .console import (
-    CONSOLE,
     COLORS,
+    CONSOLE,
     is_no_rich,
     plain_print,
 )
-from ._base import info, success, error, warning
 
 HEADING_GRADIENT = [
     COLORS["red"],
@@ -122,7 +120,7 @@ def print_subtext(t: str) -> None:
 
 
 def print_info(
-    t: str, *, details: Optional[str] = None, panel: bool = True
+    t: str, *, details: str | None = None, panel: bool = True
 ) -> None:
     """Print an info message, optionally inside a panel.
 
@@ -141,7 +139,7 @@ def print_info(
 
 
 def print_success(
-    t: str, details: Optional[str] = None, panel: bool = True
+    t: str, details: str | None = None, panel: bool = True
 ) -> None:
     """Print a success message, optionally inside a panel.
 
@@ -160,7 +158,7 @@ def print_success(
 
 
 def print_error(
-    t: str, details: Optional[str] = None, panel: bool = True
+    t: str, details: str | None = None, panel: bool = True
 ) -> None:
     """Print an error message, optionally inside a panel.
 
@@ -179,7 +177,7 @@ def print_error(
 
 
 def print_warning(
-    t: str, *, details: Optional[str] = None, panel: bool = True
+    t: str, *, details: str | None = None, panel: bool = True
 ) -> None:
     """Print a warning message, optionally inside a panel.
 

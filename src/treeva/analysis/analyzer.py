@@ -1,13 +1,16 @@
 from __future__ import annotations
-from treeva.analysis.dir_structure import dir_structure
-from typing import TYPE_CHECKING
-from pathlib import Path
+
 import time
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+from treeva.analysis.dir_structure import dir_structure
 
 if TYPE_CHECKING:
     from logging import Logger
 
 from treeva.constants.enums import FileType
+from treeva.library.exceptions import UnsupportedLanguage
 from treeva.models import (
     AnalysisResult,
     LargestClass,
@@ -16,14 +19,11 @@ from treeva.models import (
     LargestFunction,
     ScanMetadata,
 )
-from treeva.library.exceptions import UnsupportedLanguage
-
-from .treesitter.analyzer import TreeSitterAnalyzer, TREE_SITTER_GRAMMAR_MAP
-from .code_quality import code_quality
-
-from .base.dir import dir_info_from_path
 
 from ._aggregator import MetricsAggregator
+from .base.dir import dir_info_from_path
+from .code_quality import code_quality
+from .treesitter.analyzer import TREE_SITTER_GRAMMAR_MAP, TreeSitterAnalyzer
 
 
 class ProjectAnalyzer:

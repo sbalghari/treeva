@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 
-from treeva.library.version import get_version
-from treeva.cli.output.console import set_no_rich
 from treeva.analysis.analyzer import ProjectAnalyzer
+from treeva.cli.output.console import set_no_rich
+from treeva.library.version import get_version
+
 from .commands import register_commands
 
 app = typer.Typer(name="treeva", add_completion=False)
@@ -40,7 +41,7 @@ def supported_langs_callback(supported_langs: bool) -> None:
 @app.callback(invoke_without_command=False)
 def _(
     version: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--version",
             help="show version and exit",
@@ -49,7 +50,7 @@ def _(
         ),
     ] = None,
     supported_langs: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--supported-langs",
             help="show supported languages and exit",
@@ -58,7 +59,7 @@ def _(
         ),
     ] = None,
     no_rich: Annotated[
-        Optional[bool],
+        bool | None,
         typer.Option(
             "--no-rich",
             help="disable rich output (panels, tables, colors, spinners)",

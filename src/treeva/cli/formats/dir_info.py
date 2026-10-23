@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from treeva.models import DirInfo
 
-from ..utils import format_size
 from ..output.console import is_no_rich, plain_print
+from ..utils import format_size
 from .tables.dir_info import dir_info_table
 
 

@@ -57,6 +57,6 @@ def write_output_to_file(
         logger.error(f"Failed to write to {filepath}: {e}")
         return False
 
-    except Exception as e:
-        logger.exception(f"Unexpected error writing to {filepath}: {e}")
+    except Exception:
+        logger.exception(f"Unexpected error writing to {filepath}")
         return False

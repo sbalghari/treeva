@@ -274,9 +274,9 @@ def remove_agents_sections(
 
 __all__ = [
     "ALL",
+    "SECTION_NAMES",
     "GenerateResult",
     "RemoveResult",
-    "SECTION_NAMES",
     "generate_agents_md",
     "remove_agents_sections",
     "resolve_sections",

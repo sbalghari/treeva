@@ -1,12 +1,13 @@
 from __future__ import annotations
-from typing import Optional
 
-from rich.text import Text
+from typing import Self
+
 from rich.live import Live
 from rich.spinner import Spinner
+from rich.text import Text
 
+from ._base import error, panel, success, warning
 from .console import CONSOLE, is_no_rich, plain_print
-from ._base import panel, success, error, warning
 
 
 class SpinnerProgress:
@@ -52,7 +53,7 @@ class SpinnerProgress:
     def update_text(self, new_message: str) -> None:
         self.spinner.update(text=new_message, style="text")
 
-    def success(self, message: str, details: Optional[str] = None) -> None:
+    def success(self, message: str, details: str | None = None) -> None:
         if is_no_rich():
             plain_print(message)
             if details:
@@ -63,7 +64,7 @@ class SpinnerProgress:
         else:
             CONSOLE.print(success(message, details=details, use_panel=False))
 
-    def error(self, message: str, details: Optional[str] = None) -> None:
+    def error(self, message: str, details: str | None = None) -> None:
         if is_no_rich():
             plain_print(message)
             if details:
@@ -74,7 +75,7 @@ class SpinnerProgress:
         else:
             CONSOLE.print(error(message, details=details, use_panel=False))
 
-    def warning(self, message: str, details: Optional[str] = None) -> None:
+    def warning(self, message: str, details: str | None = None) -> None:
         if is_no_rich():
             plain_print(message)
             if details:
@@ -85,7 +86,7 @@ class SpinnerProgress:
         else:
             CONSOLE.print(warning(message, details=details, use_panel=False))
 
-    def __enter__(self) -> SpinnerProgress:
+    def __enter__(self) -> Self:
         if not self.verbose:
             self.live.start()
         return self

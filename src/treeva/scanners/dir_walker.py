@@ -7,8 +7,9 @@ and extra user-defined patterns.
 
 from __future__ import annotations
 
-from typing import Iterator, TYPE_CHECKING, Optional
+from collections.abc import Iterator
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
@@ -17,6 +18,7 @@ from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
 from treeva.library.exceptions import DirectoryNotFound
+
 from .exclusions import UnionExclude
 
 
@@ -65,9 +67,9 @@ def _rel_match(
 def dir_walker(
     dir_path: Path,
     *,
-    logger: Optional["Logger"] = None,
+    logger: Logger | None = None,
     include_dirs: bool = True,
-    extra_exclude_patterns: Optional[list[str]] = None,
+    extra_exclude_patterns: list[str] | None = None,
 ) -> Iterator[Path]:
     """Walk a directory tree, yielding files (and optionally dirs) that pass exclusion rules.
 

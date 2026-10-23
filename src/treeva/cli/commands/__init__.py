@@ -14,13 +14,13 @@ if TYPE_CHECKING:
 
 from ._common import common_options, write_output_to_file
 from .analyze import register as register_analyze
-from .inspect import register as register_inspect
 from .generate import register as register_generate
+from .inspect import register as register_inspect
 
 __all__ = [
     "common_options",
-    "write_output_to_file",
     "register_commands",
+    "write_output_to_file",
 ]
 
 

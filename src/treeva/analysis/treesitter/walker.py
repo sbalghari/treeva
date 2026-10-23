@@ -5,6 +5,7 @@ collect structural statistics about a parsed source file.
 """
 
 from tree_sitter import Tree
+
 from treeva.models import ErrorSpan, TreeStats
 
 

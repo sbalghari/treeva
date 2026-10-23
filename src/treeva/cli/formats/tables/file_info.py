@@ -5,12 +5,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from treeva.models import FileInfo
 
-from rich.table import Table
-from rich.panel import Panel
 from rich.columns import Columns
+from rich.panel import Panel
+from rich.table import Table
 
-from treeva.cli.output.console import CONSOLE, COLORS
 from treeva.cli.output import print_newline
+from treeva.cli.output.console import COLORS, CONSOLE
+
 from ...utils import format_size
 
 

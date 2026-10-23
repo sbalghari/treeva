@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Sequence, TYPE_CHECKING
+from collections.abc import Sequence
+from typing import TYPE_CHECKING
 
 from .sections import ALL_SECTIONS
 

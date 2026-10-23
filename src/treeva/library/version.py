@@ -1,4 +1,5 @@
 from importlib.metadata import PackageNotFoundError, version
+
 from typer import echo
 
 

@@ -1,5 +1,7 @@
 """Type aliases and shared constants for treeva."""
 
-from typing import TypeAlias, Literal
+from typing import Literal
 
-OutputFormat: TypeAlias = Literal["json", "rich-table", "plain-text"]
+# Implicit type alias: a PEP 695 ``type`` statement would produce a
+# TypeAliasType that Typer cannot resolve when building CLI parameters.
+OutputFormat = Literal["json", "rich-table", "plain-text"]

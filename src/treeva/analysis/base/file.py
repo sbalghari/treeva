@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from pathlib import Path
-from datetime import datetime
 import stat
+from datetime import datetime
+from pathlib import Path
 
 from treeva.models.file_info import FileInfo
+
 from .._utils import detect_file_type, get_group, get_owner, is_hidden
 
 

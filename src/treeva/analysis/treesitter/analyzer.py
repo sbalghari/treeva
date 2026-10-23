@@ -1,12 +1,16 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from logging import Logger
-    from treeva.models import FileInfo
+
     from tree_sitter import Tree
 
+    from treeva.models import FileInfo
+
 from treeva.constants.enums import FileType
+from treeva.library.exceptions import UnsupportedLanguage
 from treeva.models import (
     CodeMetrics,
     DocumentationInfo,
@@ -16,13 +20,12 @@ from treeva.models import (
     ParserResult,
     Symbol,
 )
-from treeva.library.exceptions import UnsupportedLanguage
-from .grammars import get_parser
-from .walker import walk_tree
-from .mapping import NODE_KIND_MAP
-from .docs import count_documented_symbols
-from .symbols import extract_symbols, find_largest_symbols
 
+from .docs import count_documented_symbols
+from .grammars import get_parser
+from .mapping import NODE_KIND_MAP
+from .symbols import extract_symbols, find_largest_symbols
+from .walker import walk_tree
 
 # Maps each FileType to its tree-sitter grammar name for parser lookup.
 TREE_SITTER_GRAMMAR_MAP: dict[FileType, str] = {

@@ -3,18 +3,19 @@ from __future__ import annotations
 from enum import Enum
 from logging import getLogger
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated
 
 import typer
 
-from treeva.library.logger import setup_logging, LOG_DIR
+from treeva.cli.output import print_error, print_success
+from treeva.cli.output.console import CONSOLE
 from treeva.generate import (
     generate_agents_md,
     remove_agents_sections,
 )
 from treeva.generate.agentsmd import resolve_sections as resolve_agent_sections
-from treeva.cli.output import print_error, print_success
-from treeva.cli.output.console import CONSOLE
+from treeva.library.logger import LOG_DIR, setup_logging
+
 from ._common import common_options
 
 
@@ -64,7 +65,7 @@ def register(app: typer.Typer) -> None:
             ),
         ] = False,
         section: Annotated[
-            Optional[list[str]],
+            list[str] | None,
             typer.Option(
                 "--section",
                 "-s",
@@ -74,7 +75,7 @@ def register(app: typer.Typer) -> None:
         ] = None,
         verbose: bool = common_options["verbose"],
         exclude: Annotated[
-            Optional[list[str]],
+            list[str] | None,
             typer.Option(
                 "--exclude",
                 "-e",
@@ -177,7 +178,7 @@ def register(app: typer.Typer) -> None:
             raise
         except Exception as e:
             print_error(
-                f"Unexpected Error: {str(e)}, check logs for details:"
+                f"Unexpected Error: {e!s}, check logs for details:"
                 f" {LOG_DIR}/treeva.cmd.generate.log"
             )
             logger.exception("Unexpected Error: ", exc_info=e)

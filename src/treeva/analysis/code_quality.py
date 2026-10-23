@@ -1,8 +1,8 @@
-from treeva.models import CodeQuality, CodeMetrics
+from treeva.models import CodeMetrics, CodeQuality
 
 
 def code_quality(
-    code_metrics: CodeMetrics, docs_coverage: int | float
+    code_metrics: CodeMetrics, docs_coverage: float
 ) -> CodeQuality:
 
     _cd = code_metrics.comment_density

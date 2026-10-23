@@ -5,11 +5,12 @@ by the higher-level print functions.
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Union
 
-from rich.text import Text
+from typing import TYPE_CHECKING
+
 from rich.box import ROUNDED
 from rich.panel import Panel
+from rich.text import Text
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -35,7 +36,7 @@ def panel(
     )
 
 
-def _build_content(message: str, details: Optional[str], style: str) -> Text:
+def _build_content(message: str, details: str | None, style: str) -> Text:
     content = Text(message, style=style)
     if details:
         content.append("\n")
@@ -47,12 +48,12 @@ def _build_content(message: str, details: Optional[str], style: str) -> Text:
 def _output(
     *,
     message: str,
-    details: Optional[str],
+    details: str | None,
     text_style: str,
     title: str,
     border_style: str,
     use_panel: bool,
-) -> Union[Panel, Text]:
+) -> Panel | Text:
     content = _build_content(message, details, text_style)
 
     if not use_panel:
@@ -62,8 +63,8 @@ def _output(
 
 
 def info(
-    message: str, *, details: Optional[str] = None, use_panel: bool = True
-) -> Union[Panel, Text]:
+    message: str, *, details: str | None = None, use_panel: bool = True
+) -> Panel | Text:
     return _output(
         message=message,
         details=details,
@@ -75,8 +76,8 @@ def info(
 
 
 def success(
-    message: str, *, details: Optional[str] = None, use_panel: bool = True
-) -> Union[Panel, Text]:
+    message: str, *, details: str | None = None, use_panel: bool = True
+) -> Panel | Text:
     return _output(
         message=message,
         details=details,
@@ -88,8 +89,8 @@ def success(
 
 
 def error(
-    message: str, *, details: Optional[str] = None, use_panel: bool = True
-) -> Union[Panel, Text]:
+    message: str, *, details: str | None = None, use_panel: bool = True
+) -> Panel | Text:
     return _output(
         message=message,
         details=details,
@@ -101,8 +102,8 @@ def error(
 
 
 def warning(
-    message: str, *, details: Optional[str] = None, use_panel: bool = True
-) -> Union[Panel, Text]:
+    message: str, *, details: str | None = None, use_panel: bool = True
+) -> Panel | Text:
     return _output(
         message=message,
         details=details,

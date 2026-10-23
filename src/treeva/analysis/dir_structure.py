@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 
 from treeva.models import DirStructure
+
 from ._utils import is_hidden
 
 
@@ -75,8 +76,7 @@ def _deepest_directory_depth(
         for entry in current.iterdir():
             if entry.is_dir() and not entry.name.startswith("."):
                 child = _deepest_directory_depth(root, entry, depth + 1)
-                if child > max_depth:
-                    max_depth = child
+                max_depth = max(max_depth, child)
     except PermissionError:
         pass
     return max_depth

@@ -15,10 +15,10 @@ from __future__ import annotations
 
 from .agentsmd import (
     ALL,
+    SECTION_NAMES,
     GenerateResult,
     PlannedWrite,
     RemoveResult,
-    SECTION_NAMES,
     generate_agents_md,
     remove_agents_sections,
     resolve_sections,
@@ -28,11 +28,11 @@ AgentsWrite = PlannedWrite
 
 __all__ = [
     "ALL",
+    "SECTION_NAMES",
     "AgentsWrite",
     "GenerateResult",
     "PlannedWrite",
     "RemoveResult",
-    "SECTION_NAMES",
     "generate_agents_md",
     "remove_agents_sections",
     "resolve_sections",

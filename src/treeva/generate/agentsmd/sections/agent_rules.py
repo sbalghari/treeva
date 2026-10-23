@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from ..base import ROOT_FILE, Section
 from treeva.models import ScanContext
+
+from ..base import ROOT_FILE, Section
 
 
 class AgentRulesSection(Section):

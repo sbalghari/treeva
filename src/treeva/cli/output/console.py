@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.style import Style
 from rich.theme import Theme
 
-
 COLORS = {
     "rosewater": "#f5e0dc",
     "flamingo": "#f2cdcd",

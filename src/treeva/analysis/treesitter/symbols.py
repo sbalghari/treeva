@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from tree_sitter import Tree
+
 from treeva.models import Symbol
+
 from .mapping import NODE_KIND_MAP
 
 
@@ -99,10 +101,9 @@ def find_largest_symbols(
                 or span > largest_func.end_line - largest_func.start_line
             ):
                 largest_func = sym
-        elif sym.kind == "class":
-            if (
-                largest_class is None
-                or span > largest_class.end_line - largest_class.start_line
-            ):
-                largest_class = sym
+        elif sym.kind == "class" and (
+            largest_class is None
+            or span > largest_class.end_line - largest_class.start_line
+        ):
+            largest_class = sym
     return largest_func, largest_class

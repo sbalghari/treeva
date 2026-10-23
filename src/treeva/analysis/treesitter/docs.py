@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from tree_sitter import Tree
+
 from .mapping import NODE_KIND_MAP
 
 

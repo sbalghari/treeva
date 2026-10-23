@@ -1,10 +1,12 @@
 from __future__ import annotations
-from typing import Any, TYPE_CHECKING
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from datetime import datetime
+    from pathlib import Path
+
     from .file_info import FileInfo
 
 

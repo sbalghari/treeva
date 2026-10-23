@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
 import platform
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-from treeva.constants.extensions import FILE_EXTENSIONS
 from treeva.constants.enums import FileType
+from treeva.constants.extensions import FILE_EXTENSIONS
 
 
 def detect_file_type(filepath: Path) -> FileType:

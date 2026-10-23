@@ -1,7 +1,10 @@
 from __future__ import annotations
 
-from ..base import ROOT_FILE, Section
+import tomllib
+
 from treeva.models import ScanContext
+
+from ..base import ROOT_FILE, Section
 
 
 class TechStackSection(Section):
@@ -21,13 +24,11 @@ class TechStackSection(Section):
         pyproject = ctx.project_root / "pyproject.toml"
         if pyproject.exists():
             try:
-                import tomllib
-
                 data = tomllib.loads(pyproject.read_text())
-                deps = data.get("project", {}).get("dependencies", [])
-                for dep in deps:
-                    lines.append(f"  - {dep}")
-            except Exception:
-                pass
+            except (OSError, ValueError):
+                data = {}
+            deps = data.get("project", {}).get("dependencies", [])
+            for dep in deps:
+                lines.append(f"  - {dep}")
         lines.append("")
         return {ROOT_FILE: lines}

@@ -1,15 +1,17 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
-from pathlib import Path
-from datetime import datetime
+
 import stat
+from datetime import datetime
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from logging import Logger
 
-from treeva.models.file_info import FileInfo
 from treeva.models.dir_info import DirInfo
+from treeva.models.file_info import FileInfo
 from treeva.scanners import dir_walker
+
 from .._utils import get_group, get_owner, is_hidden
 from .file import file_info_from_path
 

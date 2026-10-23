@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from ..base import Section
 from treeva.models import FileEntry, ScanContext
+
+from ..base import Section
 from .root_files import _lines_cell
 
 

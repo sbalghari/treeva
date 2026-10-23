@@ -6,12 +6,11 @@ platform-aware default log directory selection.
 
 import logging
 import os
+from enum import Enum
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from enum import Enum
 
 from rich.logging import RichHandler
-
 
 APP_NAME = "treeva"
 

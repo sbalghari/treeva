@@ -4,12 +4,12 @@ Exposes the primary scanning and exclusion components used throughout the
 project's analysis pipeline.
 """
 
-from .exclusions import DefaultExclude, GitignoreExclude, UnionExclude
 from .dir_walker import dir_walker
+from .exclusions import DefaultExclude, GitignoreExclude, UnionExclude
 
 __all__ = [
     "DefaultExclude",
     "GitignoreExclude",
-    "dir_walker",
     "UnionExclude",
+    "dir_walker",
 ]

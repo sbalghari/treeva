@@ -1,24 +1,22 @@
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
-from ..base import ROOT_FILE, Section
 from treeva.models import ScanContext
+
+from ..base import ROOT_FILE, Section
 
 
 def read_pyproject_field(project_root: Path, field: str) -> str:
     pyproject = project_root / "pyproject.toml"
-    if pyproject.exists():
-        try:
-            import tomllib
-
-            data = tomllib.loads(pyproject.read_text())
-            val = data.get("project", {}).get(field, "")
-            if val:
-                return val
-        except Exception:
-            pass
-    return ""
+    if not pyproject.exists():
+        return ""
+    try:
+        data = tomllib.loads(pyproject.read_text())
+    except (OSError, ValueError):
+        return ""
+    return data.get("project", {}).get(field, "") or ""
 
 
 class OverviewSection(Section):

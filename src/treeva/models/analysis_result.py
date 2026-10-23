@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .file_info import FileInfo
-from .dir_info import DirInfo
-
 from .analysis.code_metrics import CodeMetrics
 from .analysis.code_quality import CodeQuality
-from .analysis.language import LanguageStatistics
 from .analysis.docs import DocumentationInfo
 from .analysis.entities import LargestEntities
+from .analysis.language import LanguageStatistics
 from .analysis.structure import DirStructure
+from .dir_info import DirInfo
+from .file_info import FileInfo
 from .scan_metadata import ScanMetadata
 
 

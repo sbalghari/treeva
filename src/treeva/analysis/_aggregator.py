@@ -1,8 +1,8 @@
 from __future__ import annotations
-from treeva.constants.enums import FileType
 
 from collections import defaultdict
 
+from treeva.constants.enums import FileType
 from treeva.models import CodeMetrics, DocumentationInfo, LanguageStatistics
 
 

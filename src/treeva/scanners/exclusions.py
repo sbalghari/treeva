@@ -1,11 +1,12 @@
+from abc import ABC, abstractmethod
 from logging import Logger
 from pathlib import Path
-from abc import ABC, abstractmethod
+
 from pathspec import PathSpec
 from pathspec.patterns.gitignore.spec import GitIgnoreSpecPattern
 
-from treeva.library.exceptions import GitignoreNotFound, DirectoryNotFound
 from treeva.constants.excludes import DEFAULT_EXCLUDES
+from treeva.library.exceptions import GitignoreNotFound
 
 
 class ExcludeRule(ABC):
@@ -147,31 +148,24 @@ class GitignoreExclude(ExcludeRule):
         Returns:
             A two-element tuple: (root_gitignore_or_None,
             list_of_nested_gitignore_paths).
-
-        Raises:
-            DirectoryNotFound: If proj_path does not exist.
         """
         root_gitignore: Path | None = None
         subdir_gitignores: list[Path | None] = []
 
-        try:
-            for root, _, files in self.proj_path.walk(on_error=print):
-                if files:
-                    for f in files:
-                        file = root.joinpath(f)
+        for root, _, files in self.proj_path.walk(on_error=print):
+            if files:
+                for f in files:
+                    file = root.joinpath(f)
 
-                        if file.match(".gitignore"):
-                            # root .gitignore
-                            if file.parent == self.proj_path:
-                                root_gitignore = file
+                    if file.match(".gitignore"):
+                        # root .gitignore
+                        if file.parent == self.proj_path:
+                            root_gitignore = file
 
-                            # nested ones
-                            subdir_gitignores.append(file)
+                        # nested ones
+                        subdir_gitignores.append(file)
 
-            return root_gitignore, subdir_gitignores
-
-        except DirectoryNotFound:
-            raise
+        return root_gitignore, subdir_gitignores
 
     @property
     def gitignore_exists(self) -> bool:
@@ -180,12 +174,8 @@ class GitignoreExclude(ExcludeRule):
         Returns:
             True when at least one .gitignore file is present.
         """
-        gitignore = self._get_gitignore()
-
-        if not gitignore:
-            return False
-
-        return True
+        root_gitignore, subdir_gitignores = self._get_gitignore()
+        return root_gitignore is not None or bool(subdir_gitignores)
 
 
 class UnionExclude(ExcludeRule):
