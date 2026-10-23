@@ -71,4 +71,10 @@ line-length = 79
 target-version = "py312"
 
 [dependency-groups]
-dev = ["mypy>=1.20.0", "pytest>=9.0.3", "ruff>=0.15.10", "ty>=0.0.29"]
+dev = [
+    "mypy>=1.20.0",
+    "pytest>=9.0.3",
+    "pytest-cov>=7.1.0",
+    "ruff>=0.15.10",
+    "ty>=0.0.29",
+]
